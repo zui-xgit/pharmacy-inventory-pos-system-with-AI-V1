@@ -1,0 +1,15 @@
+description = 'create a commit message based on staged changes'
+
+prompt ='''
+Generate a commit message, listing $ summarizing the main changes, 
+run the  following command on the terminal to get to see the changes made:
+
+ git diff --staged
+
+use the following for types of changes:
+
+- for style changes use STYLE:
+- for bug fixes use BUG:
+- for new features use FEATURE:
+- for docs use DOCS: 
+  '''

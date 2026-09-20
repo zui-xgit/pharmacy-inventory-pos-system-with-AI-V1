@@ -144,13 +144,23 @@ Ensure you have the following installed on your machine:
 
 > *Note: Screen captures highlighting UI component interactions, role-based interfaces, and overall workflow execution.*
 
-| Landing Page | Login Page |
-| :---: | :---: |
-| ![Landing Page](docs/images/landing-page.png) | ![Login Page](docs/images/login-page.png) |
+| Landing Page |
+| :---: |
+| ![Landing Page](docs/images/landing-page.png) |
 
-| Owner Dashboard | Employee Dashboard |
-| :---: | :---: |
-| ![Owner Dashboard](docs/images/owner-dashboard.png) | ![Employee Dashboard](docs/images/employee-dashboard.png) |
+
+|  Login Page |
+| :---: | 
+| ![Login Page](docs/images/login-page.png) |
+
+| Owner Dashboard |
+| :---: |
+| ![Owner Dashboard](docs/images/owner-dashboard.png) |
+
+
+|  Employee Dashboard |
+| :---: |
+| ![Employee Dashboard](docs/images/employee-dashboard.png) |
 
 ## 🔮 Future Roadmap
 

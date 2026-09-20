@@ -138,15 +138,19 @@ Ensure you have the following installed on your machine:
 6. **Access the Application**
    Open your browser and navigate to `http://127.0.0.1:8000`.
 
+
+
 ## 🖼️ Visuals & Interface
 
-| Landing Page | Login Page | 
-| :---: | :---: | 
-| ![Landing Page](docs/images/landing-page.png) | ![Login Page](docs/images/login-page.png) | 
+> *Note: Screen captures highlighting UI component interactions, role-based interfaces, and overall workflow execution.*
 
-| Owner Dashboard | Employee Dashboard | 
-| :---: | :---: | 
-| ![Owner Dashboard](docs/images/owner-dashboard.png) | ![Employee Dashboard](docs/images/employee-dashboard.png) | 
+| Landing Page | Login Page |
+| :---: | :---: |
+| ![Landing Page](docs/images/landing-page.png) | ![Login Page](docs/images/login-page.png) |
+
+| Owner Dashboard | Employee Dashboard |
+| :---: | :---: |
+| ![Owner Dashboard](docs/images/owner-dashboard.png) | ![Employee Dashboard](docs/images/employee-dashboard.png) |
 
 ## 🔮 Future Roadmap
 

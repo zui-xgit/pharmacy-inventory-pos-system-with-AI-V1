@@ -176,10 +176,7 @@ Ensure you have the following installed on your machine:
 
 *Full-Stack Engineer | Computer Science Professional*
 
-* **Portfolio**: [your-portfolio-link.com](#)
 
-* **LinkedIn**: [linkedin.com/in/your-profile](#)
+* **GitHub**: [https://github.com/zui-xgit](#)
 
-* **GitHub**: [github.com/your-username](#)
-
-* **Email**: [your-email@example.com](mailto:your-email@example.com)
+* **Email**: [benardbenny90@gmail.com](mailto:benardbenny90@gmail.com)

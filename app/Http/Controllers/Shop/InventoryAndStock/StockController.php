@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Stock;
+namespace App\Http\Controllers\Shop\InventoryAndStock;
 
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Product;
@@ -45,6 +45,11 @@ class StockController extends Controller
             'shop_uuid' => $shop->uuid,
             'search_input' => $search_input,
         ]);
+    }
+
+    public function stockAdjustments() 
+    {
+           return Inertia::render("shop/stock/stock-history"); 
     }
 
     public function stockHistory(Shop $shop)

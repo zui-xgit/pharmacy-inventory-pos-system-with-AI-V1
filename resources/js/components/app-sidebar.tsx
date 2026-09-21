@@ -24,15 +24,14 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { shopOverview } from '@/routes';
 import catalog from '@/routes/catalog';
 import owner from '@/routes/owner';
-import sales from '@/routes/sales';
 import stock from '@/routes/stock';
 import type { NavItem } from '@/types';
 import type { Auth } from '@/types/auth';
 // import NavSubMain from './nav-sub-main';
 import { Button } from './ui/button';
+import shop from '@/routes/shop';
 
 // OWNER NAVITEMS
 const Overview: NavItem[] = [
@@ -71,12 +70,12 @@ const Account: NavItem[] = [
 const ShopOverview = (shop_uuid: string): NavItem[] => [
     {
         title: 'Overview ',
-        href: shopOverview({ shop: shop_uuid }),
+        href: shop.overview({ shop: shop_uuid }),
         icon: LayoutDashboard,
     },
     {
         title: 'Sales / POS',
-        href: sales.newSalePos({ shop: shop_uuid }),
+        href: shop.pos({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
 ];
@@ -94,7 +93,7 @@ const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
     },
     {
         title: 'Stock Adjustments',
-        href: sales.history({ shop: shop_uuid }),
+        href: '#',
         icon: History,
     },
 ];

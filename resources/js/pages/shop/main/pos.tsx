@@ -29,6 +29,7 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
+import SearchInput from '@/components/search-input';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -287,8 +288,8 @@ export default function NewSalePOS({
 
     const filteredProducts = useMemo(() => {
         if (!search.trim()) {
-return products;
-}
+            return products;
+        }
 
         const q = search.toLowerCase();
 
@@ -309,8 +310,8 @@ return products;
 
         if (existing) {
             if (existing.quantity >= selectedBatch.quantity_available) {
-return;
-}
+                return;
+            }
 
             setCart((prev) =>
                 prev.map((item) =>
@@ -353,8 +354,8 @@ return;
                     );
 
                     if (!newBatch) {
-return item;
-}
+                        return item;
+                    }
 
                     const validQty = Math.min(
                         item.quantity,
@@ -383,8 +384,8 @@ return item;
             prev.map((item) => {
                 if (item.batch_id === batchId) {
                     if (item.quantity >= item.max_quantity) {
-return item;
-}
+                        return item;
+                    }
 
                     const newQty = item.quantity + 1;
 
@@ -456,7 +457,7 @@ return item;
             <div className="relative flex h-full flex-col gap-4">
                 <Card className="flex flex-1 flex-col shadow-none">
                     <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 pb-3">
-                        <div className="relative max-w-md flex-1">
+                        <div className="tborder relative max-w-md flex-1">
                             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 placeholder="Search live products, SKU, or batch..."
@@ -474,6 +475,11 @@ return item;
                                 </button>
                             )}
                         </div>
+                        {/* <SearchInput
+                            href={window.location.pathname}
+                            filters={}
+                            placeholder="Search live  , SKU, or batch..."
+                        /> */}
                     </CardHeader>
 
                     <CardContent className="flex-1 space-y-2 overflow-y-auto">

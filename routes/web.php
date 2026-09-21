@@ -1,20 +1,20 @@
 <?php
 
-use App\Http\Controllers\Catalog\CatalogController;
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\Stock\StockController;
+
+
+use App\Http\Controllers\Shop\InventoryAndStock\CatalogController;
+use App\Http\Controllers\Shop\InventoryAndStock\StockController;
+use App\Http\Controllers\Shop\Main\MainController;
+use App\Http\Controllers\Shop\Main\PosController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');
 
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
 
-    // shop overview
-    Route::get('/', [ShopController::class, 'overviewDashboard'])->name('shop-overview');
-
-    // SALES
-    Route::get('new-sale-pos', [ShopController::class, 'newSalePos'])->name('sales.new-sale-pos');
-    Route::get('sales-history', [ShopController::class, 'salesHistory'])->name('sales.history');
+    //Main
+    Route::get('/', [MainController::class, 'overview'])->name('shop.overview');
+    Route::get('pos', [PosController::class, 'posIndex'])->name('shop.pos');
 
     // CATALOG
     Route::get('catalog/products', [CatalogController::class, 'productsCatalog'])->name('catalog.products');

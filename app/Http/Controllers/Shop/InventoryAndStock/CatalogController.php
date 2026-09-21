@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Catalog;
+namespace App\Http\Controllers\Shop\InventoryAndStock;
 
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\DosageForm;
 use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
-use App\Models\Inventory\Stock;
 use Exception;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;

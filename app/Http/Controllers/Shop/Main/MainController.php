@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Shop\Main;
 
+use App\Http\Controllers\Controller;
 use App\Models\Core\Shop;
 use App\Models\Inventory\Alert;
 use App\Models\Sales\Sale;
 use App\Models\Sales\SaleItem;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ShopController extends Controller
+class MainController extends Controller
 {
     //
-    // index - open shop
-    public function overviewDashboard(Shop $shop)
+
+    public function overview(Shop $shop)
     {
 
         $today = today();
@@ -93,7 +95,7 @@ class ShopController extends Controller
 
         // ── Render ────────────────────────────────────────────────────────────
 
-        return Inertia::render('shop/overview/overview-dashboard', [
+        return Inertia::render('shop/main/overview', [
             'shop' => [
                 'id' => $shop->uuid,
                 'name' => $shop->name,
@@ -108,16 +110,5 @@ class ShopController extends Controller
             'recent_sales' => $recentSales,
             'top_products' => $topProducts,
         ]);
-    }
-
-    // SALES
-    public function newSalePos(Shop $shop)
-    {
-        return Inertia::render('shop/sales/new-sale-pos');
-    }
-
-    public function salesHistory(Shop $shop)
-    {
-        return Inertia::render('shop/sales/sales-history');
     }
 }

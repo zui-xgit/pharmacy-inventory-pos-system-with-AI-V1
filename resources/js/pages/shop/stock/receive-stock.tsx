@@ -8,7 +8,7 @@ import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import SearchInput from '@/components/search-input';
 import NewDosageFormSheet from '@/components/sheets/new-dosage-form';
-import NewPackageUnitSheet from '@/components/sheets/new-package-unit';
+// import NewPackageUnitSheet from '@/components/sheets/new-package-unit';
 import NewProductSheet from '@/components/sheets/new-product';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -258,7 +258,7 @@ const ReceiveStock = ({
                                         </Button>
                                     }
                                 />
-                                <NewPackageUnitSheet
+                                {/* <NewPackageUnitSheet
                                     trigger={
                                         <Button
                                             type="button"
@@ -271,7 +271,7 @@ const ReceiveStock = ({
                                             available
                                         </Button>
                                     }
-                                />
+                                /> */}
                                 <NewProductSheet
                                     trigger={
                                         <Button

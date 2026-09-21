@@ -9,10 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+
+    // TODO: remember to deal with this later if this column is of no use then it is better to remove it
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // foreignId for determining what shop the user is operating in 
+            // foreignId for determining what shop the user is operating in
 
             $table->foreignId('active_shop_id')
                 ->nullable()

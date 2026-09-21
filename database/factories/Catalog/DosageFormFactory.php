@@ -28,8 +28,9 @@ class DosageFormFactory extends Factory
             'cream',
             'gel',
             'inhaler',
-            'drops'
+            'drops',
         ];
+
         return [
             'name' => fake()->unique()->randomElement($dosageForms),
         ];

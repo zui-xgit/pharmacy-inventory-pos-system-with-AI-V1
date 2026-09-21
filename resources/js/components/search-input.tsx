@@ -1,10 +1,11 @@
+import { router } from '@inertiajs/react';
+import type { InertiaLinkProps } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
-import { router, type InertiaLinkProps } from '@inertiajs/react';
 import { useDebouncedCallback } from 'use-debounce';
-import { Spinner } from './ui/spinner';
 import { Input } from './ui/input';
+import { Spinner } from './ui/spinner';
 
 interface SearchInputProps {
     href: NonNullable<InertiaLinkProps['href']>;

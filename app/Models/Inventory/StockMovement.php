@@ -2,11 +2,11 @@
 
 namespace App\Models\Inventory;
 
-use App\Models\Catalog\Product;
 use App\Models\Catalog\Batch;
+use App\Models\Catalog\Product;
 use App\Models\User;
-
 use App\Traits\BelongsToShop;
+use Database\Factories\Inventory\StockMovementFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,12 +17,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[Guarded('id')]
 class StockMovement extends Model
 {
-    /** @use HasFactory<\Database\Factories\Inventory\StockMovementFactory> */
-    use HasFactory;
-    use BelongsToShop; 
-    use HasUuids; 
+    use BelongsToShop;
 
-    
+    /** @use HasFactory<StockMovementFactory> */
+    use HasFactory;
+    use HasUuids;
+
     /**
      * Get the attributes that should be cast.
      *
@@ -31,9 +31,9 @@ class StockMovement extends Model
     protected function casts(): array
     {
         return [
-            'quantity'        => 'decimal:2',
+            'quantity' => 'decimal:2',
             'quantity_before' => 'decimal:2',
-            'quantity_after'  => 'decimal:2',
+            'quantity_after' => 'decimal:2',
         ];
     }
 
@@ -42,29 +42,28 @@ class StockMovement extends Model
         return ['uuid'];
     }
 
- 
     // Stock movements are append-only — never updated or deleted.
     // Every change to stock quantity must write a new row here.
- 
+
     // -------------------------------------------------------------------------
     // Relations
     // -------------------------------------------------------------------------
- 
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
- 
+
     public function batch(): BelongsTo
     {
         return $this->belongsTo(Batch::class);
     }
- 
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
- 
+
     /**
      * Polymorphic relation back to whatever caused this movement.
      * Could be a Sale, a Batch receipt, a StockCountSession, etc.
@@ -73,11 +72,11 @@ class StockMovement extends Model
     {
         return $this->morphTo();
     }
- 
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
- 
+
     /**
      * True if this movement added stock (purchase, return).
      */
@@ -85,7 +84,7 @@ class StockMovement extends Model
     {
         return $this->quantity > 0;
     }
- 
+
     /**
      * True if this movement removed stock (sale, expiry, adjustment down).
      */
@@ -93,5 +92,4 @@ class StockMovement extends Model
     {
         return $this->quantity < 0;
     }
-
 }

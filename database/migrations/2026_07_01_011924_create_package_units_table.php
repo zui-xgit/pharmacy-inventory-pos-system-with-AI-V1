@@ -14,16 +14,16 @@ return new class extends Migration
     {
         Schema::create('package_units', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique(); 
- 
+            $table->uuid('uuid')->unique();
+
             $table->foreignIdFor(Shop::class)
                 ->constrained()
                 ->cascadeOnDelete();
- 
-            $table->string('name'); 
-            $table->softDeletes();          
+
+            $table->string('name');
+            $table->softDeletes();
             $table->timestamps();
- 
+
             // unit names must be unique per shop
             $table->unique(['shop_id', 'name']);
         });

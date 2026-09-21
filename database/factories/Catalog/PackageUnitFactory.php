@@ -25,7 +25,7 @@ class PackageUnitFactory extends Factory
             'carton',
             'sachet',
             'tube',
-            'pack'
+            'pack',
         ];
 
         return [

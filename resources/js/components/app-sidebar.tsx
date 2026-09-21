@@ -9,44 +9,29 @@ import {
     Activity,
     LayoutDashboard,
     ShoppingCart,
-    Boxes,
-    BarChart3,
-    User,
-    BarChart4,
-    Receipt,
-    CalendarClock,
-    Wallet,
-    TrendingUp,
     History,
-    TriangleAlert,
-    AlarmClock,
-    LayoutList,
-    ArrowLeftRight,
-    ClipboardList,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
+// import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import type { NavItem } from '@/types';
-import type { Auth } from '@/types/auth';
-import owner from '@/routes/owner';
-import NavSubMain from './nav-sub-main';
-import sales from '@/routes/sales';
 import { shopOverview } from '@/routes';
 import catalog from '@/routes/catalog';
+import owner from '@/routes/owner';
+import sales from '@/routes/sales';
 import stock from '@/routes/stock';
+import type { NavItem } from '@/types';
+import type { Auth } from '@/types/auth';
+// import NavSubMain from './nav-sub-main';
 import { Button } from './ui/button';
 
 // OWNER NAVITEMS
@@ -146,18 +131,18 @@ const ShopSystem = (shop_uuid: string): NavItem[] => [
         icon: Package,
     },
 ];
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+// const footerNavItems: NavItem[] = [
+//     {
+//         title: 'Repository',
+//         href: 'https://github.com/laravel/react-starter-kit',
+//         icon: FolderGit2,
+//     },
+//     {
+//         title: 'Documentation',
+//         href: 'https://laravel.com/docs/starter-kits#react',
+//         icon: BookOpen,
+//     },
+// ];
 
 export function AppSidebar() {
     const { activeShop, auth } = usePage<{

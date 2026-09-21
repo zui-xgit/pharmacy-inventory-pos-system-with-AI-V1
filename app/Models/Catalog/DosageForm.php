@@ -3,6 +3,7 @@
 namespace App\Models\Catalog;
 
 use App\Traits\BelongsToShop;
+use Database\Factories\Catalog\DosageFormFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,11 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Guarded('id')]
 class DosageForm extends Model
 {
-    /** @use HasFactory<\Database\Factories\Catalog\DosageFormFactory> */
-    use HasFactory;
     use BelongsToShop;
-    use HasUuids; 
 
+    /** @use HasFactory<DosageFormFactory> */
+    use HasFactory;
+    use HasUuids;
 
     public function uniqueIds(): array
     {

@@ -27,7 +27,6 @@ return new class extends Migration
     //   - Purchase history report
     //   - Cash flow report
 
-
     /**
      * Run the migrations.
      */
@@ -37,25 +36,25 @@ return new class extends Migration
         Schema::create('stock_movements', function (Blueprint $table) {
 
             $table->id();
-            $table->uuid("uuid")->unique();
- 
+            $table->uuid('uuid')->unique();
+
             $table->foreignIdFor(Shop::class)
                 ->constrained()
                 ->cascadeOnDelete();
- 
+
             $table->foreignIdFor(Product::class)
                 ->constrained()
                 ->restrictOnDelete();
- 
+
             $table->foreignIdFor(Batch::class)
                 ->constrained()
                 ->restrictOnDelete();
- 
+
             // The user who triggered this movement
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->restrictOnDelete();
- 
+
             $table->enum('type', [
                 'purchase',   // batch received
                 'sale',       // sold to customer
@@ -64,21 +63,21 @@ return new class extends Migration
                 'return',     // customer return
                 'transfer',   // between shops (phase 2)
             ]);
- 
+
             // Positive = stock coming in, Negative = stock going out
             $table->decimal('quantity', 10, 2);
- 
+
             // Quantity before this movement — useful for audit trail
             $table->decimal('quantity_before', 10, 2);
- 
+
             // Quantity after this movement
             $table->decimal('quantity_after', 10, 2);
- 
+
             // Reference to the source record
             // e.g. sale_id, batch_id, stock_count_session_id
             $table->string('reference_type')->nullable(); // morph type
             $table->unsignedBigInteger('reference_id')->nullable(); // morph id
- 
+
             $table->text('notes')->nullable();
             $table->timestamps();
         });

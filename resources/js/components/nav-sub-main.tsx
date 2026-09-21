@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { ChevronRight, LucideIcon } from 'lucide-react'; // Added for the collapse arrow indicator
+import type { LucideIcon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react'; // Added for the collapse arrow indicator
 // 1. Import the collapsible layout primitives
 import {
     Collapsible,
@@ -7,7 +8,6 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
-    SidebarGroup,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,

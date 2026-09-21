@@ -10,6 +10,7 @@ use App\Models\Catalog\Supplier;
 use App\Models\Inventory\Stock;
 use App\Models\Inventory\StockMovement;
 use App\Models\User;
+use Database\Factories\Core\ShopFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(
     'name',
-    'location', 
+    'location',
     'address',
     'phone',
     'logo_path',
@@ -32,22 +33,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 )]
 class Shop extends Model
 {
-    /** @use HasFactory<\Database\Factories\Core\ShopFactory> */
+    /** @use HasFactory<ShopFactory> */
     use HasFactory;
-    use HasUuids; 
+
+    use HasUuids;
 
     public function uniqueIds(): array
     {
         return ['uuid'];
-    }   
-
+    }
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'shop_user')->withTimestamps();       
+        return $this->belongsToMany(User::class, 'shop_user')->withTimestamps();
     }
 
-    
     public function packageUnits(): HasMany
     {
         return $this->hasMany(PackageUnit::class);
@@ -82,6 +82,4 @@ class Shop extends Model
     {
         return $this->hasMany(StockMovement::class);
     }
-
-    
 }

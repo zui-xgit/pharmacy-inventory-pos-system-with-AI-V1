@@ -4,6 +4,7 @@ namespace App\Models\Sales;
 
 use App\Models\User;
 use App\Traits\BelongsToShop;
+use Database\Factories\Sales\SaleFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,12 +15,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Guarded('id')]
 class Sale extends Model
 {
-    /** @use HasFactory<\Database\Factories\Sales\SaleFactory> */
-    use HasFactory;
-    use BelongsToShop; 
-    use HasUuids; 
+    use BelongsToShop;
 
-     /**
+    /** @use HasFactory<SaleFactory> */
+    use HasFactory;
+    use HasUuids;
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -27,10 +29,10 @@ class Sale extends Model
     protected function casts(): array
     {
         return [
-            'total_amount'  => 'decimal:2',
-            'discount'      => 'decimal:2',
-            'amount_paid'   => 'decimal:2',
-            'change_given'  => 'decimal:2',
+            'total_amount' => 'decimal:2',
+            'discount' => 'decimal:2',
+            'amount_paid' => 'decimal:2',
+            'change_given' => 'decimal:2',
         ];
     }
 
@@ -42,23 +44,21 @@ class Sale extends Model
     // -------------------------------------------------------------------------
     // Relations
     // -------------------------------------------------------------------------
- 
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
 
     public function items(): HasMany
     {
         return $this->hasMany(SaleItem::class);
     }
 
-
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
- 
+
     /**
      * Total profit for this sale —
      * sum of (unit_price - cost_price) * quantity across all items.
@@ -69,12 +69,12 @@ class Sale extends Model
             return ($item->unit_price - $item->cost_price) * $item->quantity;
         });
     }
- 
+
     public function isCompleted(): bool
     {
         return $this->status === 'completed';
     }
- 
+
     public function isRefunded(): bool
     {
         return $this->status === 'refunded';

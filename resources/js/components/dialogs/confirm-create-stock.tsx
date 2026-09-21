@@ -10,7 +10,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
-import { Product } from '@/types/type';
+import type { Product } from '@/types/type';
 import { Spinner } from '../ui/spinner';
 
 // 1. Explicitly type the useForm dataset structure
@@ -28,7 +28,7 @@ export interface StockFormData {
 interface ProductConfirmationDialogProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
-    product: Product | null | Record<string, never>; 
+    product: Product | null | Record<string, never>;
     data: StockFormData;
     onConfirm: () => void;
     processing: boolean;
@@ -37,13 +37,16 @@ interface ProductConfirmationDialogProps {
 export function StocktConfirmationDialog({
     isOpen,
     onOpenChange,
-    product, 
+    product,
     data,
     onConfirm,
     processing,
 }: ProductConfirmationDialogProps) {
     const formatCurrency = (value: string | number) => {
-        if (!value) return '-';
+        if (!value) {
+return '-';
+}
+
         return new Intl.NumberFormat('en-TZ', {
             style: 'currency',
             currency: 'TZS',

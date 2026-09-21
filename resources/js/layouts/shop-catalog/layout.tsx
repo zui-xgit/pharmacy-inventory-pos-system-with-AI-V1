@@ -1,11 +1,11 @@
 import { Link, usePage } from '@inertiajs/react';
+import { Layers, Package, Pill } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { toUrl } from '@/lib/utils';
-import type { NavItem } from '@/types';
 import catalog from '@/routes/catalog';
-import { Layers, Package, Package2, Pill } from 'lucide-react';
+import type { NavItem } from '@/types';
 
 const sidebarNavItems = (shop_uuid: string): NavItem[] => [
     {

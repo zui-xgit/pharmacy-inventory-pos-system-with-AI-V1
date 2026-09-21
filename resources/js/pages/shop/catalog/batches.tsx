@@ -230,11 +230,14 @@
 //     ],
 // };
 
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
+import { EditDeleteRowActions } from '@/components/dopdown/edit-delete-row-actions';
 import Heading from '@/components/heading';
 import SearchInput from '@/components/search-input';
 
-import { EditDeleteRowActions } from '@/components/dopdown/edit-delete-row-actions';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -243,9 +246,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import stock from '@/routes/stock';
 
 interface BatchItem {
@@ -485,7 +485,10 @@ const Batches = ({ batches, filters }: Props) => {
                 {batches.links.length > 3 && (
                     <div className="flex items-center justify-end space-x-2">
                         {batches.links.map((link, index) => {
-                            if (!link.url) return null;
+                            if (!link.url) {
+return null;
+}
+
                             return (
                                 <Button
                                     key={index}

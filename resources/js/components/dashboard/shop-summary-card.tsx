@@ -1,5 +1,5 @@
+import { router } from '@inertiajs/react';
 import { ArrowRight, MailIcon, MapPin, Phone } from 'lucide-react';
-import { Button } from '../ui/button';
 import {
     Card,
     CardHeader,
@@ -7,10 +7,9 @@ import {
     CardContent,
     CardFooter,
 } from '@/components/ui/card';
-import { Badge } from '../ui/badge';
-import owner from '@/routes/owner';
-import { router } from '@inertiajs/react';
 import { shopOverview } from '@/routes';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 
 interface Shop {
     uuid: string;

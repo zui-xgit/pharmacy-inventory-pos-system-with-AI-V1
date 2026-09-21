@@ -8,13 +8,13 @@ use App\Models\Core\Shop;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -36,8 +36,9 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-    use HasUuids; 
+
     use HasRoles;
+    use HasUuids;
 
     /**
      * Get the attributes that should be cast.
@@ -57,16 +58,14 @@ class User extends Authenticatable
         return ['uuid'];
     }
 
-    public function belongsToShop(int|string $shopId): bool 
+    public function belongsToShop(int|string $shopId): bool
     {
-        return $this->shops()->where('shop_id', $shopId)->exists(); 
+        return $this->shops()->where('shop_id', $shopId)->exists();
     }
-
-
 
     public function shops(): BelongsToMany
     {
-       return $this->belongsToMany(Shop::class, 'shop_user')->withTimestamps();
+        return $this->belongsToMany(Shop::class, 'shop_user')->withTimestamps();
     }
 
     public function activeShop(): BelongsTo
@@ -77,39 +76,45 @@ class User extends Authenticatable
     // -------------------------------------------------------------------------
     // Role helpers
     // -------------------------------------------------------------------------
- 
+
     public function isOwner(): bool
     {
-        return $this->hasRole('owner');  
-         
+        return $this->hasRole('owner');
+
     }
- 
+
     public function isManager(): bool
     {
         return $this->hasRole('manager');
     }
- 
+
     public function isCashier(): bool
     {
         return $this->hasRole('cashier');
     }
- 
+
     public function isManagerOrOwner(): bool
     {
         return $this->isOwner() || $this->isManager();
     }
 
-    public function isManagerOrCashier(): bool 
+    public function isManagerOrCashier(): bool
     {
-        return $this->isManager() || $this->isCashier(); 
+        return $this->isManager() || $this->isCashier();
     }
- 
+
     public function currentRole(): string
     {
-        if ($this->isOwner())   return 'owner';
-        if ($this->isManager()) return 'manager';
-        if ($this->isCashier()) return 'cashier';
- 
+        if ($this->isOwner()) {
+            return 'owner';
+        }
+        if ($this->isManager()) {
+            return 'manager';
+        }
+        if ($this->isCashier()) {
+            return 'cashier';
+        }
+
         return 'none';
     }
 
@@ -117,17 +122,16 @@ class User extends Authenticatable
     // Status helpers
     // -------------------------------------------------------------------------
 
-
     public function isActive(): bool
     {
         return $this->status === 'active';
     }
- 
+
     public function isSuspended(): bool
     {
         return $this->status === 'suspended';
     }
- 
+
     public function isInactive(): bool
     {
         return $this->status === 'inactive';

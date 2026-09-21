@@ -1,9 +1,17 @@
-import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { useForm, usePage } from '@inertiajs/react';
+import { PackagePlus, Plus, X } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import DatePicker from '@/components/dashboard/date-picker';
+import { StocktConfirmationDialog } from '@/components/dialogs/confirm-create-stock';
+import Heading from '@/components/heading';
+import InputError from '@/components/input-error';
+import SearchInput from '@/components/search-input';
+import NewDosageFormSheet from '@/components/sheets/new-dosage-form';
+import NewPackageUnitSheet from '@/components/sheets/new-package-unit';
+import NewProductSheet from '@/components/sheets/new-product';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -11,22 +19,13 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
-
-import { PackagePlus, Plus, X } from 'lucide-react';
-import Heading from '@/components/heading';
-import SearchInput from '@/components/search-input';
-import NewProductSheet from '@/components/sheets/new-product';
-import { DosageForm, Product } from '@/types/type';
-import { useForm, usePage } from '@inertiajs/react';
-import DatePicker from '@/components/dashboard/date-picker';
-import InputError from '@/components/input-error';
-import { useState } from 'react';
-import NewPackageUnitSheet from '@/components/sheets/new-package-unit';
-import NewDosageFormSheet from '@/components/sheets/new-dosage-form';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
+import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 import stock from '@/routes/stock';
-import { StocktConfirmationDialog } from '@/components/dialogs/confirm-create-stock';
+import type { DosageForm, Product } from '@/types/type';
 
 interface ReceiveStockProps {
     products: Product[];
@@ -68,7 +67,7 @@ const ReceiveStock = ({
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(
         null,
     );
-    const { data, setData, processing, errors, post, transform, reset } =
+    const { data, setData, processing, errors, post, transform } =
         useForm<UseFormType>(useFormDefaultValues);
 
     const { activeShop } = usePage<{ activeShop: { uuid: string } }>().props;
@@ -116,6 +115,7 @@ const ReceiveStock = ({
     const handleConfirmSubmit = () => {
         handleRecordStock(true);
     };
+
     return (
         <DashboardInnerLayout>
             <StocktConfirmationDialog

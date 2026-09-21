@@ -1,3 +1,8 @@
+import { useForm } from '@inertiajs/react';
+import { Plus, Loader2 } from 'lucide-react';
+import type { FormEvent} from 'react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -8,14 +13,10 @@ import {
     DialogFooter,
     DialogClose,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Plus, Loader2 } from 'lucide-react';
-import { useForm } from '@inertiajs/react';
-import { FormEvent, useState } from 'react';
-import InputError from '../input-error';
+import { Label } from '@/components/ui/label';
 import owner from '@/routes/owner';
+import InputError from '../input-error';
 
 const RegisterBranch = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);

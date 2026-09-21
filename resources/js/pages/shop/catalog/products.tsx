@@ -1,6 +1,11 @@
+import { Head, Link } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
+import { EditDeleteRowActions } from '@/components/dopdown/edit-delete-row-actions';
 import Heading from '@/components/heading';
 import SearchInput from '@/components/search-input'; // Adjust this import path to match your structure
-import { Head, Link } from '@inertiajs/react';
+import NewProductSheet from '@/components/sheets/new-product';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -9,12 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import NewProductSheet from '@/components/sheets/new-product';
-import { DosageForm } from '@/types/type';
-import { EditDeleteRowActions } from '@/components/dopdown/edit-delete-row-actions';
+import type { DosageForm } from '@/types/type';
 
 interface ProductItem {
     uuid: string;
@@ -36,6 +36,7 @@ interface Props {
 const Products = ({ products, filters, dosage_forms }: Props) => {
     const handleEdit = () => {};
     const handleDelete = () => {};
+
     return (
         <>
             <Head title="Products Catalog" />
@@ -121,7 +122,10 @@ const Products = ({ products, filters, dosage_forms }: Props) => {
                 {products.links.length > 3 && (
                     <div className="flex items-center justify-end space-x-2">
                         {products.links.map((link, index) => {
-                            if (!link.url) return null;
+                            if (!link.url) {
+return null;
+}
+
                             return (
                                 <Button
                                     key={index}

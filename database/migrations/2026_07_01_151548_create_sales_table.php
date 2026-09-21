@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     // A sale represents one complete transaction at the counter.
     // One sale has many sale_items — one per product/batch sold.
     //
@@ -20,8 +19,6 @@ return new class extends Migration
     //
     // All four steps happen in one database transaction — if any
     // step fails, nothing is saved.
- 
-
 
     /**
      * Run the migrations.
@@ -31,27 +28,27 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
 
             $table->id();
-            $table->uuid('uuid')->unique(); 
- 
+            $table->uuid('uuid')->unique();
+
             $table->foreignIdFor(Shop::class)
                 ->constrained()
                 ->cascadeOnDelete();
- 
+
             // The cashier or staff member who processed this sale
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->restrictOnDelete();
- 
+
             $table->string('receipt_number')->unique(); // auto generated e.g. RCP-20240101-0001
             $table->decimal('total_amount', 10, 2);     // sum of all sale items
             $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('amount_paid', 10, 2);      // actual amount handed over
             $table->decimal('change_given', 10, 2)->default(0); // amount_paid - total_amount
- 
+
             $table->enum('payment_method', ['cash', 'card', 'mobile'])->default('cash');
- 
+
             $table->enum('status', ['completed', 'refunded', 'cancelled'])->default('completed');
- 
+
             $table->text('notes')->nullable();
             $table->timestamps();
         });

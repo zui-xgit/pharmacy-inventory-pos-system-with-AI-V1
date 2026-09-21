@@ -29,11 +29,11 @@
 //     );
 // }
 
+import { usePage } from '@inertiajs/react';
+import { Store } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
-import { usePage } from '@inertiajs/react';
-import { Store } from 'lucide-react';
 
 export function AppSidebarHeader({
     breadcrumbs = [],

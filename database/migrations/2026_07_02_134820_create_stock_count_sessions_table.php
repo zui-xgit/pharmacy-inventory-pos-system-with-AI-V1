@@ -24,24 +24,24 @@ return new class extends Migration
     //
     // Status flow:
     //   open → in_progress → finalized
- 
+
     public function up(): void
     {
         Schema::create('stock_count_sessions', function (Blueprint $table) {
 
             $table->id();
- 
+
             $table->foreignIdFor(Shop::class)
                 ->constrained()
                 ->cascadeOnDelete();
- 
+
             // The manager or owner who initiated the session
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->restrictOnDelete();
- 
+
             $table->enum('status', ['open', 'in_progress', 'finalized'])->default('open');
- 
+
             $table->text('notes')->nullable();
             $table->timestamp('finalized_at')->nullable();
             $table->timestamps();

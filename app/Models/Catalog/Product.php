@@ -2,12 +2,10 @@
 
 namespace App\Models\Catalog;
 
-use App\Models\Catalog\Batch;
-use App\Models\Catalog\DosageForm;
-use App\Models\Catalog\PackageUnit;
 use App\Models\Inventory\Stock;
 use App\Models\Inventory\StockMovement;
 use App\Traits\BelongsToShop;
+use Database\Factories\Catalog\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,15 +14,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 #[Guarded('id')]
 class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\Catalog\ProductFactory> */
+    use BelongsToShop;
+
+    /** @use HasFactory<ProductFactory> */
     use HasFactory;
-    use BelongsToShop; 
-    use SoftDeletes; 
-    use HasUuids; 
+    use HasUuids;
+    use SoftDeletes;
 
     /**
      * Get the attributes that should be cast.
@@ -34,7 +32,7 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'is_active'     => 'boolean',
+            'is_active' => 'boolean',
             'reorder_point' => 'integer',
         ];
     }
@@ -43,43 +41,40 @@ class Product extends Model
     {
         return ['uuid'];
     }
-    
- 
+
     // -------------------------------------------------------------------------
     // Relations
     // -------------------------------------------------------------------------
- 
+
     public function packageUnit(): BelongsTo
     {
         return $this->belongsTo(PackageUnit::class);
     }
 
-    
- 
     public function dosageForm(): BelongsTo
     {
         return $this->belongsTo(DosageForm::class);
     }
- 
+
     public function batches(): HasMany
     {
         return $this->hasMany(Batch::class);
     }
- 
+
     public function stock(): HasMany
     {
         return $this->hasMany(Stock::class);
     }
- 
+
     public function stockMovements(): HasMany
     {
         return $this->hasMany(StockMovement::class);
     }
- 
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
- 
+
     /**
      * Total current quantity across all batches of this product.
      */
@@ -87,7 +82,7 @@ class Product extends Model
     {
         return $this->stock()->sum('quantity');
     }
- 
+
     /**
      * True if total stock is at or below the reorder point.
      * Falls back to shop's low_stock_threshold if reorder_point is not set.
@@ -96,10 +91,7 @@ class Product extends Model
     {
         $threshold = $this->reorder_point
             ?? $this->shop->low_stock_threshold;
- 
+
         return $this->totalStock() <= $threshold;
     }
-
-
-
 }

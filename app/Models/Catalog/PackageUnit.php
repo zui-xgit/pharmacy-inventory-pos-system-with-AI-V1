@@ -2,8 +2,8 @@
 
 namespace App\Models\Catalog;
 
-use App\Models\Catalog\Product;
 use App\Traits\BelongsToShop;
+use Database\Factories\Catalog\PackageUnitFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,11 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Guarded('id')]
 class PackageUnit extends Model
 {
-    /** @use HasFactory<\Database\Factories\Catalog\PackageUnitFactory> */
-    use HasFactory;
     use BelongsToShop;
-    use HasUuids; 
 
+    /** @use HasFactory<PackageUnitFactory> */
+    use HasFactory;
+    use HasUuids;
 
     public function uniqueIds(): array
     {

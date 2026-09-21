@@ -11,10 +11,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
-use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
+use Laravel\Fortify\Features;
+use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -24,35 +24,37 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
-         $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
-            {   
+            {
                 return redirect('/login');
             }
         });
 
-        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse
+        {
             public function toResponse($request)
             {
-                   $user = $request->user(); 
+                $user = $request->user();
 
-                   if($user->isOwner()){
-                        return redirect()->route('owner.shops'); 
-                   }
+                if ($user->isOwner()) {
+                    return redirect()->route('owner.shops');
+                }
 
-                   if($user->isManagerOrCashier()){
-                        // 1. Grab the first shop assigned to this user
-                        $shop = $user->shops()->first(); 
+                if ($user->isManagerOrCashier()) {
+                    // 1. Grab the first shop assigned to this user
+                    $shop = $user->shops()->first();
 
-                        // 2. If they aren't assigned to any shop, handle the error gracefully
-                        if (!$shop) {
-                            abort(403, 'You are a staff member but have not been assigned to a pharmacy branch yet.');
-                        }
+                    // 2. If they aren't assigned to any shop, handle the error gracefully
+                    if (! $shop) {
+                        abort(403, 'You are a staff member but have not been assigned to a pharmacy branch yet.');
+                    }
 
-                        // 3. Redirect to the named route, passing the UUID under the 'shop' key
-                        // Matches your route parameter '{shop:uuid}'
-                        return redirect()->route('shop-overview', ['shop' => $shop->uuid]);
-                   }
+                    // 3. Redirect to the named route, passing the UUID under the 'shop' key
+                    // Matches your route parameter '{shop:uuid}'
+                    return redirect()->route('shop-overview', ['shop' => $shop->uuid]);
+                }
 
             }
         });

@@ -1,6 +1,11 @@
+import { Head, Link } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
+import { EditDeleteRowActions } from '@/components/dopdown/edit-delete-row-actions';
 import Heading from '@/components/heading';
 import SearchInput from '@/components/search-input';
-import { Head, Link } from '@inertiajs/react';
+import NewDosageFormSheet from '@/components/sheets/new-dosage-form';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -9,12 +14,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import NewDosageFormSheet from '@/components/sheets/new-dosage-form';
-import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
-import { EditDeleteRowActions } from '@/components/dopdown/edit-delete-row-actions';
 
 interface DosageFormItem {
     uuid: string;
@@ -35,6 +34,7 @@ interface Props {
 const DosageForms = ({ dosageForms, filters }: Props) => {
     const handleEdit = () => {};
     const handleDelete = () => {};
+
     return (
         <>
             <Head title="Dosage Forms Catalog" />
@@ -119,7 +119,10 @@ const DosageForms = ({ dosageForms, filters }: Props) => {
                 {dosageForms.links.length > 3 && (
                     <div className="flex items-center justify-end space-x-2">
                         {dosageForms.links.map((link, index) => {
-                            if (!link.url) return null;
+                            if (!link.url) {
+                                return null;
+                            }
+
                             return (
                                 <Button
                                     key={index}

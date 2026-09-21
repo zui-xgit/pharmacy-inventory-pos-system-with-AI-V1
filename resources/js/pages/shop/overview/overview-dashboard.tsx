@@ -1,12 +1,12 @@
-import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 // import StatCard from '@/components/shop/dashboard/stat-card';
-import StatCard from '@/components/dashboard/stat-card';
-// import RecentSales from '@/components/shop/dashboard/recent-sales';
-import RecentSales from '@/components/dashboard/recent-sales';
-// import TopProducts from '@/components/shop/dashboard/top-products';
-import TopProducts from '@/components/dashboard/top-products';
 import { usePage } from '@inertiajs/react';
 import { ShoppingCart, TrendingUp, Package, Clock } from 'lucide-react';
+import RecentSales from '@/components/dashboard/recent-sales';
+import StatCard from '@/components/dashboard/stat-card';
+// import RecentSales from '@/components/shop/dashboard/recent-sales';
+// import TopProducts from '@/components/shop/dashboard/top-products';
+import TopProducts from '@/components/dashboard/top-products';
+import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types

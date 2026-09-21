@@ -36,28 +36,27 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
 
-
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user() ? [
                     'username' => $request->user()->username,
-                    'firstname' => $request->user()->firstname, 
-                    'lastname' => $request->user()->lastname, 
-                    'email' => $request->user()->email, 
+                    'firstname' => $request->user()->firstname,
+                    'lastname' => $request->user()->lastname,
+                    'email' => $request->user()->email,
                     'roles' => $request->user()->getRoleNames(),
 
                     // Add this line to attach their shop UUID dynamically (for manager or cashier)
-                    // 'shop_uuid' => $request->user()->isManagerOrCashier() 
-                    //     ? $request->user()->shops()->first()?->uuid 
+                    // 'shop_uuid' => $request->user()->isManagerOrCashier()
+                    //     ? $request->user()->shops()->first()?->uuid
                     //     : null,
 
                     // ⭐ Pass clean, simple flags directly to frontend
                     'isOwner' => $request->user()->hasRole('owner'),
                     'isManager' => $request->user()->hasRole('manager'),
                     'isCashier' => $request->user()->hasRole('cashier'),
-                    'isOwnerOrManager' => $request->user()->hasAnyRole(['owner', 'manager']), 
+                    'isOwnerOrManager' => $request->user()->hasAnyRole(['owner', 'manager']),
                     'isManagerOrCashier' => $request->user()->hasAnyRole(['manager', 'cashier']),
                 ] : null,
             ],

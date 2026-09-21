@@ -5,32 +5,26 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Stock\StockController;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
 
+    // SHOP OVERVIEW
+    Route::get('/', [ShopController::class, 'overviewDashboard'])->name('shop-overview');
 
-Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function (){
+    // SALES
+    Route::get('new-sale-pos', [ShopController::class, 'newSalePos'])->name('sales.new-sale-pos');
+    Route::get('sales-history', [ShopController::class, 'salesHistory'])->name('sales.history');
 
-     //SHOP OVERVIEW
-    Route::get('/', [ShopController::class, "overviewDashboard"])->name('shop-overview'); 
-   
-    //SALES
-    Route::get('new-sale-pos', [ShopController::class, "newSalePos"])->name('sales.new-sale-pos'); 
-    Route::get('sales-history', [ShopController::class, "salesHistory"])->name('sales.history'); 
-    
-
-    //CATALOG
-    Route::get('catalog/products', [CatalogController::class, "productsCatalog"])->name('catalog.products'); 
-    Route::get('catalog/batches', [CatalogController::class, "batchesCatalog"])->name('catalog.batches'); 
-    Route::get('catalog/dosage-forms', [CatalogController::class, "dosageFormsCatalog"])->name('catalog.dosage-forms'); 
-    Route::get('catalog/package-units', [CatalogController::class, "packageUnitsCatalog"])->name('catalog.package-units'); 
-    Route::post('catalog/new-dosage-form', [CatalogController::class, "createDosageForm"])->name('catalog.new-dosage-form');
-    Route::post('catalog/new-product', [CatalogController::class, "createProduct"])->name('catalog.new-product');
-
+    // CATALOG
+    Route::get('catalog/products', [CatalogController::class, 'productsCatalog'])->name('catalog.products');
+    Route::get('catalog/batches', [CatalogController::class, 'batchesCatalog'])->name('catalog.batches');
+    Route::get('catalog/dosage-forms', [CatalogController::class, 'dosageFormsCatalog'])->name('catalog.dosage-forms');
+    Route::get('catalog/package-units', [CatalogController::class, 'packageUnitsCatalog'])->name('catalog.package-units');
+    Route::post('catalog/new-dosage-form', [CatalogController::class, 'createDosageForm'])->name('catalog.new-dosage-form');
+    Route::post('catalog/new-product', [CatalogController::class, 'createProduct'])->name('catalog.new-product');
 
     // Stock
-    Route::get('stock/receive-stock', [StockController::class, "receiveStock"])->name('stock.receive-stock'); 
-    Route::get('stock/stock-history', [StockController::class, "stockHistory"])->name('stock.history');
-    Route::post('stock/new-batch', [StockController::class, "createBatch"])->name('stock.new-batch');
+    Route::get('stock/receive-stock', [StockController::class, 'receiveStock'])->name('stock.receive-stock');
+    Route::get('stock/stock-history', [StockController::class, 'stockHistory'])->name('stock.history');
+    Route::post('stock/new-batch', [StockController::class, 'createBatch'])->name('stock.new-batch');
 
-     
-
-}); 
+});

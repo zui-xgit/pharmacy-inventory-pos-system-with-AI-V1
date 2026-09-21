@@ -1,31 +1,15 @@
-import { Head, router, usePage } from '@inertiajs/react';
-import {
-    ArrowRight,
-    MapPin,
-    Phone,
-    MailIcon,
-    Search,
-    Store,
-} from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Store } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardContent,
-    CardFooter,
-} from '@/components/ui/card';
-
-import { Badge } from '@/components/ui/badge';
-import Heading from '@/components/heading';
-import RegisterBranch from '@/components/dialogs/register-branch';
-import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import owner from '@/routes/owner';
-import RefreshButton from '@/components/refresh-button';
-import SearchInput from '@/components/search-input';
 import BusinessStatsBar from '@/components/dashboard/business-stats-bar';
 import ShopSummaryCard from '@/components/dashboard/shop-summary-card';
+import RegisterBranch from '@/components/dialogs/register-branch';
+import Heading from '@/components/heading';
+import RefreshButton from '@/components/refresh-button';
+import SearchInput from '@/components/search-input';
+
+import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
+import owner from '@/routes/owner';
 
 interface Shop {
     uuid: string;

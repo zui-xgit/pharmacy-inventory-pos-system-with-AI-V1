@@ -1,20 +1,18 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { login, register, shopOverview } from '@/routes';
 import {
     Pill,
     ShieldCheck,
-    LogIn,
     LayoutDashboard,
     Database,
-    ArrowRight,
     Store,
     Activity,
     ShoppingBag,
     Layers,
 } from 'lucide-react';
+import { login, register, shopOverview } from '@/routes';
 import owner from '@/routes/owner';
-import { RouteDefinition } from '@/wayfinder';
-import { Auth } from '@/types';
+import type { Auth } from '@/types';
+import type { RouteDefinition } from '@/wayfinder';
 
 export default function Welcome() {
     const { activeShop, auth } = usePage<{

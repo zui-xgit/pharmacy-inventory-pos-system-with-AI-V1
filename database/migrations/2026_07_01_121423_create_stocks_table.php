@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Catalog\Batch;
-use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -9,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     // Stock tracks the CURRENT available quantity of each batch in a shop.
     // It is the live number you see on the shelf right now.
     //
@@ -20,7 +18,6 @@ return new class extends Migration
     // Every change to stock.quantity MUST write a corresponding row
     // in stock_movements — that is the rule that makes the ledger work.
 
-
     /**
      * Run the migrations.
      */
@@ -29,23 +26,23 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
 
             $table->id();
-            $table->uuid('uuid')->unique(); 
- 
+            $table->uuid('uuid')->unique();
+
             $table->foreignIdFor(Shop::class)
                 ->constrained()
                 ->cascadeOnDelete();
- 
+
             $table->foreignIdFor(Batch::class)
                 ->constrained()
                 ->restrictOnDelete();
- 
+
             // Current available quantity of this batch in this shop
-            
+
             $table->unsignedInteger('quantity_received'); // original quantity received
             $table->unsignedInteger('quantity_remaining'); // original quantity received
- 
+
             $table->timestamps();
- 
+
             // one stock row per batch per shop
             $table->unique(['shop_id', 'batch_id']);
         });

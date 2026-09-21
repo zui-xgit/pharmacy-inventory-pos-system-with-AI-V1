@@ -17,15 +17,15 @@ class IsManagerOrCashier
     public function handle(Request $request, Closure $next): Response
     {
 
-        $user = $request->user(); 
+        $user = $request->user();
 
-        if($user && $user->isManagerOrCashier() ){
-           $shop_uuid = $request->user()->shops()->first()?->uuid;
+        if ($user && $user->isManagerOrCashier()) {
+            $shop_uuid = $request->user()->shops()->first()?->uuid;
             Inertia::share('activeShop', [
-                'uuid' => $shop_uuid, 
+                'uuid' => $shop_uuid,
             ]);
         }
-        
+
         return $next($request);
     }
 }

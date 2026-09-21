@@ -1,3 +1,14 @@
+import { useForm, usePage } from '@inertiajs/react';
+import { SelectGroup } from '@radix-ui/react-select';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Sheet,
     SheetContent,
@@ -8,24 +19,13 @@ import {
     SheetClose,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import catalog from '@/routes/catalog';
+import type { DosageForm } from '@/types/type';
+import InputError from '../input-error';
+import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label'; // Corrected to point to standard Shadcn Label component
-import { Button } from '../ui/button';
-import { useState } from 'react';
-import { useForm, usePage } from '@inertiajs/react';
-import InputError from '../input-error';
 import { Spinner } from '../ui/spinner';
-import { toast } from 'sonner';
-import { SelectGroup } from '@radix-ui/react-select';
-import { DosageForm } from '@/types/type';
-import catalog from '@/routes/catalog';
 
 interface NewProductDialogProps {
     trigger: React.ReactNode;

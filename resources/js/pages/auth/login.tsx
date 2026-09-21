@@ -113,8 +113,9 @@
 //     description: 'Enter your email and password below to log in',
 // };
 
-import { FormEvent } from 'react';
 import { Head, useForm } from '@inertiajs/react';
+import type { FormEvent } from 'react';
+import { toast } from 'sonner';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -126,7 +127,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import { toast } from 'sonner';
 
 type Props = {
     status?: string;

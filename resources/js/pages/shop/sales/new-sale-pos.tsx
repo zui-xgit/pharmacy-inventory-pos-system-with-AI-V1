@@ -1,24 +1,3 @@
-import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import { useState, useMemo } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
 import {
     Search,
     Plus,
@@ -29,6 +8,27 @@ import {
     X,
     AlertCircle,
 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -286,8 +286,12 @@ export default function NewSalePOS({
     // ── Realtime Dynamic Filtering ───────────────────────────────────────────
 
     const filteredProducts = useMemo(() => {
-        if (!search.trim()) return products;
+        if (!search.trim()) {
+return products;
+}
+
         const q = search.toLowerCase();
+
         return products.filter(
             (p) =>
                 p.name.toLowerCase().includes(q) ||
@@ -304,7 +308,10 @@ export default function NewSalePOS({
         );
 
         if (existing) {
-            if (existing.quantity >= selectedBatch.quantity_available) return;
+            if (existing.quantity >= selectedBatch.quantity_available) {
+return;
+}
+
             setCart((prev) =>
                 prev.map((item) =>
                     item.batch_id === selectedBatch.id
@@ -344,12 +351,16 @@ export default function NewSalePOS({
                     const newBatch = item.available_batches.find(
                         (b) => b.id === newBatchId,
                     );
-                    if (!newBatch) return item;
+
+                    if (!newBatch) {
+return item;
+}
 
                     const validQty = Math.min(
                         item.quantity,
                         newBatch.quantity_available,
                     );
+
                     return {
                         ...item,
                         batch_id: newBatch.id,
@@ -361,6 +372,7 @@ export default function NewSalePOS({
                         subtotal: validQty * newBatch.selling_price,
                     };
                 }
+
                 return item;
             }),
         );
@@ -370,14 +382,19 @@ export default function NewSalePOS({
         setCart((prev) =>
             prev.map((item) => {
                 if (item.batch_id === batchId) {
-                    if (item.quantity >= item.max_quantity) return item;
+                    if (item.quantity >= item.max_quantity) {
+return item;
+}
+
                     const newQty = item.quantity + 1;
+
                     return {
                         ...item,
                         quantity: newQty,
                         subtotal: newQty * item.unit_price,
                     };
                 }
+
                 return item;
             }),
         );
@@ -429,6 +446,7 @@ export default function NewSalePOS({
                 paymentMethod,
             });
         }
+
         clearCart();
         setIsSheetOpen(false);
     };

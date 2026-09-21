@@ -1,5 +1,4 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -8,7 +7,6 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogMedia,
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';

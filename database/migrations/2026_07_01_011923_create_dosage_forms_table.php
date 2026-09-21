@@ -14,16 +14,16 @@ return new class extends Migration
     {
         Schema::create('dosage_forms', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique(); 
- 
+            $table->uuid('uuid')->unique();
+
             $table->foreignIdFor(Shop::class)
                 ->constrained()
                 ->cascadeOnDelete();
- 
+
             $table->string('name');           // e.g. Tablet, Bottle, Strip
             $table->softDeletes();
             $table->timestamps();
- 
+
             // unit names must be unique per shop
             $table->unique(['shop_id', 'name']);
         });

@@ -1,3 +1,10 @@
+import { useForm, usePage } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Sheet,
     SheetContent,
@@ -8,15 +15,8 @@ import {
     SheetClose,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { useForm, usePage } from '@inertiajs/react';
-import { Loader2 } from 'lucide-react';
-import InputError from '../input-error';
-import { toast } from 'sonner';
 import catalog from '@/routes/catalog';
+import InputError from '../input-error';
 
 interface NewDosageFormSheetProps {
     trigger: React.ReactNode;

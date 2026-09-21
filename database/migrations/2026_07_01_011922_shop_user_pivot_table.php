@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
-         Schema::create('shop_user', function (Blueprint $table) {
+        Schema::create('shop_user', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Shop::class)->constrained()->cascadeOnDelete();  
+            $table->foreignIdFor(Shop::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
- 
+
             // one membership per user per shop
             $table->unique(['user_id', 'shop_id']);
         });
@@ -31,6 +30,6 @@ return new class extends Migration
     public function down(): void
     {
         //
-         Schema::dropIfExists('shop_user');
+        Schema::dropIfExists('shop_user');
     }
 };

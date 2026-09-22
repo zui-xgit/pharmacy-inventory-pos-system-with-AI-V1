@@ -7,9 +7,9 @@ import {
     CardContent,
     CardFooter,
 } from '@/components/ui/card';
-import { shopOverview } from '@/routes';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import current_shop from '@/routes/current_shop';
 
 interface Shop {
     uuid: string;
@@ -64,7 +64,7 @@ const ShopSummaryCard = ({ shop }: { shop: Shop }) => {
             <CardFooter className="pt-2">
                 <Button
                     onClick={() => {
-                        router.get(shopOverview({ shop: shop.uuid }));
+                        router.get(current_shop.overview({ shop: shop.uuid }));
                     }}
                     className="w-full cursor-pointer items-center justify-between rounded-xl bg-primary font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                 >

@@ -53,7 +53,7 @@ class FortifyServiceProvider extends ServiceProvider
 
                     // 3. Redirect to the named route, passing the UUID under the 'shop' key
                     // Matches your route parameter '{shop:uuid}'
-                    return redirect()->route('shop.overview', ['shop' => $shop->uuid]);
+                    return redirect()->route('current_shop.overview', ['shop' => $shop->uuid]);
                 }
 
             }

@@ -9,10 +9,11 @@ import {
     ShoppingBag,
     Layers,
 } from 'lucide-react';
-import { login, register, shopOverview } from '@/routes';
+import { login, register } from '@/routes';
 import owner from '@/routes/owner';
 import type { Auth } from '@/types';
 import type { RouteDefinition } from '@/wayfinder';
+import current_shop from '@/routes/current_shop';
 
 export default function Welcome() {
     const { activeShop, auth } = usePage<{
@@ -27,7 +28,7 @@ export default function Welcome() {
         if (auth.user.isOwner) {
             dashboardHref = owner.shops();
         } else if (auth.user.isManagerOrCashier && activeShop !== undefined) {
-            dashboardHref = shopOverview({ shop: activeShop.uuid });
+            dashboardHref = current_shop.overview({ shop: activeShop.uuid });
         }
     }
 

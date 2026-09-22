@@ -31,7 +31,7 @@ import type { NavItem } from '@/types';
 import type { Auth } from '@/types/auth';
 // import NavSubMain from './nav-sub-main';
 import { Button } from './ui/button';
-import shop from '@/routes/shop';
+import current_shop from '@/routes/current_shop';
 
 // OWNER NAVITEMS
 const Overview: NavItem[] = [
@@ -70,12 +70,12 @@ const Account: NavItem[] = [
 const ShopOverview = (shop_uuid: string): NavItem[] => [
     {
         title: 'Overview ',
-        href: shop.overview({ shop: shop_uuid }),
+        href: current_shop.overview({ shop: shop_uuid }),
         icon: LayoutDashboard,
     },
     {
         title: 'Sales / POS',
-        href: shop.pos({ shop: shop_uuid }),
+        href: current_shop.pos({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
 ];

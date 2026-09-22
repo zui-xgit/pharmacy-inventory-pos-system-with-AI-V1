@@ -13,8 +13,8 @@ Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier'
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
 
     //Main
-    Route::get('/', [MainController::class, 'overview'])->name('shop.overview');
-    Route::get('pos', [PosController::class, 'posIndex'])->name('shop.pos');
+    Route::get('/', [MainController::class, 'overview'])->name('current_shop.overview');
+    Route::get('pos', [PosController::class, 'posIndex'])->name('current_shop.pos');
 
     // CATALOG
     Route::get('catalog/products', [CatalogController::class, 'productsCatalog'])->name('catalog.products');
@@ -32,5 +32,6 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
 });
 
 require __DIR__.'/owner.php';
-// require __DIR__.'/shop.php';
+
+
 require __DIR__.'/settings.php';

@@ -30,7 +30,7 @@ const SearchInput = ({ href, filters, placeholder }: SearchInputProps) => {
                 onFinish: () => setLoading(false),
             },
         );
-    }, 300);
+    }, 500);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;

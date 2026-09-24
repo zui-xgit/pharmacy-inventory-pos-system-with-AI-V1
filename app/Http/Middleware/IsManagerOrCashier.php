@@ -21,7 +21,7 @@ class IsManagerOrCashier
 
         if ($user && $user->isManagerOrCashier()) {
             $shop_uuid = $request->user()->shops()->first()?->uuid;
-            Inertia::share('activeShop', [
+            Inertia::share('active_shop', [
                 'uuid' => $shop_uuid,
             ]);
         }

@@ -54,15 +54,7 @@ class Batch extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function stock(): HasOne
-    {
-        return $this->hasOne(Stock::class);
-    }
+  
 
     public function stockMovements(): HasMany
     {
@@ -72,6 +64,16 @@ class Batch extends Model
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+
+    /**
+     * True if this batch has no remaining stock.
+     */
+    public function isOutOfStock(): bool
+    {
+        return $this->units_remaining <= 0;
+    }
+
 
     /**
      * True if this batch has already expired.
@@ -85,17 +87,13 @@ class Batch extends Model
      * True if this batch expires within the shop's alert window.
      * Falls back to 30 days if shop threshold is not set.
      */
-    public function isExpiringSoon(): bool
+    public function isExpiringSoon(int $expiryAlertDays ): bool
     {
         if (! $this->expiry_date) {
             return false;
         }
 
-        $days = $this->shop->expiry_alert_days ?? 30;
-
-        return $this->expiry_date->isBefore(
-            Carbon::now()->addDays($days)
-        );
+       return $this->expiry_date->isBefore(now()->addDays($expiryAlertDays));
     }
 
     /**

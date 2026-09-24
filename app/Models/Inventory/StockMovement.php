@@ -49,10 +49,6 @@ class StockMovement extends Model
     // Relations
     // -------------------------------------------------------------------------
 
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
 
     public function batch(): BelongsTo
     {

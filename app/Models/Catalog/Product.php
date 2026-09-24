@@ -2,8 +2,6 @@
 
 namespace App\Models\Catalog;
 
-use App\Models\Inventory\Stock;
-use App\Models\Inventory\StockMovement;
 use App\Traits\BelongsToShop;
 use Database\Factories\Catalog\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
@@ -46,10 +44,7 @@ class Product extends Model
     // Relations
     // -------------------------------------------------------------------------
 
-    public function packageUnit(): BelongsTo
-    {
-        return $this->belongsTo(PackageUnit::class);
-    }
+   
 
     public function dosageForm(): BelongsTo
     {
@@ -61,37 +56,10 @@ class Product extends Model
         return $this->hasMany(Batch::class);
     }
 
-    public function stock(): HasMany
-    {
-        return $this->hasMany(Stock::class);
-    }
 
-    public function stockMovements(): HasMany
-    {
-        return $this->hasMany(StockMovement::class);
-    }
+   
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+   
 
-    /**
-     * Total current quantity across all batches of this product.
-     */
-    public function totalStock(): float
-    {
-        return $this->stock()->sum('quantity');
-    }
-
-    /**
-     * True if total stock is at or below the reorder point.
-     * Falls back to shop's low_stock_threshold if reorder_point is not set.
-     */
-    public function isLowStock(): bool
-    {
-        $threshold = $this->reorder_point
-            ?? $this->shop->low_stock_threshold;
-
-        return $this->totalStock() <= $threshold;
-    }
+   
 }

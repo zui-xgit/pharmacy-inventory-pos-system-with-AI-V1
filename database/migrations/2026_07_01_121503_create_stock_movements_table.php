@@ -10,23 +10,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // The stock movements table is the ledger — it records every single
-    // change to stock quantity with a reason and a reference.
-    //
-    // Types of movements:
-    //   purchase    — stock received from a supplier (quantity goes up)
-    //   sale        — stock sold to a customer (quantity goes down)
-    //   adjustment  — stock take correction (quantity goes up or down)
-    //   expiry      — expired stock written off (quantity goes down)
-    //   transfer    — stock moved between shops (future phase)
-    //   return      — customer returns (quantity goes up)
-    //
-    // This table is what makes these features possible:
-    //   - Full activity history
-    //   - Stock take reconciliation
-    //   - Purchase history report
-    //   - Cash flow report
-
+    
     /**
      * Run the migrations.
      */
@@ -42,10 +26,7 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignIdFor(Product::class)
-                ->constrained()
-                ->restrictOnDelete();
-
+    
             $table->foreignIdFor(Batch::class)
                 ->constrained()
                 ->restrictOnDelete();

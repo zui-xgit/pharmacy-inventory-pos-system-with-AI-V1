@@ -83,7 +83,7 @@ const ShopOverview = (shop_uuid: string): NavItem[] => [
 const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
     {
         title: 'Catalog',
-        href: catalog.products({ shop: shop_uuid }),
+        href: catalog.batches({ shop: shop_uuid }),
         icon: Package,
     },
     {
@@ -144,8 +144,8 @@ const ShopSystem = (shop_uuid: string): NavItem[] => [
 // ];
 
 export function AppSidebar() {
-    const { activeShop, auth } = usePage<{
-        activeShop: { uuid: string } | undefined;
+    const { active_shop, auth } = usePage<{
+        active_shop: { uuid: string } | undefined;
         auth: Auth;
     }>().props;
 
@@ -164,7 +164,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             {/* OWNER */}
-            {auth.user.isOwner && activeShop === undefined && (
+            {auth.user.isOwner && active_shop === undefined && (
                 <SidebarContent>
                     <NavMain groupLabel={'Overview'} items={Overview} />
                     <NavMain groupLabel={'Management'} items={Management} />
@@ -172,27 +172,27 @@ export function AppSidebar() {
                 </SidebarContent>
             )}
 
-            {activeShop !== undefined && (
+            {active_shop !== undefined && (
                 <SidebarContent>
                     <NavMain
                         groupLabel={'Main'}
-                        items={ShopOverview(activeShop.uuid)}
+                        items={ShopOverview(active_shop.uuid)}
                     />
                     <NavMain
                         groupLabel={'Inventory & Stock'}
-                        items={ShopInventoryAndStock(activeShop.uuid)}
+                        items={ShopInventoryAndStock(active_shop.uuid)}
                     />
                     <NavMain
                         groupLabel={'Reports & Insights'}
-                        items={ShopReportAndInsights(activeShop.uuid)}
+                        items={ShopReportAndInsights(active_shop.uuid)}
                     />
                     <NavMain
                         groupLabel={'Entities'}
-                        items={ShopEntities(activeShop.uuid)}
+                        items={ShopEntities(active_shop.uuid)}
                     />
                     <NavMain
                         groupLabel={'System'}
-                        items={ShopSystem(activeShop.uuid)}
+                        items={ShopSystem(active_shop.uuid)}
                     />
                 </SidebarContent>
             )}
@@ -203,7 +203,7 @@ export function AppSidebar() {
             <SidebarFooter>
                 {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
                 {/* if the role is owner and there is an active shop then show the admin dashboard button */}
-                {auth.user.isOwner && activeShop && (
+                {auth.user.isOwner && active_shop && (
                     <Button
                         onClick={() => {
                             router.get(owner.shops());

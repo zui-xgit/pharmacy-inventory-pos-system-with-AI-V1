@@ -16,8 +16,8 @@ import type { RouteDefinition } from '@/wayfinder';
 import current_shop from '@/routes/current_shop';
 
 export default function Welcome() {
-    const { activeShop, auth } = usePage<{
-        activeShop: { uuid: string } | undefined;
+    const { active_shop, auth } = usePage<{
+        active_shop: { uuid: string } | undefined;
         auth: Auth;
     }>().props;
 
@@ -27,8 +27,8 @@ export default function Welcome() {
     if (auth.user) {
         if (auth.user.isOwner) {
             dashboardHref = owner.shops();
-        } else if (auth.user.isManagerOrCashier && activeShop !== undefined) {
-            dashboardHref = current_shop.overview({ shop: activeShop.uuid });
+        } else if (auth.user.isManagerOrCashier && active_shop !== undefined) {
+            dashboardHref = current_shop.overview({ shop: active_shop.uuid });
         }
     }
 

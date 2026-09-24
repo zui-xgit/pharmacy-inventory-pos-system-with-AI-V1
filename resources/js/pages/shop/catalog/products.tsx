@@ -123,8 +123,8 @@ const Products = ({ products, filters, dosage_forms }: Props) => {
                     <div className="flex items-center justify-end space-x-2">
                         {products.links.map((link, index) => {
                             if (!link.url) {
-return null;
-}
+                                return null;
+                            }
 
                             return (
                                 <Button

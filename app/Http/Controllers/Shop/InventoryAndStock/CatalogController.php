@@ -28,8 +28,7 @@ class CatalogController extends Controller
         $products = Product::where('shop_id', $shop->id)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'LIKE', "%{$search}%")
-                        ->orWhere('sku', 'LIKE', "%{$search}%");
+                    $q->where('name', 'LIKE', "%{$search}%");
                 });
             })
             ->with([
@@ -65,6 +64,8 @@ class CatalogController extends Controller
         $search_input = $request->input('search');
         $search = strtolower($search_input);
 
+       
+
         $batches = Batch::where('shop_id', $shop->id)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -75,21 +76,24 @@ class CatalogController extends Controller
                 });
             })
             ->with([
-                'product:id,uuid,name',
-                'supplier:id,name',
+                'product:id,uuid,name,dosage_form_id', "product.dosageForm:id,name"
             ])
             ->latest()
             ->paginate(10)
             ->withQueryString()
-            ->through(function ($batch) {
+            ->through(function ($batch) use ($shop) {
                 $totalUnitsReceived = $batch->packages_received * $batch->units_per_package_received;
 
                 return [
                     'uuid' => $batch->uuid,
                     'batch_number' => $batch->batch_number,
-                    'product_name' => $batch->product?->name ?? 'Unknown Product',
-                    'product_uuid' => $batch->product?->uuid,
-                    'supplier_name' => $batch->supplier?->name ?? 'N/A',
+            
+
+                    'product' => [
+                        'uuid' => $batch->product?->uuid, 
+                        'name' => $batch->product?->name, 
+                        'dosage_form' => $batch->product?->dosageForm?->name
+                    ], 
 
                     // Receiving Quantities
                     'packages_received' => $batch->packages_received,
@@ -99,7 +103,7 @@ class CatalogController extends Controller
                     // Current Stock Quantities
                     'packages_remaining' => $batch->packages_remaining,
                     'units_remaining' => $batch->units_remaining,
-                    'is_out_of_stock' => $batch->units_remaining <= 0,
+                    'is_out_of_stock' => $batch->isOutOfStock(),
 
                     // Pricing
                     'cost_price' => $batch->cost_price,
@@ -107,8 +111,11 @@ class CatalogController extends Controller
 
                     // Dates
                     'manufactured_date' => $batch->manufactured_date ? $batch->manufactured_date->format('Y-m-d') : null,
-                    'expiry_date' => $batch->expiry_date ? $batch->expiry_date->format('Y-m-d') : 'N/A',
-                    'is_expired' => $batch->expiry_date ? $batch->expiry_date->isPast() : false,
+                    'expiry_date' => $batch->expiry_date,
+                    'is_expired' => $batch->isExpired(),
+
+                    'is_expiring_soon' => $batch->isExpiringSoon($shop->expiry_alert_days),
+                    'days_until_expiry' => $batch->daysUntilExpiry(),
                 ];
             });
 

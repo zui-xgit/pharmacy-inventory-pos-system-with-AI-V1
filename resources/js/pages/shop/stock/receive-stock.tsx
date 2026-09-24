@@ -70,7 +70,7 @@ const ReceiveStock = ({
     const { data, setData, processing, errors, post, transform } =
         useForm<UseFormType>(useFormDefaultValues);
 
-    const { activeShop } = usePage<{ activeShop: { uuid: string } }>().props;
+    const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
     const handleRecordStock = (isConfirmed = false) => {
@@ -83,7 +83,7 @@ const ReceiveStock = ({
     };
 
     const handleDataPostRequest = () => {
-        post(stock.newBatch({ shop: activeShop.uuid }).url, {
+        post(stock.newBatch({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {

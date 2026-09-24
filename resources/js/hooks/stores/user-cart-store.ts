@@ -24,7 +24,6 @@ export interface PosProduct {
 
 export interface BatchItem {
     id: number;
-    uuid: string;
     batch_number: string;
     units_remaining: number;
     packages_remaining: number;

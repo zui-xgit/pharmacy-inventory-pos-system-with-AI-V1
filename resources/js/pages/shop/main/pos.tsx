@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { usePage, Link } from '@inertiajs/react';
 import {
     Package,
@@ -67,7 +68,12 @@ interface PosPageProps {
 }
 
 export default function PosPage() {
+    const [mounted, setMounted] = useState(false);
     const { products, filters } = usePage<PosPageProps>().props;
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const searchTerm = filters.search || '';
     const currentPath =
@@ -80,7 +86,9 @@ export default function PosPage() {
     const paginationLinks =
         !Array.isArray(products) && products?.links ? products.links : [];
 
-    const totalItems = useCartStore((state) => state.getTotalItems());
+    const rawTotalItems = useCartStore((state) => state.getTotalItems());
+    // Safe guard during SSR to prevent client hydration mismatch from localStorage
+    const totalItems = mounted ? rawTotalItems : 0;
 
     return (
         <DashboardInnerLayout>
@@ -224,7 +232,7 @@ const ListPosProductsCard = ({ product }: { product: PosProduct }) => {
             ),
             richColors: true,
             duration: 3000,
-            position: 'top-right',
+            position: 'top-center',
             action: {
                 label: 'Undo',
                 onClick: () => updateQuantity(batch.id, -1),
@@ -287,7 +295,7 @@ const ListPosProductsCard = ({ product }: { product: PosProduct }) => {
                                             }`}
                                         >
                                             <Calendar className="h-3 w-3" />{' '}
-                                            Expiry date: {'  '}
+                                            Expiry date:{' '}
                                             {formatDate(batch.expiry_date)}
                                         </span>
                                     </div>

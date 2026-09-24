@@ -26,9 +26,7 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete(); // prevent deleting a unit that has products
 
-            // $table->foreignIdFor(PackageUnit::class)
-            //     ->constrained()
-            //     ->restrictOnDelete(); // prevent deleting a unit that has products
+         
 
             $table->string('name');
             // $table->string('sku')->nullable();  // barcode or internal code

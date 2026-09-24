@@ -26,11 +26,6 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete(); // cannot delete a product that has batches
 
-            // Supplier is nullable — batch can be received without a known supplier
-            $table->foreignIdFor(Supplier::class)
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
 
             $table->string('batch_number'); // manufacturer batch number
 

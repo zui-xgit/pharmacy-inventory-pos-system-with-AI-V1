@@ -3,16 +3,25 @@
 namespace App\Http\Controllers\Shop\Main;
 
 use App\Http\Controllers\Controller;
+use App\Models\Catalog\Batch;
 use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
+use App\Models\Inventory\Stock;
+use App\Models\Inventory\StockMovement;
+use App\Models\Sales\Sale;
+use App\Models\Sales\SaleItem;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class PosController extends Controller
 {
     //
 
-   public function posIndex(Request $request, Shop $shop)
+    public function posIndex(Request $request, Shop $shop)
     {
         $search_input = $request->input('search');
         $search = strtolower($search_input);
@@ -58,7 +67,6 @@ class PosController extends Controller
                         'batches' => $product->batches->map(function ($batch) {
                             return [
                                 'id' => $batch->id,
-                                'uuid' => $batch->uuid,
                                 'batch_number' => $batch->batch_number,
                                 'units_remaining' => $batch->units_remaining,
                                 'packages_remaining' => $batch->packages_remaining,
@@ -74,5 +82,152 @@ class PosController extends Controller
             'products' => $products, 
             'filters' => $request->only(['search']),
         ]); 
+    }
+
+   
+
+    // make a sell
+    public function checkOut(Request $request, Shop $shop)
+    { 
+            $validated = $request->validate([
+                'items' => ['required', 'array', 'min:1'],
+                'items.*.batch_id' => [
+                    'required',
+                    Rule::exists('batches', 'id')->where('shop_id', $shop->id),
+                ],
+                'items.*.quantity' => ['required', 'integer', 'min:1'],
+            ]);  
+
+
+            
+
+            
+            try{
+                DB::beginTransaction(); 
+
+                // ── Step 1: Lock & Verify batch stock directly ────────────────────
+                // Collect batch IDs and lock rows to prevent race conditions at POS
+                $batchIds = collect($validated['items'])->pluck('batch_id');
+                
+                $batches = Batch::whereIn('id', $batchIds)
+                    ->where('shop_id', $shop->id)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('id');
+
+                foreach ($validated['items'] as $item) {
+                    $batch = $batches->get($item['batch_id']);
+
+                    if (! $batch || $batch->units_remaining < $item['quantity']) {
+                        DB::rollBack();
+
+                        return back()->withErrors([
+                            'stock' => "Insufficient stock for batch {$batch?->batch_number}. "
+                                . "Available: {$batch?->units_remaining}, Requested: {$item['quantity']}.",
+                        ]);
+                    }
+                }
+
+                // ── Step 2: Generate receipt number ───────────────────────────────
+                $receiptNumber = $this->generateReceiptNumber($shop->id);
+
+
+                // ── Step 3: Calculate total using database batch prices ───────────
+                $totalAmount = collect($validated['items'])->sum(function ($item) use ($batches) {
+                    $batch = $batches->get($item['batch_id']);
+                    return $batch->selling_price * $item['quantity'];
+                });
+
+
+                // ── Step 4: Create the sale record ───────────────────────────────
+                $sale = Sale::create([
+                    'shop_id'        => $shop->id,
+                    'user_id'        => Auth::id(),
+                    'receipt_number' => $receiptNumber,
+                    'total_amount'   => $totalAmount,
+                    'discount'       => 0,
+                    'amount_paid'    => $totalAmount,
+                    'change_given'   => 0,
+                    'payment_method' => 'cash',
+                    'status'         => 'completed',
+                ]);
+
+
+                // ── Step 5: Process each item directly against batch inventory ────
+                foreach ($validated['items'] as $item) {
+                    $batch = $batches->get($item['batch_id']);
+
+                    $quantityBefore = $batch->units_remaining;
+                    $quantityAfter  = $quantityBefore - $item['quantity'];
+
+                    // Calculate updated package count based on remaining units
+                    $packagesRemaining = $batch->units_per_package_received > 0
+                        ? (int) floor($quantityAfter / $batch->units_per_package_received)
+                        : $batch->packages_remaining;
+
+                    // 5a. Create sale item
+                    // SaleItem::create([
+                    //     'sale_id'    => $sale->id,
+                    //     'product_id' => $batch->product_id,
+                    //     'batch_id'   => $batch->id,
+                    //     'quantity'   => $item['quantity'],
+                    //     'unit_price' => $batch->selling_price,
+                    //     'cost_price' => $batch->cost_price,
+                    //     'discount'   => 0,
+                    //     'subtotal'   => $batch->selling_price * $item['quantity'],
+                    // ]);
+
+                    // 5b. Update live inventory directly on the batch table
+                    $batch->update([
+                        'units_remaining'    => $quantityAfter,
+                        'packages_remaining' => $packagesRemaining,
+                    ]);
+
+                    // 5c. Log movement in stock_movements ledger for auditing
+                    StockMovement::create([
+                        'shop_id'         => $shop->id,
+                        'batch_id'        => $batch->id,
+                        'user_id'         => Auth::id(),
+                        'type'            => 'sale',
+                        'quantity'        => -$item['quantity'], // negative = outgoing
+                        'quantity_before' => $quantityBefore,
+                        'quantity_after'  => $quantityAfter,
+                        'reference_type'  => Sale::class,
+                        'reference_id'    => $sale->id,
+                        'notes'           => "Sale — receipt {$receiptNumber}",
+                    ]);
+                }
+
+                DB::commit();
+
+                return back()->with('success', "Sale completed. Receipt: {$receiptNumber}");
+  
+            }catch(Exception $e){
+                DB::rollBack();
+                return back()->withErrors([
+                    'error' => 'Failed to complete the sale. Please try again.',
+                ]);
+            }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Receipt number generator
+    // Format: RCP-YYYYMMDD-XXXX (sequence resets per day per shop)
+    // -------------------------------------------------------------------------
+ 
+    private function generateReceiptNumber(int $shopId): string
+    {
+        $date  = now()->format('Ymd');
+        $prefix = "RCP-{$date}-";
+ 
+        // Count today's sales for this shop to get the next sequence number
+        $todayCount = Sale::where('shop_id', $shopId)
+            ->whereDate('created_at', today())
+            ->count();
+ 
+        $sequence = str_pad($todayCount + 1, 4, '0', STR_PAD_LEFT);
+ 
+        return $prefix . $sequence;
     }
 }

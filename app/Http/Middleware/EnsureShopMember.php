@@ -39,7 +39,7 @@ class EnsureShopMember
             }
         }
 
-        Inertia::share('activeShop', [
+        Inertia::share('active_shop', [
             'uuid' => $shop->uuid,
             'name' => $shop->name,
         ]);

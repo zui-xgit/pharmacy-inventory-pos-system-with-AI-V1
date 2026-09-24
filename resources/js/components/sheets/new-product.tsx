@@ -42,10 +42,10 @@ const NewProductSheet = ({ trigger, dosage_forms }: NewProductDialogProps) => {
         });
 
     // Grab your active shop from Inertia props if needed to formulate URLs
-    const { activeShop } = usePage<{ activeShop: { uuid: string } }>().props;
+    const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
 
     const handleAddProduct = () => {
-        post(catalog.newProduct({ shop: activeShop.uuid }).url, {
+        post(catalog.newProduct({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

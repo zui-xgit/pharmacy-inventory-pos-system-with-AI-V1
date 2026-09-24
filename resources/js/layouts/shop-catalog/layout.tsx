@@ -9,6 +9,11 @@ import type { NavItem } from '@/types';
 
 const sidebarNavItems = (shop_uuid: string): NavItem[] => [
     {
+        title: 'Batches',
+        href: catalog.batches({ shop: shop_uuid }),
+        icon: Layers,
+    },
+    {
         title: 'Products',
         href: catalog.products({ shop: shop_uuid }),
         icon: Package,
@@ -18,27 +23,17 @@ const sidebarNavItems = (shop_uuid: string): NavItem[] => [
         href: catalog.dosageForms({ shop: shop_uuid }),
         icon: Pill,
     },
-    {
-        title: 'Batches',
-        href: catalog.batches({ shop: shop_uuid }),
-        icon: Layers,
-    },
-    // {
-    //     title: 'Package Units',
-    //     href: catalog.packageUnits({ shop: shop_uuid }),
-    //     icon: Package2,
-    // },
 ];
 
 export default function ShopCatalogLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
-    const { activeShop } = usePage<{
-        activeShop: { uuid: string } | undefined;
+    const { active_shop } = usePage<{
+        active_shop: { uuid: string } | undefined;
     }>().props;
 
     const items =
-        activeShop !== undefined ? sidebarNavItems(activeShop.uuid) : [];
+        active_shop !== undefined ? sidebarNavItems(active_shop.uuid) : [];
 
     // Find the current active item based on the current active URL
     const activeItem = items.find((item) => isCurrentOrParentUrl(item.href));
@@ -56,7 +51,7 @@ export default function ShopCatalogLayout({ children }: PropsWithChildren) {
 
             <div className="flex flex-col space-y-6">
                 <div className="mb-10 sm:mb-5">
-                    {activeShop !== undefined && (
+                    {active_shop !== undefined && (
                         /* FIXED: Changed defaultValue to a dynamic 'value' mapping directly to the active item title */
                         <Tabs value={activeItem?.title}>
                             <TabsList

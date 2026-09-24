@@ -21,12 +21,16 @@ import {
 } from 'lucide-react';
 import { CartItem, useCartStore } from '@/hooks/stores/user-cart-store';
 import { formatCurrency } from '@/lib/utils';
+import { toast } from 'sonner';
+import { router, usePage } from '@inertiajs/react';
+import current_shop from '@/routes/current_shop';
 
 interface PosCartSheetProps {
     trigger: React.ReactNode;
 }
 
 export function PosCartSheet({ trigger }: PosCartSheetProps) {
+    const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const cart = useCartStore((state) => state.cart);
@@ -35,8 +39,46 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
     const totalItems = useCartStore((state) => state.getTotalItems());
     const totalPrice = useCartStore((state) => state.getTotalPrice());
 
+    const [loading, setLoading] = useState<boolean>(false);
+
     const handleCheckout = () => {
-        console.log(cart);
+        if (!cart || cart.length === 0) {
+            return;
+        }
+
+        const items = cart.map((cart_item) => {
+            return {
+                batch_id: cart_item.batch_id,
+                quantity: cart_item.quantity,
+            };
+        });
+
+        router.post(
+            current_shop.pos.checkout({ shop: active_shop.uuid }).url,
+            {
+                items,
+            },
+            {
+                onStart: () => {
+                    setLoading(true);
+                },
+                onSuccess: () => {
+                    clearCart();
+                    setIsOpen(false);
+                },
+
+                onError: (errors) => {
+                    toast.error('Something went wrong ', {
+                        richColors: true,
+                        position: 'top-center',
+                    });
+                    console.log(errors);
+                },
+                onFinish: () => {
+                    setLoading(false);
+                },
+            },
+        );
     };
 
     return (
@@ -131,6 +173,7 @@ function CartRow({ item }: CartRowProps) {
     const onUpdateQuantity = useCartStore((state) => state.updateQuantity);
     const onSetQuantity = useCartStore((state) => state.setQuantity);
     const onRemoveItem = useCartStore((state) => state.removeItem);
+    const getItemQuantity = useCartStore((state) => state.getItemQuantity);
 
     useEffect(() => {
         setInputVal(item.quantity.toString());
@@ -155,7 +198,7 @@ function CartRow({ item }: CartRowProps) {
     const isAtMax = item.quantity >= item.max_units;
 
     return (
-        <div className="flex items-start justify-between gap-3 rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
+        <div className="flex items-center justify-between gap-3 rounded-lg border bg-card p-2 text-card-foreground shadow-sm">
             <div className="min-w-0 flex-1">
                 <h4 className="truncate text-sm font-semibold">
                     {item.product_name}
@@ -193,7 +236,7 @@ function CartRow({ item }: CartRowProps) {
                         variant="ghost"
                         size="icon"
                         aria-label="Decrease quantity"
-                        className="h-6 w-6 rounded-xs"
+                        className="h-6 w-6 cursor-pointer rounded-xs"
                         onClick={() => onUpdateQuantity(item.batch_id, -1)}
                     >
                         <Minus className="h-3 w-3" />
@@ -213,9 +256,48 @@ function CartRow({ item }: CartRowProps) {
                         variant="ghost"
                         size="icon"
                         aria-label="Increase quantity"
-                        className="h-6 w-6 rounded-xs"
+                        className="h-6 w-6 cursor-pointer rounded-xs"
                         disabled={isAtMax}
-                        onClick={() => onUpdateQuantity(item.batch_id, 1)}
+                        onClick={() => {
+                            onUpdateQuantity(item.batch_id, 1);
+
+                            if (
+                                getItemQuantity(item.batch_id) ===
+                                item.max_units
+                            ) {
+                                toast.error('Maximum stock limit reached', {
+                                    description: (
+                                        <div className="flex flex-col gap-0.5 text-xs">
+                                            {item.product_name && (
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Product:
+                                                    </span>{' '}
+                                                    {item.product_name}{' '}
+                                                </div>
+                                            )}
+                                            <div>
+                                                <span className="font-medium">
+                                                    Batch No:
+                                                </span>{' '}
+                                                #
+                                                {item.batch_number ||
+                                                    item.batch_id}
+                                            </div>
+                                            <div>
+                                                <span className="font-medium">
+                                                    Max Stock:
+                                                </span>{' '}
+                                                {item.max_units} units
+                                            </div>
+                                        </div>
+                                    ),
+                                    duration: 5000,
+                                    richColors: true,
+                                    position: 'top-center',
+                                });
+                            }
+                        }}
                     >
                         <Plus className="h-3 w-3" />
                     </Button>

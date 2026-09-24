@@ -26,7 +26,7 @@ const NewDosageFormSheet = ({ trigger }: NewDosageFormSheetProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     // Grab your active shop from Inertia props if needed to formulate URLs
-    const { activeShop } = usePage<{ activeShop: { uuid: string } }>().props;
+    const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
 
     const { data, setData, processing, errors, post, reset, clearErrors } =
         useForm({
@@ -36,7 +36,7 @@ const NewDosageFormSheet = ({ trigger }: NewDosageFormSheetProps) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(catalog.newDosageForm({ shop: activeShop.uuid }).url, {
+        post(catalog.newDosageForm({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

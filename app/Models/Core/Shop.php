@@ -6,8 +6,6 @@ use App\Models\Catalog\Batch;
 use App\Models\Catalog\DosageForm;
 use App\Models\Catalog\PackageUnit;
 use App\Models\Catalog\Product;
-use App\Models\Catalog\Supplier;
-use App\Models\Inventory\Stock;
 use App\Models\Inventory\StockMovement;
 use App\Models\User;
 use Database\Factories\Core\ShopFactory;
@@ -48,10 +46,7 @@ class Shop extends Model
         return $this->belongsToMany(User::class, 'shop_user')->withTimestamps();
     }
 
-    public function packageUnits(): HasMany
-    {
-        return $this->hasMany(PackageUnit::class);
-    }
+    
 
     public function dosageForms(): HasMany
     {
@@ -63,20 +58,13 @@ class Shop extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function suppliers(): HasMany
-    {
-        return $this->hasMany(Supplier::class);
-    }
 
     public function batches(): HasMany
     {
         return $this->hasMany(Batch::class);
     }
 
-    public function stock(): HasMany
-    {
-        return $this->hasMany(Stock::class);
-    }
+   
 
     public function stockMovements(): HasMany
     {

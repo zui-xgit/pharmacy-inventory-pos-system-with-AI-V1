@@ -4,6 +4,7 @@ namespace App\Models\Catalog;
 
 use App\Models\Inventory\Stock;
 use App\Models\Inventory\StockMovement;
+use App\Models\Sales\SaleItem;
 use App\Traits\BelongsToShop;
 use Database\Factories\Catalog\BatchFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
@@ -59,6 +60,12 @@ class Batch extends Model
     public function stockMovements(): HasMany
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+
+    public function saleItems(): HasMany
+    {
+        return $this->hasMany(SaleItem::class);
     }
 
     // -------------------------------------------------------------------------

@@ -17,8 +17,21 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $products = [
+            'Paracetamol 500mg',
+            'Amoxicillin 250mg',
+            'Ibuprofen 400mg',
+            'Cetirizine 10mg',
+            'Omeprazole 20mg',
+            'Metformin 500mg',
+            'Azithromycin 500mg',
+            'Ciprofloxacin 500mg',
+            'Salbutamol 100mcg',
+            'Loperamide 2mg',
+        ];
+            
         return [
-            //
+            'name' => fake()->unique()->randomElement($products),
         ];
     }
 }

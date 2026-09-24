@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Models\Sales\SaleItem;
 use App\Traits\BelongsToShop;
 use Database\Factories\Catalog\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
@@ -56,6 +57,11 @@ class Product extends Model
         return $this->hasMany(Batch::class);
     }
 
+
+    public function saleItems(): HasMany
+    {
+        return $this->hasMany(SaleItem::class); 
+    }
 
    
 

@@ -139,7 +139,7 @@ export default function PosPage() {
                 {/* 3. FEFO Product Grid */}
                 {searchTerm && productList.length > 0 && (
                     <>
-                        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+                        <div className="grid gap-4 lg:grid-cols-2">
                             {productList.map((product) => (
                                 <ListPosProductsCard
                                     product={product}
@@ -240,8 +240,8 @@ const ListPosProductsCard = ({ product }: { product: PosProduct }) => {
         });
     };
     return (
-        <Card className="flex flex-col justify-between shadow-xs">
-            <CardHeader className="p-4 pb-2">
+        <Card className="flex flex-col justify-between gap-0">
+            <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                     <div>
                         <CardTitle className="text-base font-bold">
@@ -260,7 +260,7 @@ const ListPosProductsCard = ({ product }: { product: PosProduct }) => {
                 </div>
             </CardHeader>
 
-            <CardContent className="p-4 pt-2">
+            <CardContent>
                 <div className="mt-2 space-y-2 border-t pt-3">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span className="flex items-center gap-1 font-medium">

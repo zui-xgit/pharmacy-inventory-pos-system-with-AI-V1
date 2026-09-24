@@ -138,11 +138,11 @@ class CatalogController extends Controller
             ->latest()
             ->paginate(10)
             ->withQueryString()
-            ->through(function ($form) {
+            ->through(function ($dosage_form) {
                 return [
-                    'uuid' => $form->uuid,
-                    'name' => $form->name,
-                    'products_count' => $form->products_count,
+                    'uuid' => $dosage_form->uuid,
+                    'name' => $dosage_form->name,
+                    'products_count' => $dosage_form->products_count,
                 ];
             });
 

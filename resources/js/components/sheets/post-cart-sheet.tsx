@@ -24,6 +24,7 @@ import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import { router, usePage } from '@inertiajs/react';
 import current_shop from '@/routes/current_shop';
+import { Spinner } from '@/components/ui/spinner';
 
 interface PosCartSheetProps {
     trigger: React.ReactNode;
@@ -62,17 +63,22 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                 onStart: () => {
                     setLoading(true);
                 },
-                onSuccess: () => {
+                onSuccess: ({ flash }) => {
                     clearCart();
                     setIsOpen(false);
-                },
 
+                    if (flash.message) {
+                        toast.success(flash.message as string, {
+                            richColors: true,
+                            position: 'top-center',
+                        });
+                    }
+                },
                 onError: (errors) => {
                     toast.error('Something went wrong ', {
                         richColors: true,
                         position: 'top-center',
                     });
-                    console.log(errors);
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -84,7 +90,7 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>{trigger}</SheetTrigger>
-            <SheetContent className="flex h-full w-full flex-col p-0 sm:max-w-lg">
+            <SheetContent className="flex h-full w-full flex-col sm:max-w-md">
                 {/* Header */}
                 <SheetHeader className="shrink-0 border-b p-6 pb-4">
                     <div className="flex items-center justify-between">
@@ -110,7 +116,7 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                         </p>
                     </div>
                 ) : (
-                    <div className="flex-1 space-y-4 overflow-y-auto p-6">
+                    <div className="flex-1 space-y-4 overflow-y-auto px-5">
                         {cart.map((item, index) => (
                             <CartRow key={index} item={item} />
                         ))}
@@ -144,6 +150,7 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                                 variant={'outline'}
                                 onClick={clearCart}
                                 className="col-span-3 cursor-pointer text-sm font-semibold"
+                                disabled={loading}
                             >
                                 <Trash2 />
                                 Clear all
@@ -152,9 +159,16 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                                 size="sm"
                                 className="col-span-9 cursor-pointer text-sm font-semibold"
                                 onClick={handleCheckout}
+                                disabled={loading}
                             >
-                                Checkout
-                                <ArrowRight className="h-4 w-4" />
+                                {loading ? (
+                                    <Spinner />
+                                ) : (
+                                    <>
+                                        Checkout
+                                        <ArrowRight className="h-4 w-4" />
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </SheetFooter>

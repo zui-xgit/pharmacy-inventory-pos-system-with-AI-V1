@@ -142,7 +142,7 @@ class PosController extends Controller
                 // ── Step 4: Create the sale record ───────────────────────────────
                 $sale = Sale::create([
                     'shop_id'        => $shop->id,
-                    'user_id'        => Auth::id(),
+                    'user_id'        => Auth::id(), // who made the sale
                     'receipt_number' => $receiptNumber,
                     'total_amount'   => $totalAmount,
                     'discount'       => 0,
@@ -166,16 +166,16 @@ class PosController extends Controller
                         : $batch->packages_remaining;
 
                     // 5a. Create sale item
-                    // SaleItem::create([
-                    //     'sale_id'    => $sale->id,
-                    //     'product_id' => $batch->product_id,
-                    //     'batch_id'   => $batch->id,
-                    //     'quantity'   => $item['quantity'],
-                    //     'unit_price' => $batch->selling_price,
-                    //     'cost_price' => $batch->cost_price,
-                    //     'discount'   => 0,
-                    //     'subtotal'   => $batch->selling_price * $item['quantity'],
-                    // ]);
+                    SaleItem::create([
+                        'sale_id'    => $sale->id,
+                        'product_id' => $batch->product_id,
+                        'batch_id'   => $batch->id,
+                        'quantity'   => $item['quantity'],
+                        'unit_price' => $batch->selling_price,
+                        'cost_price' => $batch->cost_price,
+                        'discount'   => 0,
+                        'subtotal'   => $batch->selling_price * $item['quantity'],
+                    ]);
 
                     // 5b. Update live inventory directly on the batch table
                     $batch->update([
@@ -199,8 +199,11 @@ class PosController extends Controller
                 }
 
                 DB::commit();
+                Inertia::flash('message' , 'Sale made successfully'); 
 
-                return back()->with('success', "Sale completed. Receipt: {$receiptNumber}");
+
+
+                // return back()->with('success', "Sale completed. Receipt: {$receiptNumber}");
   
             }catch(Exception $e){
                 DB::rollBack();
@@ -230,4 +233,70 @@ class PosController extends Controller
  
         return $prefix . $sequence;
     }
+
+
+
+
+    // TODO: THIS FUNCTION IS NOT YET USED IN THE SYSTEM. FUTURE IMPLEMENTATION.  
+
+
+    /**
+     * Revert / Void a completed sale due to cashier error
+     */
+    public function voidSale(Request $request, Shop $shop, Sale $sale)
+    {
+        if ($sale->status === 'voided') {
+            return back()->withErrors(['error' => 'This sale has already been voided.']);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $sale->load('items.batch');
+
+            foreach ($sale->items as $item) {
+                $batch = $item->batch;
+
+                if ($batch) {
+                    $batch->lockForUpdate();
+                    $quantityBefore = $batch->units_remaining;
+                    $quantityAfter  = $quantityBefore + $item->quantity;
+
+                    $packagesRemaining = $batch->units_per_package_received > 0
+                        ? (int) floor($quantityAfter / $batch->units_per_package_received)
+                        : $batch->packages_remaining;
+
+                    $batch->update([
+                        'units_remaining'    => $quantityAfter,
+                        'packages_remaining' => $packagesRemaining,
+                    ]);
+
+                    StockMovement::create([
+                        'shop_id'         => $shop->id,
+                        'batch_id'        => $batch->id,
+                        'user_id'         => Auth::id(),
+                        'type'            => 'return',
+                        'quantity'        => $item->quantity, // positive = incoming back to stock
+                        'quantity_before' => $quantityBefore,
+                        'quantity_after'  => $quantityAfter,
+                        'reference_type'  => Sale::class,
+                        'reference_id'    => $sale->id,
+                        'notes'           => "Voided Sale — receipt {$sale->receipt_number}",
+                    ]);
+                }
+            }
+
+            $sale->update(['status' => 'voided']);
+
+            DB::commit();
+
+            return back()->with('success', "Sale {$sale->receipt_number} successfully voided and stock restored.");
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Failed to void the sale.']);
+        }
+    }
+
+
 }

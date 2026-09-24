@@ -50,10 +50,12 @@ class Sale extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function items(): HasMany
+    public function saleItems(): HasMany
     {
         return $this->hasMany(SaleItem::class);
     }
+
+    
 
     // -------------------------------------------------------------------------
     // Helpers

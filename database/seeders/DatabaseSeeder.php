@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Catalog\DosageForm;
+use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -41,9 +42,15 @@ class DatabaseSeeder extends Seeder
         $shop = Shop::factory()->create();
         $userB->shops()->attach($shop->id);
 
-        DosageForm::factory(10)->create([
+        $dosageForm = DosageForm::factory(10)->create([
             'shop_id' => $shop->id,
         ]);
+
+
+        Product::factory(10)->create([
+            'shop_id' => $shop->id, 
+            'dosage_form_id' => fn () => $dosageForm->random()->id,
+        ]); 
 
     }
 }

@@ -36,7 +36,7 @@ const NewDosageFormSheet = ({ trigger }: NewDosageFormSheetProps) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(catalog.newDosageForm({ shop: active_shop.uuid }).url, {
+        post(catalog.new_dosage_form({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

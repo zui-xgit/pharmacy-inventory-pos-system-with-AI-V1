@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Shop\Main;
 
+use App\Enum\StockMovementReason;
+use App\Enum\StockMovementType;
 use App\Http\Controllers\Controller;
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
-use App\Models\Inventory\Stock;
 use App\Models\Inventory\StockMovement;
 use App\Models\Sales\Sale;
 use App\Models\Sales\SaleItem;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Throwable;
 
 class PosController extends Controller
 {
@@ -185,30 +187,27 @@ class PosController extends Controller
 
                     // 5c. Log movement in stock_movements ledger for auditing
                     StockMovement::create([
-                        'shop_id'         => $shop->id,
                         'batch_id'        => $batch->id,
                         'user_id'         => Auth::id(),
-                        'type'            => 'sale',
-                        'quantity'        => -$item['quantity'], // negative = outgoing
-                        'quantity_before' => $quantityBefore,
-                        'quantity_after'  => $quantityAfter,
-                        'reference_type'  => Sale::class,
-                        'reference_id'    => $sale->id,
+                        'type'            => StockMovementType::OUT,
+                        'reason'          => StockMovementReason::SALE,
+                        'quantity'        => $item['quantity'],
+                        'previous_stock'  => $quantityBefore,
+                        'new_stock'       => $quantityAfter,
                         'notes'           => "Sale — receipt {$receiptNumber}",
                     ]);
                 }
 
                 DB::commit();
-                Inertia::flash('message' , 'Sale made successfully'); 
-
-
-
-                // return back()->with('success', "Sale completed. Receipt: {$receiptNumber}");
+                Inertia::flash('message' , 'Sale made successfully');
+                return back();
   
-            }catch(Exception $e){
+            }catch(Throwable $e){
                 DB::rollBack();
+
+                // dd($e); 
                 return back()->withErrors([
-                    'error' => 'Failed to complete the sale. Please try again.',
+                    'error_message' => 'Failed to complete the sale. Please try again.',
                 ]);
             }
     }

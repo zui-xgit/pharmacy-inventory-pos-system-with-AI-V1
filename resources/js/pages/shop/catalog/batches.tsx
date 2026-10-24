@@ -90,7 +90,7 @@ const Batches = ({ batches, filters }: Props) => {
                         onClick={() => {
                             if (active_shop) {
                                 router.get(
-                                    stock.receiveStock(active_shop.uuid).url,
+                                    stock.receive_stock(active_shop.uuid).url,
                                 );
                             }
                         }}

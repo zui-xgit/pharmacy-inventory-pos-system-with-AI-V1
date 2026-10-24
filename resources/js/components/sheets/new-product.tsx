@@ -45,7 +45,7 @@ const NewProductSheet = ({ trigger, dosage_forms }: NewProductDialogProps) => {
     const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
 
     const handleAddProduct = () => {
-        post(catalog.newProduct({ shop: active_shop.uuid }).url, {
+        post(catalog.new_product({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

@@ -47,13 +47,10 @@ class StockController extends Controller
         ]);
     }
 
-    public function stockAdjustments() 
+    public function stockAdjustments(Request $request, Shop $shop) 
     {
-           return Inertia::render("shop/stock/stock-history"); 
+           return Inertia::render("shop/stock/stock-adjustments"); 
     }
 
-    public function stockHistory(Shop $shop)
-    {
-        return Inertia::render('shop/stock/stock-history');
-    }
+   
 }

@@ -88,12 +88,12 @@ const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
     },
     {
         title: 'Receive Stock',
-        href: stock.receiveStock({ shop: shop_uuid }),
+        href: stock.receive_stock({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
     {
         title: 'Stock Adjustments',
-        href: '#',
+        href: stock.stock_adjustments({ shop: shop_uuid }),
         icon: History,
     },
 ];

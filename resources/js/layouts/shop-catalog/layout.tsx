@@ -20,7 +20,7 @@ const sidebarNavItems = (shop_uuid: string): NavItem[] => [
     },
     {
         title: 'Dosage Forms',
-        href: catalog.dosageForms({ shop: shop_uuid }),
+        href: catalog.dosage_forms({ shop: shop_uuid }),
         icon: Pill,
     },
 ];

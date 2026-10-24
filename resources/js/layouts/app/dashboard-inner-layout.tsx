@@ -12,7 +12,7 @@ const DashboardInnerLayout = ({ children }: DashboardInnerLayoutProps) => {
         // </main>
 
         <main className="flex-1 overflow-auto">
-            <div className="mx-auto flex h-full w-full flex-col space-y-6 p-2 md:p-4">
+            <div className="mx-auto flex h-full w-full flex-col p-2 md:p-4">
                 {children}
             </div>
         </main>

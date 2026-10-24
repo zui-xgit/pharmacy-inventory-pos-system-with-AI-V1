@@ -22,11 +22,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
 
-            $table->foreignIdFor(Shop::class)
-                ->constrained()
-                ->cascadeOnDelete();
-
-    
             $table->foreignIdFor(Batch::class)
                 ->constrained()
                 ->restrictOnDelete();
@@ -36,29 +31,13 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete();
 
-            $table->enum('type', [
-                'purchase',   // batch received
-                'sale',       // sold to customer
-                'adjustment', // stock take correction
-                'expiry',     // written off as expired
-                'return',     // customer return
-                'transfer',   // between shops (phase 2)
-            ]);
+            $table->string('type'); 
+            $table->string('reason');
 
-            // Positive = stock coming in, Negative = stock going out
-            $table->decimal('quantity', 10, 2);
-
-            // Quantity before this movement — useful for audit trail
-            $table->decimal('quantity_before', 10, 2);
-
-            // Quantity after this movement
-            $table->decimal('quantity_after', 10, 2);
-
-            // Reference to the source record
-            // e.g. sale_id, batch_id, stock_count_session_id
-            $table->string('reference_type')->nullable(); // morph type
-            $table->unsignedBigInteger('reference_id')->nullable(); // morph id
-
+            $table->integer('quantity');
+            $table->integer('previous_stock');
+            $table->integer('new_stock');
+            
             $table->text('notes')->nullable();
             $table->timestamps();
         });

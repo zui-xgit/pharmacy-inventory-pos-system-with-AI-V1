@@ -2,10 +2,11 @@
 
 namespace App\Models\Inventory;
 
+use App\Enum\StockMovementReason;
+use App\Enum\StockMovementType;
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\Product;
 use App\Models\User;
-use App\Traits\BelongsToShop;
 use Database\Factories\Inventory\StockMovementFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -17,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[Guarded('id')]
 class StockMovement extends Model
 {
-    use BelongsToShop;
 
     /** @use HasFactory<StockMovementFactory> */
     use HasFactory;
@@ -34,6 +34,8 @@ class StockMovement extends Model
             'quantity' => 'decimal:2',
             'quantity_before' => 'decimal:2',
             'quantity_after' => 'decimal:2',
+            'type' => StockMovementType::class, 
+            'reason' => StockMovementReason::class
         ];
     }
 
@@ -42,6 +44,8 @@ class StockMovement extends Model
         return ['uuid'];
     }
 
+
+  
     // Stock movements are append-only — never updated or deleted.
     // Every change to stock quantity must write a new row here.
 
@@ -64,10 +68,10 @@ class StockMovement extends Model
      * Polymorphic relation back to whatever caused this movement.
      * Could be a Sale, a Batch receipt, a StockCountSession, etc.
      */
-    public function reference(): MorphTo
-    {
-        return $this->morphTo();
-    }
+    // public function reference(): MorphTo
+    // {
+    //     return $this->morphTo();
+    // }
 
     // -------------------------------------------------------------------------
     // Helpers
@@ -76,16 +80,16 @@ class StockMovement extends Model
     /**
      * True if this movement added stock (purchase, return).
      */
-    public function isIncoming(): bool
-    {
-        return $this->quantity > 0;
-    }
+    // public function isIncoming(): bool
+    // {
+    //     return $this->quantity > 0;
+    // }
 
-    /**
-     * True if this movement removed stock (sale, expiry, adjustment down).
-     */
-    public function isOutgoing(): bool
-    {
-        return $this->quantity < 0;
-    }
+    // /**
+    //  * True if this movement removed stock (sale, expiry, adjustment down).
+    //  */
+    // public function isOutgoing(): bool
+    // {
+    //     return $this->quantity < 0;
+    // }
 }

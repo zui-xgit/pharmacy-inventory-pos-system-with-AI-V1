@@ -83,7 +83,7 @@ const ReceiveStock = ({
     };
 
     const handleDataPostRequest = () => {
-        post(stock.newBatch({ shop: active_shop.uuid }).url, {
+        post(stock.new_batch({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
@@ -153,7 +153,7 @@ const ReceiveStock = ({
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <SearchInput
-                                    href={stock.receiveStock({
+                                    href={stock.receive_stock({
                                         shop: shop_uuid,
                                     })}
                                     filters={filters}

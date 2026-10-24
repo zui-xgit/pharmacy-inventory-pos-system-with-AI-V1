@@ -55,7 +55,7 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
         });
 
         router.post(
-            current_shop.pos.checkout({ shop: active_shop.uuid }).url,
+            current_shop.pos_checkout({ shop: active_shop.uuid }).url,
             {
                 items,
             },
@@ -74,11 +74,13 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                         });
                     }
                 },
-                onError: (errors) => {
-                    toast.error('Something went wrong ', {
-                        richColors: true,
-                        position: 'top-center',
-                    });
+                onError: ({ error_message }) => {
+                    if (error_message) {
+                        toast.error(error_message, {
+                            richColors: true,
+                            position: 'top-center',
+                        });
+                    }
                 },
                 onFinish: () => {
                     setLoading(false);

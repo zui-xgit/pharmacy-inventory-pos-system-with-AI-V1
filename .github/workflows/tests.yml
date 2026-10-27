@@ -45,20 +45,20 @@ jobs:
       - name: Install Node Dependencies
         run: npm i
 
-      # - name: Install Dependencies
-      # run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Install Dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      # - name: Copy Environment File
-      #   run: cp .env.example .env
+      - name: Copy Environment File
+        run: cp .env.example .env
 
-      # - name: Generate Application Key
-      #   run: php artisan key:generate
+      - name: Generate Application Key
+        run: php artisan key:generate
 
-      # - name: Build Assets
-      #   run: npm run build
+      - name: Build Assets
+        run: npm run build
 
-      # - name: Run Type Analysis
-      #   run: composer types:check
+      - name: Run Type Analysis
+        run: composer types:check
 
 # TODO: REMOVE THE COMMENTS FOR PROPER TESTING YOUR APP AFTER PUSH
 # - name: Tests

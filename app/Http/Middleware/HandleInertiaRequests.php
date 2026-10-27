@@ -47,6 +47,8 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'roles' => $request->user()->getRoleNames(),
 
+                
+
                     // Add this line to attach their shop UUID dynamically (for manager or cashier)
                     // 'shop_uuid' => $request->user()->isManagerOrCashier()
                     //     ? $request->user()->shops()->first()?->uuid

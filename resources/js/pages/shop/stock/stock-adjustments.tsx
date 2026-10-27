@@ -73,7 +73,7 @@ interface AdjustmentForm {
     units_remaining: string | number;
     manufactured_date: string;
     expiry_date: string;
-    notes: string;
+    notes: string | null;
 }
 
 const emptyForm: AdjustmentForm = {
@@ -396,13 +396,21 @@ export default function StockAdjustmentsPage({
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="notes">Notes</Label>
+                                    <Label htmlFor="notes">
+                                        Notes
+                                        <span className="ml-2 text-red-500">
+                                            (optional)
+                                        </span>
+                                    </Label>
                                     <Textarea
                                         id="notes"
                                         placeholder="e.g. Damaged stock, physical audit mismatch, corrected expiry date from supplier..."
-                                        value={data.notes}
+                                        value={data.notes ?? ''}
                                         onChange={(e) =>
-                                            setData('notes', e.target.value)
+                                            setData(
+                                                'notes',
+                                                e.target.value || null,
+                                            )
                                         }
                                         rows={3}
                                     />

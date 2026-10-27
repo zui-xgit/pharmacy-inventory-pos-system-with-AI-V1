@@ -144,7 +144,7 @@ class StockController extends Controller
             'units_remaining' => ['required', 'integer', 'min:0'],
             'manufactured_date' => ['required', 'date', 'before_or_equal:today'],
             'expiry_date' => ['required', 'date', 'after:manufactured_date'],
-            'notes' => ['required', 'string', 'max:1000'],
+            'notes' => ['nullable', 'string', 'max:1000', 'min:2'],
         ]);
 
         try {
@@ -179,7 +179,7 @@ class StockController extends Controller
                 'quantity' => abs($difference),
                 'previous_stock' => $previousStock,
                 'new_stock' => $newStock,
-                'notes' => $validated['notes'],
+                'notes' => $validated['notes'] ?? null,
             ]);
 
             DB::commit();

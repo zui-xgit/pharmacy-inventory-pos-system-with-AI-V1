@@ -21,7 +21,6 @@ interface ConfirmAlertDialogProps {
     onCancel?: () => void;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
-    actionClassName?: string;
 }
 
 export function ConfirmAlertDialog({
@@ -34,7 +33,6 @@ export function ConfirmAlertDialog({
     onCancel,
     open,
     onOpenChange,
-    actionClassName,
 }: ConfirmAlertDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -57,7 +55,7 @@ export function ConfirmAlertDialog({
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={onConfirm}
-                        className={actionClassName}
+                        className="cursor-pointer"
                     >
                         {actionText}
                     </AlertDialogAction>

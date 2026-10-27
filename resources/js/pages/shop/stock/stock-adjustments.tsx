@@ -438,7 +438,7 @@ export default function StockAdjustmentsPage({
                                                 ) : (
                                                     <Save className="mr-2 h-4 w-4" />
                                                 )}
-                                                Save Adjustment
+                                                Save Adjustment ddf
                                             </Button>
                                         }
                                         title="Confirm stock adjustment"

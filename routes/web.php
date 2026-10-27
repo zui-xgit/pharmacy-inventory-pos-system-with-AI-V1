@@ -1,7 +1,5 @@
 <?php
 
-
-
 use App\Http\Controllers\Shop\InventoryAndStock\CatalogController;
 use App\Http\Controllers\Shop\InventoryAndStock\StockController;
 use App\Http\Controllers\Shop\Main\MainController;
@@ -12,10 +10,10 @@ Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier'
 
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
 
-    //Main
+    // Main
     Route::get('/', [MainController::class, 'overview'])->name('current_shop.overview');
     Route::get('/pos', [PosController::class, 'posIndex'])->name('current_shop.pos');
-    Route::post('/post/checkout', [PosController::class, 'checkout'])->name('current_shop.pos_checkout'); 
+    Route::post('/post/checkout', [PosController::class, 'checkout'])->name('current_shop.pos_checkout');
 
     // CATALOG
     Route::get('/catalog/products', [CatalogController::class, 'productsCatalog'])->name('catalog.products');
@@ -28,11 +26,11 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
 
     // Stock
     Route::get('/stock/receive-stock', [StockController::class, 'receiveStock'])->name('stock.receive_stock');
-    Route::get('/stock/stock-adjustments', [StockController::class, 'stockAdjustments'])->name('stock.stock_adjustments'); ; 
+    Route::get('/stock/stock-adjustments', [StockController::class, 'stockAdjustments'])->name('stock.stock_adjustments');
+    Route::post('/stock/stock-adjustments', [StockController::class, 'adjustStock'])->name('stock.adjust_stock');
 
 });
 
 require __DIR__.'/owner.php';
-
 
 require __DIR__.'/settings.php';

@@ -26,7 +26,7 @@ const DatePicker = ({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline" data-empty={!value}>
+                <Button type="button" variant="outline" data-empty={!value}>
                     <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
                     {dateValue ? (
                         format(dateValue, 'PPP')

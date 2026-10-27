@@ -21,10 +21,14 @@ class IsManagerOrCashier
         $user = $request->user();
 
         if ($user instanceof User && $user->isManagerOrCashier()) {
-            $shop_uuid = $user->shops()->first()?->uuid;
-            Inertia::share('active_shop', [
-                'uuid' => $shop_uuid,
-            ]);
+            $shop = $user->shops()->first();
+
+            if ($shop) {
+                Inertia::share('active_shop', [
+                    'uuid' => $shop->uuid,
+                    'name' => $shop->name,
+                ]);
+            }
         }
 
         return $next($request);

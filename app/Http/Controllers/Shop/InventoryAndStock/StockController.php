@@ -144,7 +144,7 @@ class StockController extends Controller
             'units_remaining' => ['required', 'integer', 'min:0'],
             'manufactured_date' => ['required', 'date', 'before_or_equal:today'],
             'expiry_date' => ['required', 'date', 'after:manufactured_date'],
-            'notes' => ['nullable', 'string', 'max:1000', 'min:2'],
+            'notes' => ['nullable', 'string', 'max:1000', 'min:5'],
         ]);
 
         try {

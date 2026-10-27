@@ -74,7 +74,7 @@ interface AdjustmentForm {
     units_remaining: string | number;
     manufactured_date: string;
     expiry_date: string;
-    reason: string;
+    notes: string;
 }
 
 const emptyForm: AdjustmentForm = {
@@ -82,7 +82,7 @@ const emptyForm: AdjustmentForm = {
     units_remaining: '',
     manufactured_date: '',
     expiry_date: '',
-    reason: '',
+    notes: '',
 };
 
 export default function StockAdjustmentsPage({
@@ -97,6 +97,7 @@ export default function StockAdjustmentsPage({
         useForm<AdjustmentForm>(emptyForm);
 
     const generalError = (errors as Record<string, string | undefined>).error;
+    const hasSearch = Boolean(filters.search?.trim());
 
     const handleSelectBatch = (batch: BatchItem) => {
         setSelectedBatch(batch);
@@ -105,7 +106,7 @@ export default function StockAdjustmentsPage({
             units_remaining: batch.units_remaining,
             manufactured_date: batch.manufactured_date,
             expiry_date: batch.expiry_date,
-            reason: '',
+            notes: '',
         });
         clearErrors();
     };
@@ -120,9 +121,53 @@ export default function StockAdjustmentsPage({
             units_remaining: selectedBatch.units_remaining,
             manufactured_date: selectedBatch.manufactured_date,
             expiry_date: selectedBatch.expiry_date,
-            reason: '',
+            notes: '',
         });
         clearErrors();
+    };
+
+    const handleSaveAdjustment = () => {
+        if (!selectedBatch) {
+            return;
+        }
+
+        clearErrors();
+        setConfirmOpen(true);
+    };
+
+    const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        handleSaveAdjustment();
+    };
+
+    const performAdjustment = () => {
+        if (!selectedBatch) {
+            return;
+        }
+
+        setConfirmOpen(false);
+
+        post(stock.adjust_stock({ shop: shop_uuid }).url, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                setSelectedBatch(null);
+                setData(emptyForm);
+
+                toast.success('Stock adjustment saved successfully.', {
+                    position: 'top-right',
+                    richColors: true,
+                });
+            },
+            onError: (formErrors) => {
+                if (formErrors.error) {
+                    toast.error(formErrors.error, {
+                        position: 'top-right',
+                        richColors: true,
+                    });
+                }
+            },
+        });
     };
 
     const newQuantity = Number(data.units_remaining || 0);
@@ -158,7 +203,12 @@ export default function StockAdjustmentsPage({
                         />
 
                         <div className="max-h-[420px] divide-y overflow-y-auto rounded-md border">
-                            {batches.data.length > 0 ? (
+                            {!hasSearch ? (
+                                <p className="p-4 text-center text-sm text-muted-foreground">
+                                    Start typing a batch number or product name
+                                    to find a batch.
+                                </p>
+                            ) : batches.data.length > 0 ? (
                                 batches.data.map((batch) => (
                                     <button
                                         type="button"
@@ -212,16 +262,12 @@ export default function StockAdjustmentsPage({
                                 ))
                             ) : (
                                 <p className="p-4 text-center text-sm text-muted-foreground">
-                                    No batches found
-                                    {filters.search
-                                        ? ` for "${filters.search}"`
-                                        : ''}
-                                    .
+                                    No batches found for "{filters.search}".
                                 </p>
                             )}
                         </div>
 
-                        {batches.links.length > 3 && (
+                        {hasSearch && batches.links.length > 3 && (
                             <div className="flex flex-wrap items-center justify-center gap-1">
                                 {batches.links.map((link, index) => {
                                     if (!link.url) {
@@ -267,7 +313,10 @@ export default function StockAdjustmentsPage({
                     </CardHeader>
                     <CardContent>
                         {selectedBatch ? (
-                            <form className="space-y-6">
+                            <form
+                                onSubmit={handleFormSubmit}
+                                className="space-y-6"
+                            >
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label>Current Quantity (units)</Label>
@@ -356,19 +405,17 @@ export default function StockAdjustmentsPage({
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="reason">
-                                        Reason for Adjustment
-                                    </Label>
+                                    <Label htmlFor="notes">Notes</Label>
                                     <Textarea
-                                        id="reason"
+                                        id="notes"
                                         placeholder="e.g. Damaged stock, physical audit mismatch, corrected expiry date from supplier..."
-                                        value={data.reason}
+                                        value={data.notes}
                                         onChange={(e) =>
-                                            setData('reason', e.target.value)
+                                            setData('notes', e.target.value)
                                         }
                                         rows={3}
                                     />
-                                    <InputError message={errors.reason} />
+                                    <InputError message={errors.notes} />
                                 </div>
 
                                 {generalError && (
@@ -385,16 +432,46 @@ export default function StockAdjustmentsPage({
                                         disabled={processing}
                                     >
                                         <RotateCcw className="mr-2 h-4 w-4" />{' '}
-                                        Reset dsfdsfd
+                                        Reset
                                     </Button>
-                                    <Button type="submit" disabled={processing}>
-                                        {processing ? (
-                                            <Spinner className="mr-2 h-4 w-4" />
-                                        ) : (
-                                            <Save className="mr-2 h-4 w-4" />
-                                        )}
-                                        Save Adjustment
-                                    </Button>
+                                    <ConfirmAlertDialog
+                                        trigger={
+                                            <Button
+                                                type="button"
+                                                disabled={processing}
+                                                onClick={handleSaveAdjustment}
+                                            >
+                                                {processing ? (
+                                                    <Spinner className="mr-2 h-4 w-4" />
+                                                ) : (
+                                                    <Save className="mr-2 h-4 w-4" />
+                                                )}
+                                                Save Adjustment
+                                            </Button>
+                                        }
+                                        title="Confirm stock adjustment"
+                                        description={
+                                            <span>
+                                                Save an adjustment for{' '}
+                                                <span className="font-medium text-foreground">
+                                                    {selectedBatch.product.name}
+                                                </span>{' '}
+                                                (batch{' '}
+                                                <span className="font-mono">
+                                                    {selectedBatch.batch_number}
+                                                </span>
+                                                )?{' '}
+                                                {quantityDifference === 0
+                                                    ? `The stock will stay at ${selectedBatch.units_remaining} units.`
+                                                    : `The quantity will change from ${selectedBatch.units_remaining} to ${newQuantity} units.`}
+                                            </span>
+                                        }
+                                        actionText="Yes, save adjustment"
+                                        cancelText="Cancel"
+                                        onConfirm={performAdjustment}
+                                        open={confirmOpen}
+                                        onOpenChange={setConfirmOpen}
+                                    />
                                 </div>
                             </form>
                         ) : (

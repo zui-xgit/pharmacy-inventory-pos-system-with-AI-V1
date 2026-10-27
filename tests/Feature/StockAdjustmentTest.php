@@ -88,7 +88,7 @@ class StockAdjustmentTest extends TestCase
             'units_remaining' => 30,
             'manufactured_date' => '2025-02-01',
             'expiry_date' => '2027-02-01',
-            'reason' => 'Physical audit correction',
+            'notes' => 'Physical audit correction',
         ])->assertRedirect()->assertSessionHasNoErrors();
 
         $batch->refresh();

@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Core\Shop;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class OwnerController extends Controller
 {
-    public function createShop(Request $request)
+    public function createShop(Request $request): RedirectResponse
     {
 
         $validated = $request->validate([
@@ -33,10 +35,13 @@ class OwnerController extends Controller
             DB::commit();
             Inertia::flash('toast', ['type' => 'success', 'message' => __('Shop created successfully.')]);
 
+            return back();
+
         } catch (Exception $e) {
 
             DB::rollBack();
-            dd($e->getMessage());
+
+            report($e);
 
             return back()->withErrors([
                 'error' => 'An internal error occurred while creating the shop.',
@@ -45,7 +50,7 @@ class OwnerController extends Controller
     }
 
     // return all shops
-    public function shops(Request $request)
+    public function shops(Request $request): Response
     {
 
         // 1. Initialize the query builder
@@ -61,18 +66,17 @@ class OwnerController extends Controller
         }
 
         // 3. Paginate and map the shop data explicitly
-        $shops = $query->get()->map(function ($shop) {
+        $shops = $query->get()->map(function (Shop $shop): array {
             return [
                 'uuid' => $shop->uuid,
                 'name' => $shop->name,
                 'location' => $shop->location,
                 'address' => $shop->address,
                 'phone' => $shop->phone,
-                'email' => $shop->email,
                 'currency' => $shop->currency,
                 'currency_symbol' => $shop->currency_symbol,
-                'is_active' => (bool) $shop->is_active,
-                'created_at' => $shop->created_at->toIso8601String(),
+                'is_active' => $shop->is_active,
+                'created_at' => $shop->created_at?->toIso8601String(),
             ];
         });
 
@@ -84,7 +88,7 @@ class OwnerController extends Controller
 
     }
 
-    public function staff()
+    public function staff(): Response
     {
         return Inertia::render('owner/management/staff');
     }

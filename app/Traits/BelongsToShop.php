@@ -12,9 +12,13 @@ trait BelongsToShop
     // Relation — handled here so you never write it manually on each model
     // -------------------------------------------------------------------------
 
+    /**
+     * @return BelongsTo<Shop, $this>
+     */
     public function shop(): BelongsTo
     {
         if ($this instanceof Model) {
+            /** @var BelongsTo<Shop, $this> */
             return $this->belongsTo(Shop::class);
         }
 

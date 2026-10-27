@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -34,9 +36,13 @@ class FortifyServiceProvider extends ServiceProvider
 
         $this->app->instance(LoginResponse::class, new class implements LoginResponse
         {
-            public function toResponse($request)
+            public function toResponse($request): RedirectResponse
             {
                 $user = $request->user();
+
+                if (! $user instanceof User) {
+                    return redirect('/login');
+                }
 
                 if ($user->isOwner()) {
                     return redirect()->route('owner.shops');
@@ -56,6 +62,7 @@ class FortifyServiceProvider extends ServiceProvider
                     return redirect()->route('current_shop.overview', ['shop' => $shop->uuid]);
                 }
 
+                return redirect('/');
             }
         });
     }

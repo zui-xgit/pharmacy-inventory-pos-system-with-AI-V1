@@ -5,7 +5,6 @@ namespace App\Models\Inventory;
 use App\Enum\StockMovementReason;
 use App\Enum\StockMovementType;
 use App\Models\Catalog\Batch;
-use App\Models\Catalog\Product;
 use App\Models\User;
 use Database\Factories\Inventory\StockMovementFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
@@ -14,11 +13,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $batch_id
+ * @property int $user_id
+ * @property StockMovementType $type
+ * @property StockMovementReason $reason
+ * @property int $quantity
+ * @property int $previous_stock
+ * @property int $new_stock
+ * @property string|null $notes
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Batch $batch
+ * @property-read User $user
+ */
 #[Guarded('id')]
 class StockMovement extends Model
 {
-
     /** @use HasFactory<StockMovementFactory> */
     use HasFactory;
     use HasUuids;
@@ -39,6 +54,9 @@ class StockMovement extends Model
         ];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function uniqueIds(): array
     {
         return ['uuid'];
@@ -53,12 +71,17 @@ class StockMovement extends Model
     // Relations
     // -------------------------------------------------------------------------
 
-
+    /**
+     * @return BelongsTo<Batch, $this>
+     */
     public function batch(): BelongsTo
     {
         return $this->belongsTo(Batch::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

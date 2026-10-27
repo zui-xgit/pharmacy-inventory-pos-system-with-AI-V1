@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Core\Shop;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class EnsureShopMember
         $shop = $request->route('shop');
 
         // 1. First, make sure we actually have a logged-in user and a valid shop model
-        if (! $user || ! $shop) {
+        if (! $user instanceof User || ! $shop instanceof Shop) {
             abort(403, 'Invalid request or unauthenticated session.');
         }
 

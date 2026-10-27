@@ -19,8 +19,15 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property int $id
+ * @property string $uuid
+ * @property string $username
+ * @property string $firstname
+ * @property string $lastname
  * @property string $name
+ * @property string $gender
+ * @property string $phone
  * @property string $email
+ * @property string $status
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -29,6 +36,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $active_shop_id
  */
 #[Fillable(['username', 'first_name', 'last_name', 'gender', 'mobile',  'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
@@ -53,6 +61,9 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function uniqueIds(): array
     {
         return ['uuid'];
@@ -63,11 +74,17 @@ class User extends Authenticatable
         return $this->shops()->where('shop_id', $shopId)->exists();
     }
 
+    /**
+     * @return BelongsToMany<Shop, $this>
+     */
     public function shops(): BelongsToMany
     {
         return $this->belongsToMany(Shop::class, 'shop_user')->withTimestamps();
     }
 
+    /**
+     * @return BelongsTo<Shop, $this>
+     */
     public function activeShop(): BelongsTo
     {
         return $this->belongsTo(Shop::class, 'active_shop_id');

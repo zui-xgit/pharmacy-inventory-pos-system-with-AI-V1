@@ -12,18 +12,20 @@ use App\Models\Inventory\StockMovement;
 use App\Models\Sales\Sale;
 use App\Models\Sales\SaleItem;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 use Throwable;
 
 class PosController extends Controller
 {
     //
 
-    public function posIndex(Request $request, Shop $shop)
+    public function posIndex(Request $request, Shop $shop): Response
     {
         $search_input = $request->input('search');
         $search = strtolower($search_input);
@@ -54,19 +56,19 @@ class PosController extends Controller
                 ])
                 ->paginate(15)
                 ->withQueryString() // Preserves the search parameter in pagination links
-                ->through(function ($product) {
+                ->through(function (Product $product): array {
                     $firstBatch = $product->batches->first();
 
                     return [
                         'uuid' => $product->uuid,
                         'name' => $product->name,
                         'dosage_form' => [
-                            'uuid' => $product->dosageForm?->uuid,
-                            'name' => $product->dosageForm?->name ?? 'N/A',
+                            'uuid' => $product->dosageForm->uuid,
+                            'name' => $product->dosageForm->name,
                         ],
                         'total_stock' => $product->batches->sum('units_remaining'),
-                        'selling_price' => $firstBatch?->selling_price ?? 0,
-                        'batches' => $product->batches->map(function ($batch) {
+                        'selling_price' => $firstBatch->selling_price,
+                        'batches' => $product->batches->map(function (Batch $batch): array {
                             return [
                                 'id' => $batch->id,
                                 'batch_number' => $batch->batch_number,
@@ -89,7 +91,7 @@ class PosController extends Controller
    
 
     // make a sell
-    public function checkOut(Request $request, Shop $shop)
+    public function checkOut(Request $request, Shop $shop): RedirectResponse
     { 
             $validated = $request->validate([
                 'items' => ['required', 'array', 'min:1'],
@@ -100,16 +102,22 @@ class PosController extends Controller
                 'items.*.quantity' => ['required', 'integer', 'min:1'],
             ]);  
 
+            /** @var array<int, array{batch_id: int, quantity: int}> $items */
+            $items = [];
 
-            
+            foreach ((array) $validated['items'] as $item) {
+                $items[] = [
+                    'batch_id' => (int) $item['batch_id'],
+                    'quantity' => (int) $item['quantity'],
+                ];
+            }
 
-            
             try{
                 DB::beginTransaction(); 
 
                 // ── Step 1: Lock & Verify batch stock directly ────────────────────
                 // Collect batch IDs and lock rows to prevent race conditions at POS
-                $batchIds = collect($validated['items'])->pluck('batch_id');
+                $batchIds = collect($items)->pluck('batch_id');
                 
                 $batches = Batch::whereIn('id', $batchIds)
                     ->where('shop_id', $shop->id)
@@ -117,7 +125,7 @@ class PosController extends Controller
                     ->get()
                     ->keyBy('id');
 
-                foreach ($validated['items'] as $item) {
+                foreach ($items as $item) {
                     $batch = $batches->get($item['batch_id']);
 
                     if (! $batch || $batch->units_remaining < $item['quantity']) {
@@ -135,9 +143,10 @@ class PosController extends Controller
 
 
                 // ── Step 3: Calculate total using database batch prices ───────────
-                $totalAmount = collect($validated['items'])->sum(function ($item) use ($batches) {
+                $totalAmount = collect($items)->sum(function (array $item) use ($batches): int {
                     $batch = $batches->get($item['batch_id']);
-                    return $batch->selling_price * $item['quantity'];
+
+                    return (int) $batch->selling_price * $item['quantity'];
                 });
 
 
@@ -156,8 +165,12 @@ class PosController extends Controller
 
 
                 // ── Step 5: Process each item directly against batch inventory ────
-                foreach ($validated['items'] as $item) {
+                foreach ($items as $item) {
                     $batch = $batches->get($item['batch_id']);
+
+                    if (! $batch) {
+                        continue;
+                    }
 
                     $quantityBefore = $batch->units_remaining;
                     $quantityAfter  = $quantityBefore - $item['quantity'];
@@ -228,7 +241,7 @@ class PosController extends Controller
             ->whereDate('created_at', today())
             ->count();
  
-        $sequence = str_pad($todayCount + 1, 4, '0', STR_PAD_LEFT);
+        $sequence = str_pad((string) ($todayCount + 1), 4, '0', STR_PAD_LEFT);
  
         return $prefix . $sequence;
     }
@@ -242,9 +255,9 @@ class PosController extends Controller
     /**
      * Revert / Void a completed sale due to cashier error
      */
-    public function voidSale(Request $request, Shop $shop, Sale $sale)
+    public function voidSale(Request $request, Shop $shop, Sale $sale): RedirectResponse
     {
-        if ($sale->status === 'voided') {
+        if ($sale->status !== 'completed') {
             return back()->withErrors(['error' => 'This sale has already been voided.']);
         }
 
@@ -256,36 +269,32 @@ class PosController extends Controller
             foreach ($sale->items as $item) {
                 $batch = $item->batch;
 
-                if ($batch) {
-                    $batch->lockForUpdate();
-                    $quantityBefore = $batch->units_remaining;
-                    $quantityAfter  = $quantityBefore + $item->quantity;
+                $batch->lockForUpdate();
+                $quantityBefore = $batch->units_remaining;
+                $quantityAfter  = $quantityBefore + $item->quantity;
 
-                    $packagesRemaining = $batch->units_per_package_received > 0
-                        ? (int) floor($quantityAfter / $batch->units_per_package_received)
-                        : $batch->packages_remaining;
+                $packagesRemaining = $batch->units_per_package_received > 0
+                    ? (int) floor($quantityAfter / $batch->units_per_package_received)
+                    : $batch->packages_remaining;
 
-                    $batch->update([
-                        'units_remaining'    => $quantityAfter,
-                        'packages_remaining' => $packagesRemaining,
-                    ]);
+                $batch->update([
+                    'units_remaining'    => $quantityAfter,
+                    'packages_remaining' => $packagesRemaining,
+                ]);
 
-                    StockMovement::create([
-                        'shop_id'         => $shop->id,
-                        'batch_id'        => $batch->id,
-                        'user_id'         => Auth::id(),
-                        'type'            => 'return',
-                        'quantity'        => $item->quantity, // positive = incoming back to stock
-                        'quantity_before' => $quantityBefore,
-                        'quantity_after'  => $quantityAfter,
-                        'reference_type'  => Sale::class,
-                        'reference_id'    => $sale->id,
-                        'notes'           => "Voided Sale — receipt {$sale->receipt_number}",
-                    ]);
-                }
+                StockMovement::create([
+                    'batch_id'        => $batch->id,
+                    'user_id'         => Auth::id(),
+                    'type'            => StockMovementType::IN,
+                    'reason'          => StockMovementReason::RETURN,
+                    'quantity'        => $item->quantity, // positive = incoming back to stock
+                    'previous_stock'  => $quantityBefore,
+                    'new_stock'       => $quantityAfter,
+                    'notes'           => "Voided Sale — receipt {$sale->receipt_number}",
+                ]);
             }
 
-            $sale->update(['status' => 'voided']);
+            $sale->update(['status' => 'cancelled']);
 
             DB::commit();
 

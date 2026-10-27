@@ -9,17 +9,19 @@ use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
 use Exception;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CatalogController extends Controller
 {
     //
 
     // CATALOG
-    public function productsCatalog(Request $request, Shop $shop)
+    public function productsCatalog(Request $request, Shop $shop): Response
     {
 
         $search_input = $request->input('search');
@@ -37,13 +39,13 @@ class CatalogController extends Controller
             ->latest()
             ->paginate(15)
             ->withQueryString()
-            ->through(function ($product) {
+            ->through(function (Product $product): array {
                 return [
                     'uuid' => $product->uuid,
                     'name' => $product->name,
                     'dosage_form' => [
-                        'uuid' => $product->dosageForm?->uuid,
-                        'name' => $product->dosageForm?->name ?? 'N/A',
+                        'uuid' => $product->dosageForm->uuid,
+                        'name' => $product->dosageForm->name,
                     ],
 
                 ];
@@ -59,7 +61,7 @@ class CatalogController extends Controller
 
     }
 
-    public function batchesCatalog(Request $request, Shop $shop)
+    public function batchesCatalog(Request $request, Shop $shop): Response
     {
         $search_input = $request->input('search');
         $search = strtolower($search_input);
@@ -81,7 +83,7 @@ class CatalogController extends Controller
             ->latest()
             ->paginate(10)
             ->withQueryString()
-            ->through(function ($batch) use ($shop) {
+            ->through(function (Batch $batch) use ($shop): array {
                 $totalUnitsReceived = $batch->packages_received * $batch->units_per_package_received;
 
                 return [
@@ -90,9 +92,9 @@ class CatalogController extends Controller
             
 
                     'product' => [
-                        'uuid' => $batch->product?->uuid, 
-                        'name' => $batch->product?->name, 
-                        'dosage_form' => $batch->product?->dosageForm?->name
+                        'uuid' => $batch->product->uuid, 
+                        'name' => $batch->product->name, 
+                        'dosage_form' => $batch->product->dosageForm->name,
                     ], 
 
                     // Receiving Quantities
@@ -110,7 +112,7 @@ class CatalogController extends Controller
                     'selling_price' => $batch->selling_price,
 
                     // Dates
-                    'manufactured_date' => $batch->manufactured_date ? $batch->manufactured_date->format('Y-m-d') : null,
+                    'manufactured_date' => $batch->manufactured_date->format('Y-m-d'),
                     'expiry_date' => $batch->expiry_date,
                     'is_expired' => $batch->isExpired(),
 
@@ -125,7 +127,7 @@ class CatalogController extends Controller
         ]);
     }
 
-    public function dosageFormsCatalog(Request $request, Shop $shop)
+    public function dosageFormsCatalog(Request $request, Shop $shop): Response
     {
         $search_input = $request->input('search');
         $search = strtolower($search_input);
@@ -138,7 +140,7 @@ class CatalogController extends Controller
             ->latest()
             ->paginate(10)
             ->withQueryString()
-            ->through(function ($dosage_form) {
+            ->through(function (DosageForm $dosage_form): array {
                 return [
                     'uuid' => $dosage_form->uuid,
                     'name' => $dosage_form->name,
@@ -152,7 +154,7 @@ class CatalogController extends Controller
         ]);
     }
 
-    public function createDosageForm(Request $request, Shop $shop)
+    public function createDosageForm(Request $request, Shop $shop): RedirectResponse
     {
 
         $request->merge([
@@ -177,6 +179,8 @@ class CatalogController extends Controller
                 'name' => $validated['name'],
             ]);
             DB::commit();
+
+            return back();
         } catch (Exception $e) {
             DB::rollback();
 
@@ -184,7 +188,7 @@ class CatalogController extends Controller
         }
     }
 
-    public function createProduct(Request $request, Shop $shop)
+    public function createProduct(Request $request, Shop $shop): RedirectResponse
     {
 
         $request->merge([
@@ -221,6 +225,8 @@ class CatalogController extends Controller
             ]);
 
             DB::commit();
+
+            return back();
         } catch (UniqueConstraintViolationException $e) {
             DB::rollBack();
 
@@ -233,7 +239,7 @@ class CatalogController extends Controller
 
     }
 
-    public function createBatch(Request $request, Shop $shop)
+    public function createBatch(Request $request, Shop $shop): RedirectResponse
     {
         $request->merge([
             'batch_number' => strtolower($request->input('batch_number')),
@@ -294,6 +300,7 @@ class CatalogController extends Controller
 
             DB::commit();
 
+            return back();
         } catch (UniqueConstraintViolationException $e) {
             DB::rollBack();
 

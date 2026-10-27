@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,8 +20,8 @@ class IsManagerOrCashier
 
         $user = $request->user();
 
-        if ($user && $user->isManagerOrCashier()) {
-            $shop_uuid = $request->user()->shops()->first()?->uuid;
+        if ($user instanceof User && $user->isManagerOrCashier()) {
+            $shop_uuid = $user->shops()->first()?->uuid;
             Inertia::share('active_shop', [
                 'uuid' => $shop_uuid,
             ]);

@@ -7,11 +7,12 @@ use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class StockController extends Controller
 {
     // STOCK
-    public function receiveStock(Request $request, Shop $shop)
+    public function receiveStock(Request $request, Shop $shop): Response
     {
         $search_input = $request->input('search');
         $search = strtolower($search_input);
@@ -23,14 +24,13 @@ class StockController extends Controller
                 ->with(['dosageForm:id,uuid,name'])
                 ->limit(20)
                 ->get()
-                ->map(function ($product) {
+                ->map(function (Product $product): array {
                     return [
                         'uuid' => $product->uuid,
                         'name' => $product->name,
-                        'sku' => $product->sku,
                         'dosage_form' => [
-                            'uuid' => $product->dosageForm?->uuid ?? null,
-                            'name' => $product->dosageForm?->name ?? 'N/A',
+                            'uuid' => $product->dosageForm->uuid,
+                            'name' => $product->dosageForm->name,
                         ],
 
                     ];
@@ -47,7 +47,7 @@ class StockController extends Controller
         ]);
     }
 
-    public function stockAdjustments(Request $request, Shop $shop) 
+    public function stockAdjustments(Request $request, Shop $shop): Response
     {
            return Inertia::render("shop/stock/stock-adjustments"); 
     }

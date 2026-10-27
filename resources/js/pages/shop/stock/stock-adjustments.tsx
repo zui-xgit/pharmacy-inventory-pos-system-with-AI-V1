@@ -1,7 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { RotateCcw, Save } from 'lucide-react';
 import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { toast } from 'sonner';
 import DatePicker from '@/components/dashboard/date-picker';
 import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
@@ -133,11 +132,6 @@ export default function StockAdjustmentsPage({
 
         clearErrors();
         setConfirmOpen(true);
-    };
-
-    const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        handleSaveAdjustment();
     };
 
     const performAdjustment = () => {
@@ -313,10 +307,7 @@ export default function StockAdjustmentsPage({
                     </CardHeader>
                     <CardContent>
                         {selectedBatch ? (
-                            <form
-                                onSubmit={handleFormSubmit}
-                                className="space-y-6"
-                            >
+                            <div className="space-y-6">
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label>Current Quantity (units)</Label>
@@ -473,7 +464,7 @@ export default function StockAdjustmentsPage({
                                         onOpenChange={setConfirmOpen}
                                     />
                                 </div>
-                            </form>
+                            </div>
                         ) : (
                             <div className="py-12 text-center text-muted-foreground">
                                 No batch selected.

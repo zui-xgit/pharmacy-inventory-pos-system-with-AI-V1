@@ -3,6 +3,7 @@
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\PosController;
+use App\Http\Controllers\ReportsAndInsightsController;
 use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,8 +31,8 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
     Route::post('/stock/stock-adjustments', [StockController::class, 'adjustStock'])->name('stock.adjust_stock');
 
     // Reports
-    Route::get('/reports/sales', [MainController::class, 'salesReports'])->name('reports.sales');
-    Route::get('/reports/inventory', [MainController::class, 'inventoryReports'])->name('reports.inventory');
+    Route::get('/reports/sales', [ReportsAndInsightsController::class, 'salesReports'])->name('reports.sales');
+    Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('reports.inventory');
 
 });
 

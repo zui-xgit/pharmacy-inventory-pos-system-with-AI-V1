@@ -13,13 +13,5 @@ class MainController extends Controller
         return Inertia::render('shop/main/overview');
     }
 
-    public function salesReports(Shop $shop): Response
-    {
-        return Inertia::render('shop/reports/sales');
-    }
-
-    public function inventoryReports(Shop $shop): Response
-    {
-        return Inertia::render('shop/reports/inventory');
-    }
+    
 }

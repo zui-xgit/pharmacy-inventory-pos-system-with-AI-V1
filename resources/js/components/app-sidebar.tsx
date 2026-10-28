@@ -112,18 +112,6 @@ const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
     },
 ];
 
-const ShopEntities = (shop_uuid: string): NavItem[] => [
-    {
-        title: 'Suppliers / Vendors',
-        href: '#',
-        icon: Package,
-    },
-    {
-        title: 'Customers',
-        href: '#',
-        icon: ShoppingCart,
-    },
-];
 const ShopSystem = (shop_uuid: string): NavItem[] => [
     {
         title: 'Settings',
@@ -187,19 +175,13 @@ export function AppSidebar() {
                         groupLabel={'Reports & Insights'}
                         items={ShopReportAndInsights(active_shop.uuid)}
                     />
-                    <NavMain
-                        groupLabel={'Entities'}
-                        items={ShopEntities(active_shop.uuid)}
-                    />
+
                     <NavMain
                         groupLabel={'System'}
                         items={ShopSystem(active_shop.uuid)}
                     />
                 </SidebarContent>
             )}
-
-            {/* MANAGER */}
-            {/* CASHIER */}
 
             <SidebarFooter>
                 {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}

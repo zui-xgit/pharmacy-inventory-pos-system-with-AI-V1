@@ -29,6 +29,10 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
     Route::get('/stock/stock-adjustments', [StockController::class, 'stockAdjustments'])->name('stock.stock_adjustments');
     Route::post('/stock/stock-adjustments', [StockController::class, 'adjustStock'])->name('stock.adjust_stock');
 
+    // Reports
+    Route::get('/reports/sales', [MainController::class, 'salesReports'])->name('reports.sales');
+    Route::get('/reports/inventory', [MainController::class, 'inventoryReports'])->name('reports.inventory');
+
 });
 
 require __DIR__.'/owner.php';

@@ -32,6 +32,7 @@ import type { Auth } from '@/types/auth';
 // import NavSubMain from './nav-sub-main';
 import { Button } from './ui/button';
 import current_shop from '@/routes/current_shop';
+import reports from '@/routes/reports';
 
 // OWNER NAVITEMS
 const Overview: NavItem[] = [
@@ -101,12 +102,12 @@ const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
 const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
     {
         title: 'Sales Reports',
-        href: '#',
+        href: reports.sales({ shop: shop_uuid }),
         icon: Package,
     },
     {
         title: 'Inventory Reports',
-        href: '#',
+        href: reports.inventory({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
 ];

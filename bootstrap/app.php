@@ -29,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
+            'is.manager_or_cashier' => IsManagerOrCashier::class,
             'shop.member' => EnsureShopMember::class,
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,

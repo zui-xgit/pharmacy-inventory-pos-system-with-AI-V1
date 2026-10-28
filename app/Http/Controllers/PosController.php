@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Shop\Main;
+namespace App\Http\Controllers;
 
 use App\Enum\StockMovementReason;
 use App\Enum\StockMovementType;

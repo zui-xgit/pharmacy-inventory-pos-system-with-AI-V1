@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Shop\Main;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Core\Shop;

@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Shop\InventoryAndStock\CatalogController;
-use App\Http\Controllers\Shop\InventoryAndStock\StockController;
-use App\Http\Controllers\Shop\Main\MainController;
-use App\Http\Controllers\Shop\Main\PosController;
+use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\PosController;
+use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');

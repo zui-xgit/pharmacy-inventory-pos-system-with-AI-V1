@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
+use App\Models\Core\Shop;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -23,7 +24,7 @@ class SecurityController extends Controller
 
         return Inertia::render('settings/security', $props);
     }
-
+    
     /**
      * Update the user's password.
      */

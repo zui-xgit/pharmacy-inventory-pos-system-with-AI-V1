@@ -153,7 +153,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             {/* OWNER */}
-            {auth.user.isOwner && active_shop === undefined && (
+            {auth.user.isOwner && !active_shop && (
                 <SidebarContent>
                     <NavMain groupLabel={'Overview'} items={Overview} />
                     <NavMain groupLabel={'Management'} items={Management} />
@@ -161,7 +161,7 @@ export function AppSidebar() {
                 </SidebarContent>
             )}
 
-            {active_shop !== undefined && (
+            {active_shop && (
                 <SidebarContent>
                     <NavMain
                         groupLabel={'Main'}

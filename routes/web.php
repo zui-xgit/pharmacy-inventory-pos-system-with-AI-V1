@@ -1,18 +1,18 @@
 <?php
 
 use App\Http\Controllers\CatalogController;
-use App\Http\Controllers\MainController;
+use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ReportsAndInsightsController;
 use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');
+Route::inertia('/', 'welcome')->name('home')->middleware('role:manager');
 
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
-
+    
     // Main
-    Route::get('/', [MainController::class, 'overview'])->name('current_shop.overview');
+    Route::get('/', [OverviewController::class, 'overview'])->name('current_shop.overview');
     Route::get('/pos', [PosController::class, 'posIndex'])->name('current_shop.pos');
     Route::post('/post/checkout', [PosController::class, 'checkout'])->name('current_shop.pos_checkout');
 

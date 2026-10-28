@@ -1,4 +1,4 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
 import {
     DropdownMenuGroup,
@@ -9,7 +9,7 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import profile from '@/routes/profile';
 import type { User } from '@/types';
 
 type Props = {
@@ -32,11 +32,12 @@ export function UserMenuContent({ user }: Props) {
                 </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"
-                        href={edit()}
+                        href={profile.edit()}
                         prefetch
                         onClick={cleanup}
                     >
@@ -45,6 +46,7 @@ export function UserMenuContent({ user }: Props) {
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link

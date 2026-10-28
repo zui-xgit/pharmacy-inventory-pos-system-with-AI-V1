@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Models\Core\Shop;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,19 +25,25 @@ class ProfileController extends Controller
             'status' => $request->session()->get('status'),
         ]);
     }
-
     /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        $user->firstname = $validated['firstname'];
+        $user->lastname = $validated['lastname'];
+        $user->gender = $validated['gender'];
+        $user->phone = $validated['phone'];
+        $user->email = $validated['email'];
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 

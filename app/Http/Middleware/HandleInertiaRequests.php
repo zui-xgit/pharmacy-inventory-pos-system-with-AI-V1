@@ -45,14 +45,11 @@ class HandleInertiaRequests extends Middleware
                     'firstname' => $request->user()->firstname,
                     'lastname' => $request->user()->lastname,
                     'email' => $request->user()->email,
+                    'gender' => $request->user()->gender, 
+                    'phone' => $request->user()->phone, 
                     'roles' => $request->user()->getRoleNames(),
 
                 
-
-                    // Add this line to attach their shop UUID dynamically (for manager or cashier)
-                    // 'shop_uuid' => $request->user()->isManagerOrCashier()
-                    //     ? $request->user()->shops()->first()?->uuid
-                    //     : null,
 
                     // ⭐ Pass clean, simple flags directly to frontend
                     'isOwner' => $request->user()->hasRole('owner'),
@@ -60,6 +57,7 @@ class HandleInertiaRequests extends Middleware
                     'isCashier' => $request->user()->hasRole('cashier'),
                     'isOwnerOrManager' => $request->user()->hasAnyRole(['owner', 'manager']),
                     'isManagerOrCashier' => $request->user()->hasAnyRole(['manager', 'cashier']),
+                    'isShopMember' => $request->user()->hasAnyRole(['owner', 'manager', 'cashier']) 
                 ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

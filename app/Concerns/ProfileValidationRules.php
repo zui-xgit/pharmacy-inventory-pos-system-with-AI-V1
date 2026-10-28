@@ -16,7 +16,10 @@ trait ProfileValidationRules
     protected function profileRules(?int $userId = null): array
     {
         return [
-            'name' => $this->nameRules(),
+            'firstname' => $this->nameRules(),
+            'lastname' => $this->nameRules(),
+            'gender' => ['required', Rule::in(['male', 'female'])],
+            'phone' => ['required', 'string', 'max:20'],
             'email' => $this->emailRules($userId),
         ];
     }

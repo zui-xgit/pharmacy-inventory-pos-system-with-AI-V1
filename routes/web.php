@@ -7,7 +7,9 @@ use App\Http\Controllers\ReportsAndInsightsController;
 use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home')->middleware('role:manager');
+
+Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');
+
 
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
     

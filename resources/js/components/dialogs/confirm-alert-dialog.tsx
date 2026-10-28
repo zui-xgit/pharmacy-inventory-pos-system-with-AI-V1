@@ -19,8 +19,6 @@ interface ConfirmAlertDialogProps {
     cancelText?: string;
     onConfirm: () => void;
     onCancel?: () => void;
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
 }
 
 export function ConfirmAlertDialog({
@@ -31,13 +29,10 @@ export function ConfirmAlertDialog({
     cancelText = 'Cancel',
     onConfirm,
     onCancel,
-    open,
-    onOpenChange,
 }: ConfirmAlertDialogProps) {
     return (
-        <AlertDialog open={open} onOpenChange={onOpenChange}>
+        <AlertDialog>
             <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-
             <AlertDialogContent>
                 <AlertDialogHeader>
                     {/* <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">

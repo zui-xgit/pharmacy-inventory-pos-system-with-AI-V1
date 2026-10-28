@@ -90,7 +90,6 @@ export default function StockAdjustmentsPage({
     shop_uuid,
 }: Props) {
     const [selectedBatch, setSelectedBatch] = useState<BatchItem | null>(null);
-    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const { data, setData, post, processing, errors, clearErrors } =
         useForm<AdjustmentForm>(emptyForm);
@@ -129,17 +128,13 @@ export default function StockAdjustmentsPage({
         if (!selectedBatch) {
             return;
         }
-
         clearErrors();
-        setConfirmOpen(true);
     };
 
     const performAdjustment = () => {
         if (!selectedBatch) {
             return;
         }
-
-        setConfirmOpen(false);
 
         post(stock.adjust_stock({ shop: shop_uuid }).url, {
             preserveScroll: true,
@@ -469,8 +464,6 @@ export default function StockAdjustmentsPage({
                                         actionText="Yes, save adjustment"
                                         cancelText="Cancel"
                                         onConfirm={performAdjustment}
-                                        open={confirmOpen}
-                                        onOpenChange={setConfirmOpen}
                                     />
                                 </div>
                             </div>

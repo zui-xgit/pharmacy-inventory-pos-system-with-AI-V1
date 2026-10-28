@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { router, usePage } from '@inertiajs/react';
 import current_shop from '@/routes/current_shop';
 import { Spinner } from '@/components/ui/spinner';
+import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
 
 interface PosCartSheetProps {
     trigger: React.ReactNode;
@@ -41,8 +42,9 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
     const totalPrice = useCartStore((state) => state.getTotalPrice());
 
     const [loading, setLoading] = useState<boolean>(false);
+    const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
 
-    const handleCheckout = () => {
+    const performCheckout = () => {
         if (!cart || cart.length === 0) {
             return;
         }
@@ -74,9 +76,9 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                         });
                     }
                 },
-                onError: ({ error_message }) => {
-                    if (error_message) {
-                        toast.error(error_message, {
+                onError: (errors) => {
+                    if (errors?.error_message) {
+                        toast.error(errors.error_message, {
                             richColors: true,
                             position: 'top-center',
                         });
@@ -146,7 +148,7 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                             </div>
                         </div>
 
-                        <div className="tborderf grid grid-cols-12 gap-2">
+                        <div className="grid grid-cols-12 gap-2">
                             <Button
                                 size={'sm'}
                                 variant={'outline'}
@@ -157,21 +159,42 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
                                 <Trash2 />
                                 Clear all
                             </Button>
-                            <Button
-                                size="sm"
-                                className="col-span-9 cursor-pointer text-sm font-semibold"
-                                onClick={handleCheckout}
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <Spinner />
-                                ) : (
-                                    <>
-                                        Checkout
-                                        <ArrowRight className="h-4 w-4" />
-                                    </>
-                                )}
-                            </Button>
+                            <ConfirmAlertDialog
+                                trigger={
+                                    <Button
+                                        size="sm"
+                                        className="col-span-9 w-full cursor-pointer text-sm font-semibold"
+                                        disabled={loading || cart.length === 0}
+                                    >
+                                        {loading ? (
+                                            <Spinner />
+                                        ) : (
+                                            <>
+                                                Checkout
+                                                <ArrowRight className="h-4 w-4" />
+                                            </>
+                                        )}
+                                    </Button>
+                                }
+                                title="Confirm Checkout"
+                                description={
+                                    <span>
+                                        Complete sale for{' '}
+                                        <span className="font-medium text-foreground">
+                                            {totalItems} item
+                                            {totalItems !== 1 ? 's' : ''}
+                                        </span>{' '}
+                                        totaling{' '}
+                                        <span className="font-medium text-foreground">
+                                            {formatCurrency(totalPrice)}
+                                        </span>
+                                        ?
+                                    </span>
+                                }
+                                actionText="Yes, complete sale"
+                                cancelText="Cancel"
+                                onConfirm={performCheckout}
+                            />
                         </div>
                     </SheetFooter>
                 )}

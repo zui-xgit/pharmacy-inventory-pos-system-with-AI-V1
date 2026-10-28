@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Catalog\Batch;
 use App\Models\Catalog\Product;
 use App\Models\Core\Shop;
 use App\Models\Sales\Sale;
@@ -42,7 +43,7 @@ class ReportsAndInsightsController extends Controller
                 break;
         }
 
-        $sales = (clone $query)->with(['user:id,first_name,last_name', 'items.product:id,name'])
+        $sales = (clone $query)->with(['user:id,firstname,lastname', 'items.product:id,name'])
             ->latest()
             ->paginate(20)
             ->withQueryString()
@@ -55,7 +56,7 @@ class ReportsAndInsightsController extends Controller
                     'payment_method' => $sale->payment_method,
                     'status' => $sale->status,
                     'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
-                    'cashier' => $sale->user ? trim($sale->user->first_name.' '.$sale->user->last_name) : null,
+                    'cashier' => $sale->user ? trim(($sale->user->firstname ?? '').' '.($sale->user->lastname ?? '')) : null,
                     'items_count' => $sale->items->count(),
                     'profit' => $sale->profit(),
                 ];
@@ -106,8 +107,90 @@ class ReportsAndInsightsController extends Controller
         ]);
     }
 
-    public function inventoryReports(Shop $shop): Response
+    public function inventoryReports(Request $request, Shop $shop): Response
     {
-        return Inertia::render('shop/reports/inventory');
+        $search = $request->string('search')->trim()->lower()->toString();
+
+        $batchesQuery = Batch::where('shop_id', $shop->id)
+            ->with(['product:id,uuid,name,dosage_form_id', 'product.dosageForm:id,name']);
+
+        if ($search !== '') {
+            $batchesQuery->where(function ($q) use ($search) {
+                $q->where('batch_number', 'LIKE', "%{$search}%")
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('name', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
+        $batches = $batchesQuery
+            ->orderBy('expiry_date')
+            ->paginate(20)
+            ->withQueryString()
+            ->through(function (Batch $batch) use ($shop) {
+                return [
+                    'uuid' => $batch->uuid,
+                    'batch_number' => $batch->batch_number,
+                    'product' => [
+                        'name' => $batch->product->name,
+                        'dosage_form' => $batch->product->dosageForm->name ?? null,
+                    ],
+                    'units_remaining' => $batch->units_remaining,
+                    'packages_remaining' => $batch->packages_remaining,
+                    'cost_price' => (float) $batch->cost_price,
+                    'selling_price' => (float) $batch->selling_price,
+                    'expiry_date' => $batch->expiry_date->format('Y-m-d'),
+                    'manufactured_date' => $batch->manufactured_date->format('Y-m-d'),
+                    'is_expired' => $batch->isExpired(),
+                    'is_expiring_soon' => $batch->isExpiringSoon($shop->expiry_alert_days),
+                    'days_until_expiry' => $batch->daysUntilExpiry(),
+                    'is_out_of_stock' => $batch->isOutOfStock(),
+                    'stock_value' => (float) $batch->units_remaining * (float) $batch->cost_price,
+                ];
+            });
+
+        $totalProducts = Product::where('shop_id', $shop->id)->count();
+        $totalBatches = Batch::where('shop_id', $shop->id)->count();
+        $outOfStock = Batch::where('shop_id', $shop->id)->where('units_remaining', '<=', 0)->count();
+        $expired = Batch::where('shop_id', $shop->id)->whereDate('expiry_date', '<', Carbon::today())->count();
+        $expiringSoon = Batch::where('shop_id', $shop->id)
+            ->whereDate('expiry_date', '>=', Carbon::today())
+            ->whereDate('expiry_date', '<=', Carbon::now()->addDays($shop->expiry_alert_days))
+            ->count();
+        $totalStockValue = Batch::where('shop_id', $shop->id)->sum(DB::raw('units_remaining * cost_price'));
+
+        $lowStockProducts = Product::where('shop_id', $shop->id)
+            ->with(['batches'])
+            ->get()
+            ->filter(function ($product) {
+                $total = $product->batches->sum('units_remaining');
+                $threshold = $product->reorder_point ?? 10;
+                return $total > 0 && $total <= $threshold;
+            })
+            ->take(10)
+            ->map(function ($product) {
+                $total = $product->batches->sum('units_remaining');
+                return [
+                    'name' => $product->name,
+                    'total_units' => $total,
+                    'reorder_point' => $product->reorder_point ?? 10,
+                ];
+            })
+            ->values();
+
+        return Inertia::render('shop/reports/inventory', [
+            'batches' => $batches,
+            'summary' => [
+                'totalProducts' => $totalProducts,
+                'totalBatches' => $totalBatches,
+                'outOfStock' => $outOfStock,
+                'expired' => $expired,
+                'expiringSoon' => $expiringSoon,
+                'totalStockValue' => (float) $totalStockValue,
+            ],
+            'lowStockProducts' => $lowStockProducts,
+            'filters' => $request->only(['search']),
+            'shop_uuid' => $shop->uuid,
+        ]);
     }
 }

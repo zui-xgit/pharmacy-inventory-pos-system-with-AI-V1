@@ -10,6 +10,7 @@ import {
     LayoutDashboard,
     ShoppingCart,
     History,
+    Users,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 // import { NavFooter } from '@/components/nav-footer';
@@ -33,6 +34,7 @@ import type { Auth } from '@/types/auth';
 import { Button } from './ui/button';
 import current_shop from '@/routes/current_shop';
 import reports from '@/routes/reports';
+import staff from '@/routes/staff';
 
 // OWNER NAVITEMS
 const Overview: NavItem[] = [
@@ -114,8 +116,13 @@ const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
 
 const ShopSystem = (shop_uuid: string): NavItem[] => [
     {
-        title: 'Settings',
+        title: 'Staff',
         href: '#',
+        icon: Users,
+    },
+    {
+        title: 'Settings',
+        href: staff.profile({ shop: shop_uuid }),
         icon: Package,
     },
 ];

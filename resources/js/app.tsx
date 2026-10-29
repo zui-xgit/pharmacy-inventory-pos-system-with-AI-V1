@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import ShopCatalogLayout from './layouts/shop-catalog/layout';
+import StaffSettingsLayout from './layouts/settings/staff_layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -19,6 +20,8 @@ createInertiaApp({
                 return AuthLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
+            case name.startsWith('staff_settings/'):
+                return [AppLayout, StaffSettingsLayout];
             case name.startsWith('shop/catalog/'):
                 return [AppLayout, ShopCatalogLayout];
             default:

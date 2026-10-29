@@ -10,7 +10,7 @@ import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import profile from '@/routes/profile';
-import type { User } from '@/types';
+import type { Auth, User } from '@/types';
 
 type Props = {
     user: User;
@@ -24,6 +24,11 @@ export function UserMenuContent({ user }: Props) {
         router.flushAll();
     };
 
+    const { active_shop, auth } = usePage<{
+        active_shop: { uuid: string } | undefined;
+        auth: Auth;
+    }>().props;
+
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
@@ -33,19 +38,21 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                    <Link
-                        className="block w-full cursor-pointer"
-                        href={profile.edit()}
-                        prefetch
-                        onClick={cleanup}
-                    >
-                        <Settings className="mr-2" />
-                        Settings
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuGroup>
+            {auth.user.isOwner && (
+                <DropdownMenuGroup>
+                    <DropdownMenuItem asChild>
+                        <Link
+                            className="block w-full cursor-pointer"
+                            href={profile.edit()}
+                            prefetch
+                            onClick={cleanup}
+                        >
+                            <Settings className="mr-2" />
+                            Settings
+                        </Link>
+                    </DropdownMenuItem>
+                </DropdownMenuGroup>
+            )}
 
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

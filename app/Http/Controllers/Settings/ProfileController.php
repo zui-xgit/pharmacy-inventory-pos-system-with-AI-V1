@@ -25,6 +25,16 @@ class ProfileController extends Controller
             'status' => $request->session()->get('status'),
         ]);
     }
+
+
+    public function staffProfileEdit(Request $request, Shop $shop): Response
+    {
+        return Inertia::render('staff_settings/profile', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => $request->session()->get('status'),
+        ]);
+    }
+
     /**
      * Update the user's profile information.
      */

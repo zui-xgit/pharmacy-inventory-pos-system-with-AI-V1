@@ -4,9 +4,13 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ReportsAndInsightsController;
+use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\SecurityController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StockController;
+use App\Models\Core\Shop;
 use Illuminate\Support\Facades\Route;
-
+use Inertia\Inertia;
 
 Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');
 
@@ -37,6 +41,24 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
     Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('reports.inventory');
 
 });
+
+
+// shop user settings
+Route::prefix('staff/shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function (){
+       Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('staff.profile'); 
+       Route::get('staff/security', [SecurityController::class, 'staffSecurityEdit'])->name('staff.security'); 
+
+
+        Route::get('staff/appearance', function (Shop $shop){
+           return Inertia::render("staff_settings/appearance"); 
+        })->name('staff.appearance'); 
+
+}); 
+
+// Staff
+Route::prefix('staff/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function (){
+        Route::get('staff', [StaffController::class, 'staff'])->name('staff.edit'); 
+}); 
 
 require __DIR__.'/owner.php';
 

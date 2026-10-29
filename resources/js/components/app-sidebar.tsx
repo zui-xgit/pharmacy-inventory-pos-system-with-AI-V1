@@ -117,7 +117,7 @@ const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
 const ShopSystem = (shop_uuid: string): NavItem[] => [
     {
         title: 'Staff',
-        href: '#',
+        href: staff.edit({ shop: shop_uuid }),
         icon: Users,
     },
     {

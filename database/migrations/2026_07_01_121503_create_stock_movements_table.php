@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\Catalog\Batch;
-use App\Models\Catalog\Product;
-use App\Models\Core\Shop;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    
     /**
      * Run the migrations.
      */
@@ -31,13 +28,13 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete();
 
-            $table->string('type'); 
+            $table->string('type');
             $table->string('reason');
 
             $table->integer('quantity');
             $table->integer('previous_stock');
             $table->integer('new_stock');
-            
+
             $table->text('notes')->nullable();
             $table->timestamps();
         });

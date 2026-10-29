@@ -42,6 +42,7 @@ class Batch extends Model
 
     /** @use HasFactory<BatchFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**
@@ -108,7 +109,6 @@ class Batch extends Model
     // Helpers
     // -------------------------------------------------------------------------
 
-
     /**
      * True if this batch has no remaining stock.
      */
@@ -116,7 +116,6 @@ class Batch extends Model
     {
         return $this->units_remaining <= 0;
     }
-
 
     /**
      * True if this batch has already expired.

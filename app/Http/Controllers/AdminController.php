@@ -6,7 +6,6 @@ use App\Models\Catalog\Batch;
 use App\Models\Core\Shop;
 use App\Models\Sales\Sale;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -14,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class OwnerController extends Controller
+class AdminController extends Controller
 {
     public function createShop(Request $request): RedirectResponse
     {
@@ -171,15 +170,21 @@ class OwnerController extends Controller
         ];
 
         // 8. Return the Inertia view with all the payload data
-        return Inertia::render('owner/overview/shops', [
+        return Inertia::render('admin/overview/shops', [
             'shops' => $shops,
             'stats' => $businessStats,
             'filters' => $request->only(['search']),
         ]);
     }
 
-    public function staff(): Response
+    public function staffManagement(): Response
     {
-        return Inertia::render('owner/management/staff');
+        return Inertia::render('admin/management/staff-management');
+    }
+
+    public function activityLogs()
+    {
+        return Inertia::render('admin/management/activity-logs');
+
     }
 }

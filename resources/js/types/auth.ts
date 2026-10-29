@@ -18,10 +18,10 @@ export type User = {
     email: string;
     roles: string[];
     shop_uuid: string;
-    isOwner: boolean;
+    isAdmin: boolean;
     isManager: boolean;
     isCashier: boolean;
-    isOwnerOrManager: boolean;
+    isAdminOrManager: boolean;
     isManagerOrCashier: boolean;
 
     [key: string]: unknown;

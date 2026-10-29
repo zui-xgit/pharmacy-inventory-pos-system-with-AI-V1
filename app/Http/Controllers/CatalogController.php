@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\DosageForm;
 use App\Models\Catalog\Product;
@@ -66,8 +65,6 @@ class CatalogController extends Controller
         $search_input = $request->input('search');
         $search = strtolower($search_input);
 
-       
-
         $batches = Batch::where('shop_id', $shop->id)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -78,7 +75,7 @@ class CatalogController extends Controller
                 });
             })
             ->with([
-                'product:id,uuid,name,dosage_form_id', "product.dosageForm:id,name"
+                'product:id,uuid,name,dosage_form_id', 'product.dosageForm:id,name',
             ])
             ->latest()
             ->paginate(10)
@@ -89,13 +86,12 @@ class CatalogController extends Controller
                 return [
                     'uuid' => $batch->uuid,
                     'batch_number' => $batch->batch_number,
-            
 
                     'product' => [
-                        'uuid' => $batch->product->uuid, 
-                        'name' => $batch->product->name, 
+                        'uuid' => $batch->product->uuid,
+                        'name' => $batch->product->name,
                         'dosage_form' => $batch->product->dosageForm->name,
-                    ], 
+                    ],
 
                     // Receiving Quantities
                     'packages_received' => $batch->packages_received,

@@ -42,6 +42,7 @@ class Sale extends Model
 
     /** @use HasFactory<SaleFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**
@@ -97,6 +98,7 @@ class Sale extends Model
 
     /**
      * Alias for saleItems() to support $sale->items
+     *
      * @return HasMany<SaleItem, $this>
      */
     public function items(): HasMany

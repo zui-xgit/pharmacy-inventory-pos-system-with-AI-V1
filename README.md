@@ -20,9 +20,9 @@ Pharmacy management demands strict compliance, precise stock tracking, and real-
 | :---------------------------------------: |
 | ![Login Page](docs/images/login-page.png) |
 
-|                   Owner Dashboard                   |
+|                   Admin Dashboard                   |
 | :-------------------------------------------------: |
-| ![Owner Dashboard](docs/images/owner-dashboard.png) |
+| ![Admin Dashboard](docs/images/owner-dashboard.png) |
 
 |                    Employee Dashboard                     |
 | :-------------------------------------------------------: |

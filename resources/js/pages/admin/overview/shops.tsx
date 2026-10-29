@@ -9,7 +9,7 @@ import RefreshButton from '@/components/refresh-button';
 import SearchInput from '@/components/search-input';
 
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import owner from '@/routes/owner';
+import admin from '@/routes/admin';
 
 interface ShopStats {
     total_sales_today: number;
@@ -122,13 +122,13 @@ export default function Shops({ shops, stats, filters }: ShopsProps) {
                     </h2>
                     <div className="flex w-full items-center space-x-2">
                         <SearchInput
-                            href={owner.shops()}
+                            href={admin.shops()}
                             filters={filters}
                             placeholder={
                                 'Search by name or location...  (Live search)'
                             }
                         />
-                        <RefreshButton href={owner.shops()} />
+                        <RefreshButton href={admin.shops()} />
                     </div>
                 </div>
 
@@ -164,7 +164,7 @@ Shops.layout = {
     breadcrumbs: [
         {
             title: 'Shops',
-            href: '/owner/shop-select-or-create',
+            href: admin.shops(),
         },
     ],
 };

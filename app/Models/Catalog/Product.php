@@ -39,6 +39,7 @@ class Product extends Model
 
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
+
     use HasUuids;
     use SoftDeletes;
 
@@ -68,7 +69,7 @@ class Product extends Model
     // -------------------------------------------------------------------------
 
     /**
-     * @return BelongsTo<\App\Models\Catalog\DosageForm, $this>
+     * @return BelongsTo<DosageForm, $this>
      */
     public function dosageForm(): BelongsTo
     {
@@ -88,12 +89,6 @@ class Product extends Model
      */
     public function saleItems(): HasMany
     {
-        return $this->hasMany(SaleItem::class); 
+        return $this->hasMany(SaleItem::class);
     }
-
-   
-
-   
-
-   
 }

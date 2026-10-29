@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DosageFormFactory extends Factory
 {
-
-
     protected static ?array $shuffledForms = null;
+
     protected static int $index = 0;
+
     /**
      * Define the model's default state.
      *

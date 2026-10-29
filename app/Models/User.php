@@ -94,10 +94,14 @@ class User extends Authenticatable
     // Role helpers
     // -------------------------------------------------------------------------
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
     public function isOwner(): bool
     {
-        return $this->hasRole('owner');
-
+        return $this->isAdmin();
     }
 
     public function isManager(): bool
@@ -110,9 +114,14 @@ class User extends Authenticatable
         return $this->hasRole('cashier');
     }
 
+    public function isManagerOrAdmin(): bool
+    {
+        return $this->isAdmin() || $this->isManager();
+    }
+
     public function isManagerOrOwner(): bool
     {
-        return $this->isOwner() || $this->isManager();
+        return $this->isManagerOrAdmin();
     }
 
     public function isManagerOrCashier(): bool
@@ -122,8 +131,8 @@ class User extends Authenticatable
 
     public function currentRole(): string
     {
-        if ($this->isOwner()) {
-            return 'owner';
+        if ($this->isAdmin()) {
+            return 'admin';
         }
         if ($this->isManager()) {
             return 'manager';

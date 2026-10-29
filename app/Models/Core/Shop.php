@@ -4,7 +4,6 @@ namespace App\Models\Core;
 
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\DosageForm;
-use App\Models\Catalog\PackageUnit;
 use App\Models\Catalog\Product;
 use App\Models\Inventory\StockMovement;
 use App\Models\Sales\Sale;

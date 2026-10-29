@@ -18,12 +18,10 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
 
-
             // Foreign Keys linking to parent Sale, Product, and specific Batch
             $table->foreignIdFor(Sale::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Batch::class)->constrained()->cascadeOnDelete();
-
 
             // Quantity and pricing snapshots at the time of purchase
             $table->integer('quantity');
@@ -31,7 +29,6 @@ return new class extends Migration
             $table->decimal('cost_price', 12, 2)->default(0.00);
             $table->decimal('discount', 12, 2)->default(0.00);
             $table->decimal('subtotal', 12, 2);
-
 
             $table->timestamps();
         });

@@ -24,11 +24,6 @@ export function UserMenuContent({ user }: Props) {
         router.flushAll();
     };
 
-    const { active_shop, auth } = usePage<{
-        active_shop: { uuid: string } | undefined;
-        auth: Auth;
-    }>().props;
-
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
@@ -37,8 +32,8 @@ export function UserMenuContent({ user }: Props) {
                 </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-
-            {auth.user.isOwner && (
+            {/* 
+            {auth.user.isAdmin && (
                 <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
                         <Link
@@ -52,7 +47,7 @@ export function UserMenuContent({ user }: Props) {
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
-            )}
+            )} */}
 
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

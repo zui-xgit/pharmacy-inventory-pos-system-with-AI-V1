@@ -44,8 +44,8 @@ class FortifyServiceProvider extends ServiceProvider
                     return redirect('/login');
                 }
 
-                if ($user->isOwner()) {
-                    return redirect()->route('owner.shops');
+                if ($user->isAdmin()) {
+                    return redirect()->route('admin.shops');
                 }
 
                 if ($user->isManagerOrCashier()) {

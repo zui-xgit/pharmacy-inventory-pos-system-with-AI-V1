@@ -26,7 +26,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import catalog from '@/routes/catalog';
-import owner from '@/routes/owner';
+import admin from '@/routes/admin';
 import stock from '@/routes/stock';
 import type { NavItem } from '@/types';
 import type { Auth } from '@/types/auth';
@@ -35,36 +35,33 @@ import { Button } from './ui/button';
 import current_shop from '@/routes/current_shop';
 import reports from '@/routes/reports';
 import staff from '@/routes/staff';
+import { edit } from '@/routes/profile';
+import shopStaff from '@/routes/shop-staff';
 
-// OWNER NAVITEMS
+// ADMIN NAVITEMS
 const Overview: NavItem[] = [
     {
         title: 'Shops',
-        href: owner.shops(),
+        href: admin.shops(),
         icon: Store,
     },
 ];
 const Management: NavItem[] = [
     {
-        title: 'Staff',
-        href: owner.staff(),
+        title: 'Staff Management',
+        href: admin.staff(),
         icon: UsersRound,
     },
     {
         title: 'Activity Logs',
-        href: '#',
+        href: admin.activityLogs(),
         icon: Activity,
     },
 ];
 const Account: NavItem[] = [
     {
-        title: 'Profile',
-        href: owner.staff(),
-        icon: UsersRound,
-    },
-    {
         title: 'Settings',
-        href: '#',
+        href: edit(),
         icon: Settings,
     },
 ];
@@ -117,7 +114,8 @@ const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
 const ShopSystem = (shop_uuid: string): NavItem[] => [
     {
         title: 'Staff',
-        href: staff.edit({ shop: shop_uuid }),
+        // href: staff.edit({ shop: shop_uuid }),
+        href: shopStaff.edit({ shop: shop_uuid }),
         icon: Users,
     },
     {
@@ -151,7 +149,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={owner.shops()} prefetch>
+                            <Link href={admin.shops()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -159,8 +157,8 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            {/* OWNER */}
-            {auth.user.isOwner && !active_shop && (
+            {/* ADMIN */}
+            {auth.user.isAdmin && !active_shop && (
                 <SidebarContent>
                     <NavMain groupLabel={'Overview'} items={Overview} />
                     <NavMain groupLabel={'Management'} items={Management} />
@@ -192,11 +190,11 @@ export function AppSidebar() {
 
             <SidebarFooter>
                 {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
-                {/* if the role is owner and there is an active shop then show the admin dashboard button */}
-                {auth.user.isOwner && active_shop && (
+                {/* if the role is admin and there is an active shop then show the admin dashboard button */}
+                {auth.user.isAdmin && active_shop && (
                     <Button
                         onClick={() => {
-                            router.get(owner.shops());
+                            router.get(admin.shops());
                         }}
                         className="cursor-pointer justify-start px-0 py-0"
                         variant={'link'}

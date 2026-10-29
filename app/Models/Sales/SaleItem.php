@@ -4,6 +4,7 @@ namespace App\Models\Sales;
 
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\Product;
+use Database\Factories\Sales\SaleItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,11 +32,12 @@ use Illuminate\Support\Carbon;
 #[Guarded('id')]
 class SaleItem extends Model
 {
-    /** @use HasFactory<\Database\Factories\Sales\SaleItemFactory> */
+    /** @use HasFactory<SaleItemFactory> */
     use HasFactory;
-    use HasUuids; 
 
-    // uuid 
+    use HasUuids;
+
+    // uuid
     /**
      * @return array<int, string>
      */
@@ -44,16 +46,14 @@ class SaleItem extends Model
         return ['uuid'];
     }
 
-
     // Belongs to the header sale
     /**
      * @return BelongsTo<Sale, $this>
      */
     public function sale(): BelongsTo
     {
-       return $this->belongsTo(Sale::class); 
+        return $this->belongsTo(Sale::class);
     }
-
 
     // Belongs to the specific product line item
     /**
@@ -61,9 +61,8 @@ class SaleItem extends Model
      */
     public function product(): BelongsTo
     {
-       return $this->belongsTo(Product::class);    
+        return $this->belongsTo(Product::class);
     }
-
 
     // Belongs to the specific batch inventory row
     /**
@@ -71,6 +70,6 @@ class SaleItem extends Model
      */
     public function batch(): BelongsTo
     {
-        return $this->belongsTo(Batch::class); 
+        return $this->belongsTo(Batch::class);
     }
 }

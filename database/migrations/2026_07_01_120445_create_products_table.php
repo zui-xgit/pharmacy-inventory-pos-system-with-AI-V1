@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Catalog\DosageForm;
-use App\Models\Catalog\PackageUnit;
 use App\Models\Core\Shop;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -25,8 +24,6 @@ return new class extends Migration
             $table->foreignIdFor(DosageForm::class)
                 ->constrained()
                 ->restrictOnDelete(); // prevent deleting a unit that has products
-
-         
 
             $table->string('name');
             // $table->string('sku')->nullable();  // barcode or internal code

@@ -1,22 +1,20 @@
 <?php
 
-namespace App\Enum; 
+namespace App\Enum;
 
-enum StockMovementReason : string
+enum StockMovementReason: string
 {
     case PURCHASE = 'purchase';
     case SALE = 'sale';
     case ADJUSTMENT = 'adjustment';
     case EXPIRY = 'expiry';
     case RETURN = 'return';
-    case TRANSFER = 'transfer'; 
+    case TRANSFER = 'transfer';
 
-
-
-    // helper function 
+    // helper function
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PURCHASE => 'Purchase / Received',
             self::SALE => 'Customer Sale',
             self::ADJUSTMENT => 'Stock Adjustment',

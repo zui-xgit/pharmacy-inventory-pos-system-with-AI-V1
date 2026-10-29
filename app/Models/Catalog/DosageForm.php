@@ -31,6 +31,7 @@ class DosageForm extends Model
 
     /** @use HasFactory<DosageFormFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**

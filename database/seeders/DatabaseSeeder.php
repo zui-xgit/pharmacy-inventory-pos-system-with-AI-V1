@@ -20,18 +20,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        $owner_role = Role::create(['name' => 'owner']);
+        $admin_role = Role::create(['name' => 'admin']);
         $manager_role = Role::create(['name' => 'manager']);
         $casher_role = Role::create(['name' => 'cashier']);
 
-        // User A (owner)
-        $owner_user = User::factory()->create([
-            'username' => 'owner.owner',
+        // User A (admin)
+        $admin_user = User::factory()->create([
+            'username' => 'admin.admin',
             'firstname' => 'jacob',
             'lastname' => 'athuman',
         ]);
-        $owner_user->assignRole($owner_role);
-
+        $admin_user->assignRole($admin_role);
 
         // SHOP 1
         $manager_user_1 = User::factory()->create([
@@ -41,8 +40,6 @@ class DatabaseSeeder extends Seeder
         ]);
         $manager_user_1->assignRole($manager_role);
 
-       
-
         $shop_1 = Shop::factory()->create();
         $manager_user_1->shops()->attach($shop_1->id);
 
@@ -50,15 +47,13 @@ class DatabaseSeeder extends Seeder
             'shop_id' => $shop_1->id,
         ]);
 
-
         Product::factory(10)->create([
-            'shop_id' => $shop_1->id, 
+            'shop_id' => $shop_1->id,
             'dosage_form_id' => fn () => $dosageForm_shop_1->random()->id,
         ]);
-        
 
         // SHOP 2
-         $manager_user_2 = User::factory()->create([
+        $manager_user_2 = User::factory()->create([
             'username' => 'manager.2',
             'firstname' => 'manager_2',
             'lastname' => 'juma',
@@ -72,12 +67,10 @@ class DatabaseSeeder extends Seeder
             'shop_id' => $shop_2->id,
         ]);
 
-
         Product::factory(10)->create([
-            'shop_id' => $shop_2->id, 
+            'shop_id' => $shop_2->id,
             'dosage_form_id' => fn () => $dosageForm_shop_2->random()->id,
         ]);
-        
 
     }
 }

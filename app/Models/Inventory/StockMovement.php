@@ -36,6 +36,7 @@ class StockMovement extends Model
 {
     /** @use HasFactory<StockMovementFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**
@@ -49,8 +50,8 @@ class StockMovement extends Model
             'quantity' => 'decimal:2',
             'quantity_before' => 'decimal:2',
             'quantity_after' => 'decimal:2',
-            'type' => StockMovementType::class, 
-            'reason' => StockMovementReason::class
+            'type' => StockMovementType::class,
+            'reason' => StockMovementReason::class,
         ];
     }
 
@@ -62,8 +63,6 @@ class StockMovement extends Model
         return ['uuid'];
     }
 
-
-  
     // Stock movements are append-only — never updated or deleted.
     // Every change to stock quantity must write a new row here.
 

@@ -15,7 +15,7 @@ class PosService
 
         return DB::transaction(function () use ($shop, $prefix) {
             $lastReceipt = Sale::where('shop_id', $shop->id)
-                ->where('receipt_number', 'like', $prefix . '%')
+                ->where('receipt_number', 'like', $prefix.'%')
                 ->orderByRaw('LENGTH(receipt_number) desc')
                 ->orderByDesc('receipt_number')
                 ->lockForUpdate()
@@ -28,7 +28,7 @@ class PosService
             }
 
             do {
-                $receiptNumber = $prefix . str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
+                $receiptNumber = $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
                 $exists = Sale::where('receipt_number', $receiptNumber)->exists();
                 $sequence++;
             } while ($exists);

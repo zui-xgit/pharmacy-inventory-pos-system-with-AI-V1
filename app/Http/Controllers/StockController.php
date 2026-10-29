@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enum\StockMovementReason;
 use App\Enum\StockMovementType;
-use App\Http\Controllers\Controller;
 use App\Models\Catalog\Batch;
 use App\Models\Catalog\Product;
 use App\Models\Core\Shop;

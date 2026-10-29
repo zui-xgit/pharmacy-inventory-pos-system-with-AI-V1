@@ -1,6 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { Plus, Loader2 } from 'lucide-react';
-import type { FormEvent} from 'react';
+import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import owner from '@/routes/owner';
+import admin from '@/routes/admin';
 import InputError from '../input-error';
 
 const RegisterBranch = () => {
@@ -32,7 +32,7 @@ const RegisterBranch = () => {
     const handleCreateShop = (e: FormEvent) => {
         e.preventDefault();
 
-        post(owner.createShop().url, {
+        post(admin.createShop().url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

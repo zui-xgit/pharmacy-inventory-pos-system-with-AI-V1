@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Catalog\Product;
-use App\Models\Catalog\Supplier;
 use App\Models\Core\Shop;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -25,7 +24,6 @@ return new class extends Migration
             $table->foreignIdFor(Product::class)
                 ->constrained()
                 ->restrictOnDelete(); // cannot delete a product that has batches
-
 
             $table->string('batch_number'); // manufacturer batch number
 

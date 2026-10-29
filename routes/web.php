@@ -6,7 +6,7 @@ use App\Http\Controllers\PosController;
 use App\Http\Controllers\ReportsAndInsightsController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
-use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ShopStaffController;
 use App\Http\Controllers\StockController;
 use App\Models\Core\Shop;
 use Illuminate\Support\Facades\Route;
@@ -14,9 +14,8 @@ use Inertia\Inertia;
 
 Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');
 
-
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
-    
+
     // Main
     Route::get('/', [OverviewController::class, 'overview'])->name('current_shop.overview');
     Route::get('/pos', [PosController::class, 'posIndex'])->name('current_shop.pos');
@@ -42,24 +41,22 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
 
 });
 
-
 // shop user settings
-Route::prefix('staff/shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function (){
-       Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('staff.profile'); 
-       Route::get('staff/security', [SecurityController::class, 'staffSecurityEdit'])->name('staff.security'); 
+Route::prefix('staff/shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
+    Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('staff.profile');
+    Route::get('staff/security', [SecurityController::class, 'staffSecurityEdit'])->name('staff.security');
 
+    Route::get('staff/appearance', function (Shop $shop) {
+        return Inertia::render('staff_settings/appearance');
+    })->name('staff.appearance');
 
-        Route::get('staff/appearance', function (Shop $shop){
-           return Inertia::render("staff_settings/appearance"); 
-        })->name('staff.appearance'); 
+});
 
-}); 
+// shop staff
+Route::prefix('staff/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
+    Route::get('shop-staff', [ShopStaffController::class, 'shopStaffEdit'])->name('shop-staff.edit');
+});
 
-// Staff
-Route::prefix('staff/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function (){
-        Route::get('staff', [StaffController::class, 'staff'])->name('staff.edit'); 
-}); 
-
-require __DIR__.'/owner.php';
+require __DIR__.'/admin.php';
 
 require __DIR__.'/settings.php';

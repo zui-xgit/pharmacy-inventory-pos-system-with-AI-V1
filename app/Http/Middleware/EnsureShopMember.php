@@ -29,8 +29,8 @@ class EnsureShopMember
             abort(403, 'Invalid request or unauthenticated session.');
         }
 
-        // Owners can access any shop
-        if (! $user->hasRole('owner')) {
+        // Admins can access any shop
+        if (! $user->hasRole('admin')) {
             // Managers/cashiers must belong to this shop
             if (! $user->belongsToShop($shop->id)) {
                 abort(

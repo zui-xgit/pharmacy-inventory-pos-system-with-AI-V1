@@ -25,7 +25,6 @@ class SecurityController extends Controller
         return Inertia::render('settings/security', $props);
     }
 
-
     public function staffSecurityEdit(TwoFactorAuthenticationRequest $request, Shop $shop): Response
     {
         $props = [
@@ -35,7 +34,6 @@ class SecurityController extends Controller
         return Inertia::render('staff_settings/security', $props);
     }
 
-    
     /**
      * Update the user's password.
      */

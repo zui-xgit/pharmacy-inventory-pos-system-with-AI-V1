@@ -10,7 +10,7 @@ import {
     Layers,
 } from 'lucide-react';
 import { login, register } from '@/routes';
-import owner from '@/routes/owner';
+import admin from '@/routes/admin';
 import type { Auth } from '@/types';
 import type { RouteDefinition } from '@/wayfinder';
 import current_shop from '@/routes/current_shop';
@@ -25,8 +25,8 @@ export default function Welcome() {
         '#' as unknown as RouteDefinition<'get'>;
 
     if (auth.user) {
-        if (auth.user.isOwner) {
-            dashboardHref = owner.shops();
+        if (auth.user.isAdmin) {
+            dashboardHref = admin.shops();
         } else if (auth.user.isManagerOrCashier && active_shop !== undefined) {
             dashboardHref = current_shop.overview({ shop: active_shop.uuid });
         }

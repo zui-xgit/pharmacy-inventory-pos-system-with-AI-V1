@@ -11,6 +11,7 @@ use App\Models\Core\Shop;
 use App\Models\Inventory\StockMovement;
 use App\Models\Sales\Sale;
 use App\Models\Sales\SaleItem;
+use App\Services\PosService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ use Throwable;
 
 class PosController extends Controller
 {
-    //
+    
 
     public function posIndex(Request $request, Shop $shop): Response
     {
@@ -91,7 +92,7 @@ class PosController extends Controller
    
 
     // make a sell
-    public function checkOut(Request $request, Shop $shop): RedirectResponse
+    public function checkOut(Request $request, PosService $posService, Shop $shop): RedirectResponse
     { 
             $validated = $request->validate([
                 'items' => ['required', 'array', 'min:1'],
@@ -139,7 +140,7 @@ class PosController extends Controller
                 }
 
                 // ── Step 2: Generate receipt number ───────────────────────────────
-                $receiptNumber = $this->generateReceiptNumber($shop->id);
+                $receiptNumber = $posService->generateReceiptNumber($shop);
 
 
                 // ── Step 3: Calculate total using database batch prices ───────────
@@ -218,7 +219,7 @@ class PosController extends Controller
             }catch(Throwable $e){
                 DB::rollBack();
 
-                // dd($e); 
+                dd($e); 
                 return back()->withErrors([
                     'error_message' => 'Failed to complete the sale. Please try again.',
                 ]);
@@ -231,21 +232,6 @@ class PosController extends Controller
     // Format: RCP-YYYYMMDD-XXXX (sequence resets per day per shop)
     // -------------------------------------------------------------------------
  
-    private function generateReceiptNumber(int $shopId): string
-    {
-        $date  = now()->format('Ymd');
-        $prefix = "RCP-{$date}-";
- 
-        // Count today's sales for this shop to get the next sequence number
-        $todayCount = Sale::where('shop_id', $shopId)
-            ->whereDate('created_at', today())
-            ->count();
- 
-        $sequence = str_pad((string) ($todayCount + 1), 4, '0', STR_PAD_LEFT);
- 
-        return $prefix . $sequence;
-    }
-
 
 
 

@@ -22,35 +22,62 @@ class DatabaseSeeder extends Seeder
 
         $owner_role = Role::create(['name' => 'owner']);
         $manager_role = Role::create(['name' => 'manager']);
-        $cashier_role = Role::create(['name' => 'cashier']);
+        $casher_role = Role::create(['name' => 'cashier']);
 
         // User A (owner)
-        $userA = User::factory()->create([
+        $owner_user = User::factory()->create([
             'username' => 'owner.owner',
             'firstname' => 'jacob',
             'lastname' => 'athuman',
         ]);
-        $userA->assignRole($owner_role);
+        $owner_user->assignRole($owner_role);
 
-        $userB = User::factory()->create([
-            'username' => 'manager.manager',
-            'firstname' => 'manager',
+
+        // SHOP 1
+        $manager_user_1 = User::factory()->create([
+            'username' => 'manager.1',
+            'firstname' => 'manager_1',
             'lastname' => 'juma',
         ]);
-        $userB->assignRole($manager_role);
+        $manager_user_1->assignRole($manager_role);
 
-        $shop = Shop::factory()->create();
-        $userB->shops()->attach($shop->id);
+       
 
-        $dosageForm = DosageForm::factory(10)->create([
-            'shop_id' => $shop->id,
+        $shop_1 = Shop::factory()->create();
+        $manager_user_1->shops()->attach($shop_1->id);
+
+        $dosageForm_shop_1 = DosageForm::factory(10)->create([
+            'shop_id' => $shop_1->id,
         ]);
 
 
         Product::factory(10)->create([
-            'shop_id' => $shop->id, 
-            'dosage_form_id' => fn () => $dosageForm->random()->id,
-        ]); 
+            'shop_id' => $shop_1->id, 
+            'dosage_form_id' => fn () => $dosageForm_shop_1->random()->id,
+        ]);
+        
+
+        // SHOP 2
+         $manager_user_2 = User::factory()->create([
+            'username' => 'manager.2',
+            'firstname' => 'manager_2',
+            'lastname' => 'juma',
+        ]);
+        $manager_user_2->assignRole($manager_role);
+
+        $shop_2 = Shop::factory()->create();
+        $manager_user_2->shops()->attach($shop_2->id);
+
+        $dosageForm_shop_2 = DosageForm::factory(10)->create([
+            'shop_id' => $shop_2->id,
+        ]);
+
+
+        Product::factory(10)->create([
+            'shop_id' => $shop_2->id, 
+            'dosage_form_id' => fn () => $dosageForm_shop_2->random()->id,
+        ]);
+        
 
     }
 }

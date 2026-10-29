@@ -7,8 +7,9 @@ import {
     ShoppingBag,
     TrendingUp,
 } from 'lucide-react';
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
 import DatePicker from '@/components/dashboard/date-picker';
+import StatCard from '@/components/dashboard/stat-card';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import {
@@ -83,29 +84,6 @@ interface Props {
         to?: string;
     };
     shop_uuid: string;
-}
-
-interface StatCardProps {
-    title: string;
-    value: string;
-    icon: ReactNode;
-    valueClassName?: string;
-}
-
-function StatCard({ title, value, icon, valueClassName }: StatCardProps) {
-    return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                {icon}
-            </CardHeader>
-            <CardContent>
-                <div className={`text-xl font-bold ${valueClassName ?? ''}`}>
-                    {value}
-                </div>
-            </CardContent>
-        </Card>
-    );
 }
 
 export default function SalesReports({

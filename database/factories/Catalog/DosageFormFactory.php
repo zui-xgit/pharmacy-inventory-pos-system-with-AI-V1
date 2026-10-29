@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DosageFormFactory extends Factory
 {
+
+
+    protected static ?array $shuffledForms = null;
+    protected static int $index = 0;
     /**
      * Define the model's default state.
      *
@@ -31,8 +35,17 @@ class DosageFormFactory extends Factory
             'drops',
         ];
 
+        // Shuffle the array once when a new batch starts or resets
+        if (self::$shuffledForms === null || self::$index >= count(self::$shuffledForms)) {
+            self::$shuffledForms = collect($dosageForms)->shuffle()->values()->all();
+            self::$index = 0;
+        }
+
+        $name = self::$shuffledForms[self::$index];
+        self::$index++;
+
         return [
-            'name' => fake()->unique()->randomElement($dosageForms),
+            'name' => $name,
         ];
     }
 }

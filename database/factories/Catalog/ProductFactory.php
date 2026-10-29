@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductFactory extends Factory
 {
+    protected static ?array $shuffledProducts = null;
+    protected static int $index = 0;
     /**
      * Define the model's default state.
      *
@@ -30,8 +32,17 @@ class ProductFactory extends Factory
             'Loperamide 2mg',
         ];
             
+        // Shuffle once when a new batch starts or resets
+        if (self::$shuffledProducts === null || self::$index >= count(self::$shuffledProducts)) {
+            self::$shuffledProducts = collect($products)->shuffle()->values()->all();
+            self::$index = 0;
+        }
+
+        $name = self::$shuffledProducts[self::$index];
+        self::$index++;
+
         return [
-            'name' => fake()->unique()->randomElement($products),
+            'name' => $name,
         ];
     }
 }

@@ -99,10 +99,7 @@ class User extends Authenticatable
         return $this->hasRole('admin');
     }
 
-    public function isOwner(): bool
-    {
-        return $this->isAdmin();
-    }
+    
 
     public function isManager(): bool
     {
@@ -119,10 +116,6 @@ class User extends Authenticatable
         return $this->isAdmin() || $this->isManager();
     }
 
-    public function isManagerOrOwner(): bool
-    {
-        return $this->isManagerOrAdmin();
-    }
 
     public function isManagerOrCashier(): bool
     {

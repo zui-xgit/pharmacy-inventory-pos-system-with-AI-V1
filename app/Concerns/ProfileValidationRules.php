@@ -18,7 +18,7 @@ trait ProfileValidationRules
         return [
             'firstname' => $this->nameRules(),
             'lastname' => $this->nameRules(),
-            'username' => $this->usernameRules($userId), 
+            'username' => $this->usernameRules($userId),
             'gender' => ['required', Rule::in(['male', 'female'])],
             'phone' => ['required', 'string', 'max:20'],
             'email' => $this->emailRules($userId),

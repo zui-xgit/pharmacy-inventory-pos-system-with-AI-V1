@@ -6,61 +6,42 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
-use Laravel\Fortify\Features;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class SecurityTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_security_page_is_displayed()
+    private function adminUser(): User
     {
-        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
+        Role::findOrCreate('admin', 'web');
 
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-        ]);
-
-        $user = User::factory()->create();
-
-        $this->actingAs($user)
-            ->get(route('security.edit'))
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('settings/security')
-                ->where('canManageTwoFactor', true)
-                ->where('twoFactorEnabled', false),
-            );
+        return User::factory()->create()->assignRole('admin');
     }
 
-    public function test_security_page_renders_without_two_factor_when_feature_is_disabled()
+    public function test_security_page_is_displayed()
     {
-        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
-
-        config(['fortify.features' => []]);
-
-        $user = User::factory()->create();
+        $user = $this->adminUser();
 
         $this->actingAs($user)
             ->get(route('security.edit'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('settings/security')
-                ->where('canManageTwoFactor', false)
-                ->missing('twoFactorEnabled')
-                ->missing('requiresConfirmation'),
+                ->has('passwordRules'),
             );
     }
 
     public function test_password_can_be_updated()
     {
-        $user = User::factory()->create();
+        $user = $this->adminUser();
 
         $response = $this
             ->actingAs($user)
             ->from(route('security.edit'))
             ->put(route('user-password.update'), [
-                'current_password' => 'password',
+                'current_password' => '123456789',
                 'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ]);
@@ -74,7 +55,7 @@ class SecurityTest extends TestCase
 
     public function test_correct_password_must_be_provided_to_update_password()
     {
-        $user = User::factory()->create();
+        $user = $this->adminUser();
 
         $response = $this
             ->actingAs($user)

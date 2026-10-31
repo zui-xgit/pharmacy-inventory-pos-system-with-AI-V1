@@ -138,6 +138,23 @@ export default function Profile() {
                                     message={errors.email}
                                 />
                             </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="username">Username</Label>
+                                <Input
+                                    id="username"
+                                    type="text"
+                                    className="mt-1 block w-full"
+                                    defaultValue={auth.user.username}
+                                    name="username"
+                                    autoComplete="username"
+                                    placeholder="Enter the username"
+                                    disabled={processing}
+                                />
+                                <InputError
+                                    className="mt-2"
+                                    message={errors.username}
+                                />
+                            </div>
 
                             <div className="flex items-center gap-4">
                                 <Button

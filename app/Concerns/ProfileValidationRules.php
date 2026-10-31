@@ -18,9 +18,28 @@ trait ProfileValidationRules
         return [
             'firstname' => $this->nameRules(),
             'lastname' => $this->nameRules(),
+            'username' => $this->usernameRules($userId), 
             'gender' => ['required', Rule::in(['male', 'female'])],
             'phone' => ['required', 'string', 'max:20'],
             'email' => $this->emailRules($userId),
+        ];
+    }
+
+    /**
+     * Get the validation rules used to validate usernames.
+     *
+     * @return array<int, ValidationRule|string>
+     */
+    protected function usernameRules(?int $userId = null): array
+    {
+        return [
+            'required',
+            'string',
+            'max:255',
+            'regex:/^[A-Za-z0-9._-]+$/',
+            $userId === null
+                ? Rule::unique(User::class)
+                : Rule::unique(User::class)->ignore($userId),
         ];
     }
 

@@ -9,7 +9,7 @@ import {
     ShoppingBag,
     Layers,
 } from 'lucide-react';
-import { login, register } from '@/routes';
+import { login } from '@/routes';
 import admin from '@/routes/admin';
 import type { Auth } from '@/types';
 import type { RouteDefinition } from '@/wayfinder';
@@ -72,12 +72,6 @@ export default function Welcome() {
                                     className="px-4 py-2 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
                                 >
                                     Log in
-                                </Link>
-                                <Link
-                                    href={register()}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900/60"
-                                >
-                                    Register Outlet
                                 </Link>
                             </>
                         )}

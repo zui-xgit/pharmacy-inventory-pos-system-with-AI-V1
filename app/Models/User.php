@@ -38,7 +38,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property int|null $active_shop_id
  */
-#[Fillable(['username', 'first_name', 'last_name', 'gender', 'mobile',  'email', 'password'])]
+#[Fillable(['username', 'firstname', 'lastname', 'gender', 'phone', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -99,8 +99,6 @@ class User extends Authenticatable
         return $this->hasRole('admin');
     }
 
-    
-
     public function isManager(): bool
     {
         return $this->hasRole('manager');
@@ -115,7 +113,6 @@ class User extends Authenticatable
     {
         return $this->isAdmin() || $this->isManager();
     }
-
 
     public function isManagerOrCashier(): bool
     {

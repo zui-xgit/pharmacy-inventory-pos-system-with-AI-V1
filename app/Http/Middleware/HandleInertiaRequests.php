@@ -40,25 +40,29 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
-            'auth' => [
-                'user' => $request->user() ? [
-                    'uuid' => $request->user()->uuid, 
-                    'username' => $request->user()->username,
-                    'firstname' => $request->user()->firstname,
-                    'lastname' => $request->user()->lastname,
-                    'email' => $request->user()->email,
-                    'gender' => $request->user()->gender,
-                    'phone' => $request->user()->phone,
-                    'roles' => $request->user()->getRoleNames(),
-                    'permissions' => $request->user()->getPermissionNames(), 
+            'auth' =>   [
+                            'user' => $request->user() ? [
+                            'uuid' => $request->user()->uuid, 
+                            'username' => $request->user()->username,
+                            'firstname' => $request->user()->firstname,
+                            'lastname' => $request->user()->lastname,
+                            'email' => $request->user()->email,
+                            'gender' => $request->user()->gender,
+                            'phone' => $request->user()->phone,
+                            'roles' => $request->user()->getRoleNames(),
+                            'permissions' => $request->user()->getPermissionNames(), 
 
-                    // ⭐ Pass clean, simple flags directly to frontend
-                    'isAdmin' => $request->user()->hasRole('admin'),
-                    'isManager' => $request->user()->hasRole('manager'),
-                    'isCashier' => $request->user()->hasRole('cashier'),
-                    'isAdminOrManager' => $request->user()->hasAnyRole(['admin', 'manager']),
-                    'isManagerOrCashier' => $request->user()->hasAnyRole(['manager', 'cashier']),
-                ] : null,
+                            // ⭐ Pass clean, simple flags directly to frontend
+                            'isAdmin' => $request->user()->hasRole('admin'),
+                            'isManager' => $request->user()->hasRole('manager'),
+                            'isCashier' => $request->user()->hasRole('cashier'),
+                            'isAdminOrManager' => $request->user()->hasAnyRole(['admin', 'manager']),
+                            'isManagerOrCashier' => $request->user()->hasAnyRole(['manager', 'cashier']),
+                            
+                            'user_shops_count' => fn () => $request->user()->isManagerOrCashier()
+                                                ? $request->user()->shops()->count()
+                                                : 0,
+                        ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

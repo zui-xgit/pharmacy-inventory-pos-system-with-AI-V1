@@ -49,17 +49,15 @@ class FortifyServiceProvider extends ServiceProvider
                 }
 
                 if ($user->isManagerOrCashier()) {
-                    // 1. Grab the first shop assigned to this user
-                    $shop = $user->shops()->first();
+                    $shops = $user->shops()->get(['shops.uuid']);
 
-                    // 2. If they aren't assigned to any shop, handle the error gracefully
-                    if (! $shop) {
-                        abort(403, 'You are a staff member but have not been assigned to a pharmacy branch yet.');
+                    if ($shops->count() === 1) {
+                        return redirect()->route('current_shop.overview', ['shop' => $shops->first()->uuid]);
                     }
-
-                    // 3. Redirect to the named route, passing the UUID under the 'shop' key
-                    // Matches your route parameter '{shop:uuid}'
-                    return redirect()->route('current_shop.overview', ['shop' => $shop->uuid]);
+        
+                    // 0 shops
+                    // 2+ shops: the page lets them pick one
+                   return redirect()->route('staff.shops-select');
                 }
 
                 return redirect('/');

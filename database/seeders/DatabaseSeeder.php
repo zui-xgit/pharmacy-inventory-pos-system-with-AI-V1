@@ -81,6 +81,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $cashier_user_1->assignRole($cashier_role);
 
+
         // SHOP 1
         $shop_1 = Shop::factory()->create();
         $manager_user_1->shops()->attach($shop_1->id);

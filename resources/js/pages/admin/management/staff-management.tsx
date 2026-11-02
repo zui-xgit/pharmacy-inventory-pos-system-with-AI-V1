@@ -18,6 +18,9 @@ import {
 import { useState } from 'react';
 
 import StatCard from '@/components/dashboard/stat-card';
+import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
+import CreateStaffDialog from '@/components/dialogs/create-staff-dialog';
+import StaffCredentialsDialog from '@/components/dialogs/staff-credentials-dialog';
 import StaffDetailsDialog from '@/components/dialogs/staff-details-dialog';
 import Heading from '@/components/heading';
 import RefreshButton from '@/components/refresh-button';
@@ -55,7 +58,6 @@ import { staffRoleStyles, staffStatusStyles } from '@/lib/staff';
 import type { StaffMember, StaffShop } from '@/lib/staff';
 import { cn } from '@/lib/utils';
 import admin from '@/routes/admin';
-import StaffCredentialsDialog from '@/components/dialogs/staff-credentials-dialog';
 import {
     Popover,
     PopoverContent,
@@ -65,7 +67,6 @@ import {
 import { Auth } from '@/types';
 import { toast } from 'sonner';
 import ShopFilter from '@/components/user-filter-by-shop';
-import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
 
 interface PaginationLink {
     url: string | null;
@@ -243,11 +244,17 @@ export default function StaffManagement({
                         title="Staff Management"
                         description="Manage staff accounts, roles and access across your pharmacies."
                     />
-                    {/* Create staff flow is not wired up yet. */}
-                    <Button className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90">
-                        <Plus className="h-4 w-4" />
-                        <span>Create Staff </span>
-                    </Button>
+                    <CreateStaffDialog
+                        trigger={
+                            <Button className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90">
+                                <Plus className="h-4 w-4" />
+                                <span>Create Staff</span>
+                            </Button>
+                        }
+                        availableRoles={available_roles}
+                        availablePermissions={available_permissions}
+                        availableShops={available_shops}
+                    />
                 </div>
 
                 {/* STAT CARDS */}

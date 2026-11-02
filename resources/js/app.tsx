@@ -24,6 +24,8 @@ createInertiaApp({
                 return [AppLayout, StaffSettingsLayout];
             case name.startsWith('shop/catalog/'):
                 return [AppLayout, ShopCatalogLayout];
+            case name.startsWith('shop/shop_selection/'):
+                return null;
             default:
                 return AppLayout;
         }

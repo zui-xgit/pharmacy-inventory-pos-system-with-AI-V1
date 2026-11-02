@@ -24,6 +24,7 @@ export type User = {
     isCashier: boolean;
     isAdminOrManager: boolean;
     isManagerOrCashier: boolean;
+    user_shops_count: number;
 
     [key: string]: unknown;
 };

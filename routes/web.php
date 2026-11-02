@@ -6,13 +6,14 @@ use App\Http\Controllers\PosController;
 use App\Http\Controllers\ReportsAndInsightsController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
+use App\Http\Controllers\ShopSelectionController;
 use App\Http\Controllers\ShopStaffController;
 use App\Http\Controllers\StockController;
 use App\Models\Core\Shop;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::inertia('/', 'welcome')->name('home')->middleware('is.manager_or_cashier');
+Route::inertia('/', 'welcome')->name('home');
 
 Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
 
@@ -55,6 +56,10 @@ Route::prefix('staff/shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.m
 // shop staff
 Route::prefix('staff/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
     Route::get('shop-staff', [ShopStaffController::class, 'shopStaffEdit'])->name('shop-staff.edit');
+});
+
+Route::middleware(['auth', 'verified', 'role:manager|cashier'])->group(function (){
+    Route::get('select-shop', [ShopSelectionController::class, 'index'])->name('staff.shops-select');
 });
 
 require __DIR__.'/admin.php';

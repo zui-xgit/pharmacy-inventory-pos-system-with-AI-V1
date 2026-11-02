@@ -11,28 +11,26 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Str;
 use Throwable;
 
 class AdminController extends Controller
 {
-
-   private function destoryUserSession(Request $request,  User $user) 
-   {
+    private function destoryUserSession(Request $request, User $user)
+    {
 
         $user->setRememberToken(Str::random(60));
         DB::table('sessions')
             ->where('user_id', $user->id)
             ->where('id', '!=', $request->session()->getId())
             ->delete();
-   }
-
+    }
 
     public function createShop(Request $request): RedirectResponse
     {
@@ -202,7 +200,7 @@ class AdminController extends Controller
         $role = $request->string('role')->toString();
         $status = $request->string('status')->toString();
         $shop = $request->string('shop')->toString(); // NEW: shop uuid from the URL
-  
+
         $staff = User::query()
             ->with(['roles:id,name', 'permissions:id,name', 'shops:id,uuid,name'])
             ->when($search !== '', function ($query) use ($search) {
@@ -230,8 +228,8 @@ class AdminController extends Controller
             ->withQueryString()
             ->through(fn (User $user) => [
                 'uuid' => $user->uuid,
-                'firstname' => $user->firstname, 
-                'lastname' => $user->lastname,  
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
                 'username' => $user->username,
                 'gender' => $user->gender,
                 'email' => $user->email,
@@ -257,15 +255,15 @@ class AdminController extends Controller
             'staff' => $staff,
             'stats' => $stats,
             'available_roles' => Role::pluck('name'),
-            'available_permissions' => Permission::pluck('name'), 
+            'available_permissions' => Permission::pluck('name'),
             'available_shops' => Shop::query()
-                                    ->orderBy('name')
-                                    ->get(['uuid', 'name']),
+                ->orderBy('name')
+                ->get(['uuid', 'name']),
             'filters' => [
                 'search' => $search,
                 'role' => $role,
                 'status' => $status,
-                'shop' => $shop, 
+                'shop' => $shop,
             ],
         ]);
     }
@@ -288,7 +286,7 @@ class AdminController extends Controller
 
         DB::beginTransaction();
 
-        try{
+        try {
             $user->forceFill([
                 'firstname' => $validated['firstname'],
                 'lastname' => $validated['lastname'],
@@ -297,10 +295,8 @@ class AdminController extends Controller
                 'phone' => $validated['phone'],
             ])->save();
 
-
             $user->syncRoles($validated['role']);
             $user->syncPermissions($validated['permissions']);
-
 
             // admins already have access to every shop, so keep no individual links
             $shopIds = $validated['role'] === 'admin'
@@ -308,92 +304,159 @@ class AdminController extends Controller
             : Shop::whereIn('uuid', $validated['shops'])->pluck('id')->all();
 
             $user->shops()->sync($shopIds);
-            
+
             DB::commit();
             Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff updated successfully.')]);
-            return back(); 
-                      
-        }catch(Throwable $e){
-             DB::rollBack();
+
+            return back();
+
+        } catch (Throwable $e) {
+            DB::rollBack();
 
             return back()->withErrors([
                 'staff' => 'Could not update the staff member. Please try again.',
-             ]);
+            ]);
         }
-        
+
     }
 
-    public function updateCredentials(Request $request , User $user) 
+    public function updateCredentials(Request $request, User $user)
     {
-            $validated = $request->validate([
-                'username' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    'regex:/^[A-Za-z0-9._-]+$/',
-                     Rule::unique(User::class)->ignore($user->id),
-                ],
-                'password' => ['nullable', 'confirmed', Password::defaults()],
+        $validated = $request->validate([
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z0-9._-]+$/',
+                Rule::unique(User::class)->ignore($user->id),
+            ],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
+        ]);
+
+        $passwordChanged = filled($validated['password'] ?? null);
+
+        DB::beginTransaction();
+
+        try {
+            $user->username = $validated['username'];
+
+            if ($passwordChanged) {
+                $user->password = $validated['password'];
+                $user->setRememberToken(Str::random(60));
+            }
+
+            $user->save();
+
+            if ($passwordChanged) {
+                DB::table('sessions')
+                    ->where('user_id', $user->id)
+                    ->where('id', '!=', $request->session()->getId())
+                    ->delete();
+            }
+
+            DB::commit();
+            Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff Credentials updated successfully.')]);
+
+            return back();
+        } catch (Throwable $e) {
+            DB::rollBack();
+
+            return back()->withErrors([
+                'credentials' => 'Could not update the credentials. Please try again.',
+            ]);
+        }
+    }
+
+    public function createStaff(Request $request): RedirectResponse
+    {
+
+        $validated = $request->validate([
+            'firstname' => ['required', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+                Rule::unique(User::class),
+            ],
+            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)],
+            'phone' => ['required', 'string', 'max:30'],
+            'gender' => ['required', Rule::in(['male', 'female'])],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'role' => ['required', 'string', Rule::exists('roles', 'name')],
+            'permissions' => ['present', 'array'],
+            'permissions.*' => ['string', Rule::exists('permissions', 'name')],
+            'shops' => ['present', 'array'],
+            'shops.*' => ['uuid', Rule::exists('shops', 'uuid')],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $user = User::create([
+                'firstname' => $validated['firstname'],
+                'lastname' => $validated['lastname'],
+                'username' => $validated['username'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'gender' => $validated['gender'],
+                'password' => $validated['password'],
             ]);
 
+            // Accounts are provisioned by an admin, so no email verification step is needed.
+            $user->forceFill(['email_verified_at' => now()])->save();
 
-            $passwordChanged = filled($validated['password'] ?? null);
+            $user->assignRole($validated['role']);
+            $user->syncPermissions($validated['permissions']);
 
-            DB::beginTransaction();
+            // admins already have access to every shop, so keep no individual links
+            $shopIds = $validated['role'] === 'admin'
+                ? []
+                : Shop::whereIn('uuid', $validated['shops'])->pluck('id')->all();
 
-            try {
-                $user->username = $validated['username'];
+            $user->shops()->sync($shopIds);
 
-                if ($passwordChanged) {
-                    $user->password = $validated['password'];
-                    $user->setRememberToken(Str::random(60));
-                }
+            DB::commit();
+            Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff created successfully.')]);
 
-                $user->save();
+            return back();
+        } catch (Throwable $e) {
+            DB::rollBack();
 
-                if ($passwordChanged) {
-                    DB::table('sessions')
-                        ->where('user_id', $user->id)
-                        ->where('id', '!=', $request->session()->getId())
-                        ->delete();
-                }
-
-                DB::commit();
-                Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff Credentials updated successfully.')]);
-                return back(); 
-            } catch (Throwable $e) {
-                DB::rollBack();
-                return back()->withErrors([
-                    'credentials' => 'Could not update the credentials. Please try again.',
-                ]);
-            }
+            return back()->withErrors([
+                'staff' => 'Could not create the staff member. Please try again.',
+            ]);
+        }
     }
 
-
-
-    public function storeStaff(Request $request) {}
-
-
-    public function activateStaff(User $user){
-        $user->update(['status' => 'active']); 
+    public function activateStaff(User $user)
+    {
+        $user->update(['status' => 'active']);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff activated successfully.')]);
-        return back(); 
-    }
-    public function deactivateStaff(Request $request, User $user){
-        $user->update(['status' => 'inactive']); 
 
-        $this->destoryUserSession($request, $user); 
+        return back();
+    }
+
+    public function deactivateStaff(Request $request, User $user)
+    {
+        $user->update(['status' => 'inactive']);
+
+        $this->destoryUserSession($request, $user);
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff deactivated successfully.')]);
-        return back(); 
-    }
-    public function suspendStaff(Request $request, User $user){
-        $user->update(['status' => 'suspended']);
-        $this->destoryUserSession($request, $user); 
 
-        
+        return back();
+    }
+
+    public function suspendStaff(Request $request, User $user)
+    {
+        $user->update(['status' => 'suspended']);
+        $this->destoryUserSession($request, $user);
+
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff suspended successfully.')]);
-        return back(); 
+
+        return back();
     }
 
     public function activityLogs()

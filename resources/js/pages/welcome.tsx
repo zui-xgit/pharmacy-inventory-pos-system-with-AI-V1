@@ -14,10 +14,10 @@ import admin from '@/routes/admin';
 import type { Auth } from '@/types';
 import type { RouteDefinition } from '@/wayfinder';
 import current_shop from '@/routes/current_shop';
+import staff from '@/routes/staff';
 
 export default function Welcome() {
-    const { active_shop, auth } = usePage<{
-        active_shop: { uuid: string } | undefined;
+    const { auth } = usePage<{
         auth: Auth;
     }>().props;
 
@@ -27,8 +27,8 @@ export default function Welcome() {
     if (auth.user) {
         if (auth.user.isAdmin) {
             dashboardHref = admin.shops();
-        } else if (auth.user.isManagerOrCashier && active_shop !== undefined) {
-            dashboardHref = current_shop.overview({ shop: active_shop.uuid });
+        } else if (auth.user.isManagerOrCashier) {
+            dashboardHref = staff.shopsSelect();
         }
     }
 

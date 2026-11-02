@@ -189,19 +189,6 @@ export function AppSidebar() {
             )}
 
             <SidebarFooter>
-                {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
-                {/* if the role is admin and there is an active shop then show the admin dashboard button */}
-                {auth.user.isAdmin && active_shop && (
-                    <Button
-                        onClick={() => {
-                            router.get(admin.shops());
-                        }}
-                        className="cursor-pointer justify-start px-0 py-0"
-                        variant={'link'}
-                    >
-                        Main Dashboard
-                    </Button>
-                )}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

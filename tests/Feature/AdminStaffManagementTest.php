@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Core\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -90,5 +92,89 @@ class AdminStaffManagementTest extends TestCase
         $this->actingAs($this->makeUser())
             ->get(route('admin.staff'))
             ->assertForbidden();
+    }
+
+    public function test_admin_can_create_a_staff_member(): void
+    {
+        $admin = $this->makeAdmin();
+        $role = Role::findOrCreate('cashier');
+        $permission = Permission::findOrCreate('view reports');
+        $shop = Shop::factory()->create();
+
+        $this->actingAs($admin)
+            ->post(route('admin.create-staff'), [
+                'firstname' => 'Neema',
+                'lastname' => 'Mushi',
+                'username' => 'neema.mushi',
+                'email' => 'neema@example.com',
+                'phone' => '0712345678',
+                'gender' => 'female',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => $role->name,
+                'permissions' => [$permission->name],
+                'shops' => [$shop->uuid],
+            ])
+            ->assertRedirect();
+
+        $user = User::where('username', 'neema.mushi')->firstOrFail();
+
+        $this->assertSame('Neema', $user->firstname);
+        $this->assertSame('inactive', $user->status);
+        $this->assertNotNull($user->email_verified_at);
+        $this->assertTrue($user->hasRole('cashier'));
+        $this->assertTrue($user->hasPermissionTo('view reports'));
+        $this->assertTrue($user->shops->contains($shop));
+    }
+
+    public function test_admin_accounts_are_not_linked_to_individual_shops(): void
+    {
+        $admin = $this->makeAdmin();
+        $role = Role::findOrCreate('admin');
+        $shop = Shop::factory()->create();
+
+        $this->actingAs($admin)
+            ->post(route('admin.create-staff'), [
+                'firstname' => 'Juma',
+                'lastname' => 'Ally',
+                'username' => 'juma.ally',
+                'email' => 'juma@example.com',
+                'phone' => '0712345679',
+                'gender' => 'male',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => $role->name,
+                'permissions' => [],
+                'shops' => [$shop->uuid],
+            ])
+            ->assertRedirect();
+
+        $user = User::where('username', 'juma.ally')->firstOrFail();
+
+        $this->assertTrue($user->hasRole('admin'));
+        $this->assertCount(0, $user->shops);
+    }
+
+    public function test_non_admins_cannot_create_staff(): void
+    {
+        $role = Role::findOrCreate('cashier');
+
+        $this->actingAs($this->makeUser())
+            ->post(route('admin.create-staff'), [
+                'firstname' => 'Neema',
+                'lastname' => 'Mushi',
+                'username' => 'neema.mushi',
+                'email' => 'neema@example.com',
+                'phone' => '0712345678',
+                'gender' => 'female',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'role' => $role->name,
+                'permissions' => [],
+                'shops' => [],
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('users', ['username' => 'neema.mushi']);
     }
 }

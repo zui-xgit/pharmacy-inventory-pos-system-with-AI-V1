@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,11 +25,27 @@ class DatabaseSeeder extends Seeder
         $manager_role = Role::create(['name' => 'manager']);
         $casher_role = Role::create(['name' => 'cashier']);
 
+        // permissions 
+        $permissions = [
+            'shop inventory and stock management',
+            'shop reports and insights management',
+            'shop staff management',
+            'shop profile management',
+            'shop security management',
+        ];
+
+        foreach ($permissions as $name) {   
+            Permission::findOrCreate($name);
+        } 
+        
+
         // User A (admin)
         $admin_user = User::factory()->create([
             'username' => 'admin.admin',
             'firstname' => 'jacob',
             'lastname' => 'athuman',
+            'email' => 'benardbenny90@gmail.com',
+            'status' => 'active'
         ]);
         $admin_user->assignRole($admin_role);
 
@@ -37,8 +54,12 @@ class DatabaseSeeder extends Seeder
             'username' => 'manager.1',
             'firstname' => 'manager_1',
             'lastname' => 'juma',
+            'email' => 'benardbenny10@gmail.com', 
+            'status' => 'active'
+
         ]);
         $manager_user_1->assignRole($manager_role);
+        // $manager_user_1->givePermissionTo("shop inventory and stock management"); 
 
         $shop_1 = Shop::factory()->create();
         $manager_user_1->shops()->attach($shop_1->id);
@@ -57,11 +78,15 @@ class DatabaseSeeder extends Seeder
             'username' => 'manager.2',
             'firstname' => 'manager_2',
             'lastname' => 'juma',
+            'email' => 'benardbenny20@gmail.com', 
+            'status' => 'active'
+
         ]);
         $manager_user_2->assignRole($manager_role);
 
         $shop_2 = Shop::factory()->create();
         $manager_user_2->shops()->attach($shop_2->id);
+        $manager_user_2->shops()->attach($shop_1->id);
 
         $dosageForm_shop_2 = DosageForm::factory(10)->create([
             'shop_id' => $shop_2->id,

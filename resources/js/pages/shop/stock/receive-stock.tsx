@@ -1,23 +1,32 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { PackagePlus, Plus, X } from 'lucide-react';
+import {
+    Banknote,
+    CalendarClock,
+    Hash,
+    Info,
+    PackagePlus,
+    Pill,
+    Plus,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { toast } from 'sonner';
+
 import DatePicker from '@/components/dashboard/date-picker';
 import { StocktConfirmationDialog } from '@/components/dialogs/confirm-create-stock';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
-import SearchInput from '@/components/search-input';
+import ProductCombobox from '@/components/product-combobox';
 import NewDosageFormSheet from '@/components/sheets/new-dosage-form';
-// import NewPackageUnitSheet from '@/components/sheets/new-package-unit';
 import NewProductSheet from '@/components/sheets/new-product';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
-    CardDescription,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -57,11 +66,89 @@ const useFormDefaultValues: UseFormType = {
     packages_received: '',
 };
 
+type InputKey =
+    | 'batch_number'
+    | 'cost_price'
+    | 'selling_price'
+    | 'units_per_package_received'
+    | 'packages_received';
+
+const CardHeading = ({
+    icon: Icon,
+    title,
+    description,
+}: {
+    icon: LucideIcon;
+    title: string;
+    description: string;
+}) => (
+    <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Icon className="h-4 w-4" />
+        </span>
+        <div className="space-y-0.5">
+            <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+            <CardDescription className="text-xs">{description}</CardDescription>
+        </div>
+    </div>
+);
+
+const SectionLabel = ({
+    icon: Icon,
+    children,
+}: {
+    icon: LucideIcon;
+    children: ReactNode;
+}) => (
+    <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+        <Icon className="h-3.5 w-3.5" />
+        {children}
+    </div>
+);
+
+const Field = ({
+    id,
+    label,
+    required,
+    hint,
+    error,
+    className,
+    children,
+}: {
+    id?: string;
+    label: string;
+    required?: boolean;
+    hint?: string;
+    error?: string;
+    className?: string;
+    children: ReactNode;
+}) => (
+    <div className={className ?? 'space-y-1.5'}>
+        <Label htmlFor={id} className="text-xs font-semibold">
+            {label}
+            {required && <span className="text-destructive"> *</span>}
+        </Label>
+        {children}
+        {hint && !error && (
+            <p className="text-[11px] text-muted-foreground">{hint}</p>
+        )}
+        <InputError message={error} />
+    </div>
+);
+
+const MoneyInput = (props: ComponentProps<typeof Input>) => (
+    <div className="relative">
+        <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs font-medium text-muted-foreground">
+            Tsh
+        </span>
+        <Input type="number" min={0} className="pl-10" {...props} />
+    </div>
+);
+
 const ReceiveStock = ({
     products,
     filters,
     shop_uuid,
-    search_input,
     dosage_forms,
 }: ReceiveStockProps) => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(
@@ -72,6 +159,17 @@ const ReceiveStock = ({
 
     const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
+
+    const bind = (key: InputKey) => ({
+        id: key,
+        value: data[key],
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+            setData(key, event.target.value),
+    });
+
+    const totalQuantity =
+        Number(data.units_per_package_received || 0) *
+        Number(data.packages_received || 0);
 
     const handleRecordStock = (isConfirmed = false) => {
         transform((data) => ({
@@ -126,371 +224,230 @@ const ReceiveStock = ({
                 onConfirm={handleConfirmSubmit}
                 processing={processing}
             />
+
             <div className="space-y-6">
-                {/* Page header */}
                 <Heading
                     title="Receive Stock"
-                    description="Record a new stock delivery from a supplier.."
+                    description="Record a new stock delivery from a supplier."
                 />
 
-                {/* Main form */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    {/* LEFT — Product + Supplier */}
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold">
-                                Product & Supplier
-                            </CardTitle>
-                            <CardDescription className="text-xs">
-                                Search for an existing product or add a new one.
-                            </CardDescription>
+                <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-5">
+                    {/* LEFT: product */}
+                    <Card className="lg:col-span-2">
+                        <CardHeader>
+                            <CardHeading
+                                icon={Pill}
+                                title="Product"
+                                description="Search for the product you are receiving."
+                            />
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Product Search Input with Datalist */}
-                            <div className="space-y-1.5">
-                                <Label className="text-xs font-semibold">
-                                    Product Name:
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <SearchInput
-                                    href={stock.receive_stock({
+                        <CardContent className="space-y-5">
+                            <Field
+                                label="Product Name"
+                                required
+                                error={
+                                    (errors as Record<string, string>).product
+                                }
+                            >
+                                <ProductCombobox
+                                    products={products}
+                                    selected={selectedProduct}
+                                    onSelect={setSelectedProduct}
+                                    searchUrl={stock.receive_stock({
                                         shop: shop_uuid,
                                     })}
                                     filters={filters}
                                 />
+                            </Field>
 
-                                <InputError
-                                    message={
-                                        (errors as Record<string, string>)
-                                            .product
-                                    }
-                                />
+                            <div className="space-y-2 rounded-xl border border-dashed bg-muted/30 p-3">
+                                <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                                    <Info className="h-3.5 w-3.5" />
+                                    Can&apos;t find what you need?
+                                </p>
 
-                                {selectedProduct && (
-                                    <div className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-muted/50 px-3 py-1 text-sm shadow-sm">
-                                        <div className="flex items-center gap-2 truncate overflow-hidden">
-                                            <span className="truncate font-medium text-foreground">
-                                                {selectedProduct.name}
-                                            </span>
-                                            <Badge
-                                                variant="outline"
-                                                className="h-4 shrink-0 py-0 text-[10px]"
-                                            >
-                                                {
-                                                    selectedProduct.dosage_form
-                                                        .name
-                                                }
-                                            </Badge>
-                                        </div>
-
-                                        {/* Clear button to let them search again */}
-                                        <button
-                                            onClick={() =>
-                                                setSelectedProduct(null)
-                                            }
-                                            type="button"
-                                            className="pl-2 text-xs font-semibold text-destructive transition-colors"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
-                                    </div>
-                                )}
-                                {products && products.length > 0 ? (
-                                    <div className="p-1">
-                                        <p className="px-2 py-1 text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
-                                            Available Products (
-                                            {products.length})
-                                        </p>
-                                        <div className="space-y-0.5">
-                                            {products.map((product, index) => (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    className="flex h-8 w-full cursor-pointer items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent hover:text-accent-foreground"
-                                                    onClick={() =>
-                                                        setSelectedProduct(
-                                                            product,
-                                                        )
-                                                    }
-                                                >
-                                                    <span className="font-medium text-foreground">
-                                                        {product.name}
-                                                    </span>
-                                                    <div className="flex items-center gap-1">
-                                                        <Badge
-                                                            variant="outline"
-                                                            className="bg-background py-0 text-[10px]"
-                                                        >
-                                                            {
-                                                                product
-                                                                    .dosage_form
-                                                                    .name
-                                                            }
-                                                        </Badge>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <>
-                                        {search_input !== null && (
-                                            <div className="p-1">
-                                                <div className="px-3 py-4 text-center text-xs text-muted-foreground">
-                                                    No matching products found.
-                                                </div>
-                                                <div className="my-1 border-t" />
-                                            </div>
-                                        )}
-                                    </>
-                                )}
                                 <NewDosageFormSheet
                                     trigger={
                                         <Button
                                             type="button"
-                                            variant="ghost"
+                                            variant="outline"
                                             size="sm"
-                                            className="w-full cursor-pointer justify-start gap-2 rounded-lg text-xs font-medium text-primary hover:bg-primary/5 hover:text-primary"
+                                            className="w-full cursor-pointer justify-start gap-2 bg-background text-xs font-medium"
                                         >
                                             <Plus className="h-3.5 w-3.5" />
-                                            Add New Dosage Form - If not
-                                            available
+                                            New dosage form
                                         </Button>
                                     }
                                 />
-                                {/* <NewPackageUnitSheet
-                                    trigger={
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="w-full cursor-pointer justify-start gap-2 rounded-lg text-xs font-medium text-primary hover:bg-primary/5 hover:text-primary"
-                                        >
-                                            <Plus className="h-3.5 w-3.5" />
-                                            Add New Package Unit - If not
-                                            available
-                                        </Button>
-                                    }
-                                /> */}
+
                                 <NewProductSheet
                                     trigger={
                                         <Button
                                             type="button"
-                                            variant="ghost"
+                                            variant="outline"
                                             size="sm"
-                                            className="w-full cursor-pointer justify-start gap-2 rounded-lg text-xs font-medium text-primary hover:bg-primary/5 hover:text-primary"
+                                            className="w-full cursor-pointer justify-start gap-2 bg-background text-xs font-medium"
                                         >
                                             <Plus className="h-3.5 w-3.5" />
-                                            Add New Product - If not available
+                                            New product
                                         </Button>
                                     }
                                     dosage_forms={dosage_forms}
                                 />
                             </div>
-
-                            {/* Supplier Input  */}
-                            <div className="space-y-1.5">
-                                <Label className="text-xs font-semibold">
-                                    Supplier{' '}
-                                    <span className="ml-1 font-normal text-muted-foreground">
-                                        (optional)
-                                    </span>
-                                </Label>
-                                <Input
-                                    type="text"
-                                    list="suppliers-datalist"
-
-                                    placeholder="Type to select supplier..."
-                                    className="rounded-xl text-xs"
-                                />
-                            </div>
                         </CardContent>
                     </Card>
 
-                    {/* RIGHT — Batch details */}
-                    <Card>
+                    {/* RIGHT: batch details */}
+                    <Card className="lg:col-span-3">
                         <CardHeader>
-                            <CardTitle className="text-sm font-semibold">
-                                Batch Details
-                            </CardTitle>
-                            <CardDescription className="text-xs">
-                                Enter the details from the delivery invoice.
-                            </CardDescription>
+                            <CardHeading
+                                icon={PackagePlus}
+                                title="Batch Details"
+                                description="Enter the details from the delivery invoice."
+                            />
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold">
-                                        Batch Number{' '}
-                                        <span className="text-destructive">
-                                            *
-                                        </span>
-                                    </Label>
-                                    <Input
-                                        value={data.batch_number}
-                                        onChange={(e) =>
-                                            setData(
-                                                'batch_number',
-                                                e.target.value,
-                                            )
-                                        }
-                                        type="text"
-                                        placeholder="e.g. PCM-2024-001"
-                                    />
-                                    <InputError message={errors.batch_number} />
-                                </div>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-4">
+                                <SectionLabel icon={Hash}>
+                                    Batch & Quantity
+                                </SectionLabel>
 
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold">
-                                        Units Per Package Received
-                                    </Label>
-                                    <Input
-                                        value={data.units_per_package_received}
-                                        onChange={(e) =>
-                                            setData(
-                                                'units_per_package_received',
-                                                e.target.value,
-                                            )
-                                        }
-                                        type="number"
-                                        placeholder="e.g. 15"
-                                    />
-                                    <InputError
-                                        message={
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <Field
+                                        id="batch_number"
+                                        label="Batch Number"
+                                        required
+                                        error={errors.batch_number}
+                                        className="space-y-1.5 sm:col-span-2"
+                                    >
+                                        <Input
+                                            {...bind('batch_number')}
+                                            type="text"
+                                            placeholder="e.g. PCM-2024-001"
+                                        />
+                                    </Field>
+
+                                    <Field
+                                        id="units_per_package_received"
+                                        label="Units Per Package"
+                                        error={
                                             errors.units_per_package_received
                                         }
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold">
-                                        Packages Received
-                                    </Label>
-                                    <Input
-                                        value={data.packages_received}
-                                        onChange={(e) =>
-                                            setData(
-                                                'packages_received',
-                                                e.target.value,
-                                            )
-                                        }
-                                        type="number"
-                                        placeholder="e.g. 100"
-                                    />
-                                    <InputError
-                                        message={errors.packages_received}
-                                    />
-                                </div>
+                                    >
+                                        <Input
+                                            {...bind(
+                                                'units_per_package_received',
+                                            )}
+                                            type="number"
+                                            min={0}
+                                            placeholder="e.g. 15"
+                                        />
+                                    </Field>
 
-                                {/* AUTOMATIC FILLED QUANTITY RECEIVED */}
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold">
-                                        Quantity Received{' '}
-                                        <span className="text-destructive">
-                                            (Automatic)
-                                        </span>
-                                    </Label>
-                                    <Input
-                                        value={
-                                            Number(
-                                                data.units_per_package_received ||
-                                                    0,
-                                            ) *
-                                                Number(
-                                                    data.packages_received || 0,
-                                                ) || ''
-                                        }
-                                        type="number"
-                                        placeholder="e.g. 100"
-                                        readOnly
-                                        className="pointer-events-none bg-muted"
-                                    />
-                                </div>
-                            </div>
+                                    <Field
+                                        id="packages_received"
+                                        label="Packages Received"
+                                        error={errors.packages_received}
+                                    >
+                                        <Input
+                                            {...bind('packages_received')}
+                                            type="number"
+                                            min={0}
+                                            placeholder="e.g. 100"
+                                        />
+                                    </Field>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="flex flex-col space-y-1">
-                                    <Label className="text-xs font-semibold">
-                                        Expiry Date
-                                    </Label>
-                                    <DatePicker
-                                        value={data.expiry_date}
-                                        onChange={(date) =>
-                                            setData('expiry_date', date)
-                                        }
-                                    />
-                                    <InputError message={errors.expiry_date} />
-                                </div>
-                                <div className="flex flex-col space-y-1">
-                                    <Label className="text-xs font-semibold">
-                                        Manufactured Date
-                                    </Label>
-                                    <DatePicker
-                                        value={data.manufactured_date}
-                                        onChange={(date) =>
-                                            setData('manufactured_date', date)
-                                        }
-                                    />
-                                    <InputError
-                                        message={errors.manufactured_date}
-                                    />
+                                    <div className="flex items-center justify-between gap-3 rounded-xl border bg-muted/40 px-4 py-3 sm:col-span-2">
+                                        <div>
+                                            <p className="text-xs font-semibold">
+                                                Quantity Received
+                                            </p>
+                                            <p className="text-[11px] text-muted-foreground">
+                                                Units per package × packages
+                                                received
+                                            </p>
+                                        </div>
+                                        <p className="text-xl font-bold tabular-nums">
+                                            {totalQuantity > 0
+                                                ? totalQuantity.toLocaleString()
+                                                : '—'}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
                             <Separator />
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold">
-                                        Cost Pric (Tsh)
-                                    </Label>
-                                    <div className="relative">
-                                        <span className="absolute top-1/2 left-3 -translate-y-1/2 text-xs text-muted-foreground">
-                                            Tsh
-                                        </span>
-                                        <Input
-                                            value={data.cost_price}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'cost_price',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="rounded-xl pl-10 text-sm"
-                                            type="number"
-                                            placeholder="8,000"
-                                        />
-                                    </div>
-                                    <InputError message={errors.cost_price} />
-                                </div>
+                            <div className="space-y-4">
+                                <SectionLabel icon={CalendarClock}>
+                                    Dates
+                                </SectionLabel>
 
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold">
-                                        Selling Price (Tsh)
-                                    </Label>
-                                    <div className="relative">
-                                        <span className="absolute top-1/2 left-3 -translate-y-1/2 text-xs text-muted-foreground">
-                                            Tsh
-                                        </span>
-                                        <Input
-                                            value={data.selling_price}
-                                            onChange={(e) =>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <Field
+                                        label="Manufactured Date"
+                                        error={errors.manufactured_date}
+                                        className="flex items-center gap-3"
+                                    >
+                                        <DatePicker
+                                            value={data.manufactured_date}
+                                            onChange={(date) =>
                                                 setData(
-                                                    'selling_price',
-                                                    e.target.value,
+                                                    'manufactured_date',
+                                                    date,
                                                 )
                                             }
-                                            className="rounded-xl pl-10 text-sm"
-                                            type="number"
-                                            placeholder="12,000"
                                         />
-                                    </div>
-                                    <InputError
-                                        message={errors.selling_price}
-                                    />
+                                    </Field>
+
+                                    <Field
+                                        label="Expiry Date"
+                                        error={errors.expiry_date}
+                                        className="flex items-center gap-3"
+                                    >
+                                        <DatePicker
+                                            value={data.expiry_date}
+                                            onChange={(date) =>
+                                                setData('expiry_date', date)
+                                            }
+                                        />
+                                    </Field>
                                 </div>
                             </div>
 
-                            {/* Submit */}
+                            <Separator />
+
+                            <div className="space-y-4">
+                                <SectionLabel icon={Banknote}>
+                                    Pricing
+                                </SectionLabel>
+
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <Field
+                                        id="cost_price"
+                                        label="Cost Price (Tsh)"
+                                        error={errors.cost_price}
+                                    >
+                                        <MoneyInput
+                                            {...bind('cost_price')}
+                                            placeholder="8,000"
+                                        />
+                                    </Field>
+
+                                    <Field
+                                        id="selling_price"
+                                        label="Selling Price (Tsh)"
+                                        error={errors.selling_price}
+                                    >
+                                        <MoneyInput
+                                            {...bind('selling_price')}
+                                            placeholder="12,000"
+                                        />
+                                    </Field>
+                                </div>
+                            </div>
+
                             <Button
                                 onClick={() => handleRecordStock()}
                                 className="w-full cursor-pointer gap-2 rounded-xl font-semibold"

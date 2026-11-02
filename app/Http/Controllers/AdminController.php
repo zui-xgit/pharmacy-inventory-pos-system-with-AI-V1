@@ -5,13 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Catalog\Batch;
 use App\Models\Core\Shop;
 use App\Models\Sales\Sale;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
+use Throwable;
 
 class AdminController extends Controller
 {
@@ -177,10 +184,188 @@ class AdminController extends Controller
         ]);
     }
 
-    public function staffManagement(): Response
+    public function staffManagement(Request $request): Response
     {
-        return Inertia::render('admin/management/staff-management');
+        $search = trim($request->string('search')->toString());
+        $role = $request->string('role')->toString();
+        $status = $request->string('status')->toString();
+        $shop = $request->string('shop')->toString(); // NEW: shop uuid from the URL
+  
+        $staff = User::query()
+            ->with(['roles:id,name', 'permissions:id,name', 'shops:id,uuid,name'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('firstname', 'like', "%{$search}%")
+                        ->orWhere('lastname', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhereRaw(
+                            "CONCAT(firstname, ' ', lastname) LIKE ?",
+                            ["%{$search}%"],
+                        );
+                });
+            })
+            ->when($role !== '', fn ($query) => $query->role($role))
+            ->when($status !== '', fn ($query) => $query->where('status', $status))
+             // NEW: only users linked to the selected shop
+            ->when($shop !== '', fn ($query) => $query->whereHas(
+                'shops',
+                fn ($q) => $q->where('shops.uuid', $shop),
+            ))
+            ->orderBy('firstname')
+            ->orderBy('lastname')
+            ->paginate(15)
+            ->withQueryString()
+            ->through(fn (User $user) => [
+                'uuid' => $user->uuid,
+                'firstname' => $user->firstname, 
+                'lastname' => $user->lastname,  
+                'username' => $user->username,
+                'gender' => $user->gender,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'status' => $user->status,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getPermissionNames(),
+                'shops' => $user->shops->map(fn ($shop) => [
+                    'uuid' => $shop->uuid,
+                    'name' => $shop->name,
+                ])->values(),
+                'created_at' => $user->created_at?->toIso8601String(),
+            ]);
+
+        $stats = [
+            'total' => User::count(),
+            'active' => User::where('status', 'active')->count(),
+            'suspended' => User::where('status', 'suspended')->count(),
+            'inactive' => User::where('status', 'inactive')->count(),
+        ];
+
+        return Inertia::render('admin/management/staff-management', [
+            'staff' => $staff,
+            'stats' => $stats,
+            'available_roles' => Role::pluck('name'),
+            'available_permissions' => Permission::pluck('name'), 
+            'available_shops' => Shop::query()
+                                    ->orderBy('name')
+                                    ->get(['uuid', 'name']),
+            'filters' => [
+                'search' => $search,
+                'role' => $role,
+                'status' => $status,
+                'shop' => $shop, 
+            ],
+        ]);
     }
+
+    public function updateStaff(Request $request, User $user)
+    {
+
+        $validated = $request->validate([
+            'firstname' => ['required', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'gender' => ['required', Rule::in(['male', 'female'])],
+            'phone' => ['required', 'string', 'max:30'],
+            'role' => ['required', 'string', Rule::exists('roles', 'name')],
+            'permissions' => ['present', 'array'],
+            'permissions.*' => ['string', Rule::exists('permissions', 'name')],
+            'shops' => ['present', 'array'],
+            'shops.*' => ['uuid', Rule::exists('shops', 'uuid')],
+        ]);
+
+        DB::beginTransaction();
+
+        try{
+            $user->forceFill([
+                'firstname' => $validated['firstname'],
+                'lastname' => $validated['lastname'],
+                'email' => $validated['email'],
+                'gender' => $validated['gender'],
+                'phone' => $validated['phone'],
+            ])->save();
+
+
+            $user->syncRoles($validated['role']);
+            $user->syncPermissions($validated['permissions']);
+
+
+            // admins already have access to every shop, so keep no individual links
+            $shopIds = $validated['role'] === 'admin'
+            ? []
+            : Shop::whereIn('uuid', $validated['shops'])->pluck('id')->all();
+
+            $user->shops()->sync($shopIds);
+            DB::commit();
+
+
+            Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff updated successfully.')]);
+            return back(); 
+                      
+        }catch(Throwable $e){
+             DB::rollBack();
+
+            return back()->withErrors([
+                'staff' => 'Could not update the staff member. Please try again.',
+             ]);
+        }
+        
+    }
+
+    public function updateCredentials(Request $request , User $user) 
+    {
+            $validated = $request->validate([
+                'username' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    'regex:/^[A-Za-z0-9._-]+$/',
+                     Rule::unique(User::class)->ignore($user->id),
+                ],
+                'password' => ['nullable', 'confirmed', Password::defaults()],
+            ]);
+
+
+            $passwordChanged = filled($validated['password'] ?? null);
+
+            DB::beginTransaction();
+
+            try {
+                $user->username = $validated['username'];
+
+                if ($passwordChanged) {
+                    $user->password = $validated['password'];
+                    $user->setRememberToken(Str::random(60));
+                }
+
+                $user->save();
+
+                if ($passwordChanged) {
+                    DB::table('sessions')
+                        ->where('user_id', $user->id)
+                        ->where('id', '!=', $request->session()->getId())
+                        ->delete();
+                }
+
+                DB::commit();
+                Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff Credentials updated successfully.')]);
+                return back(); 
+            } catch (Throwable $e) {
+                DB::rollBack();
+                return back()->withErrors([
+                    'credentials' => 'Could not update the credentials. Please try again.',
+                ]);
+            }
+
+
+            
+
+           
+
+            return back() ;
+    }
+
+    public function storeStaff(Request $request) {}
 
     public function activityLogs()
     {

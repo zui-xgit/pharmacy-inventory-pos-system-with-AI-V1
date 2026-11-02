@@ -36,11 +36,13 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
 
+        
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user() ? [
+                    'uuid' => $request->user()->uuid, 
                     'username' => $request->user()->username,
                     'firstname' => $request->user()->firstname,
                     'lastname' => $request->user()->lastname,
@@ -48,6 +50,7 @@ class HandleInertiaRequests extends Middleware
                     'gender' => $request->user()->gender,
                     'phone' => $request->user()->phone,
                     'roles' => $request->user()->getRoleNames(),
+                    'permissions' => $request->user()->getPermissionNames(), 
 
                     // ⭐ Pass clean, simple flags directly to frontend
                     'isAdmin' => $request->user()->hasRole('admin'),
@@ -55,7 +58,6 @@ class HandleInertiaRequests extends Middleware
                     'isCashier' => $request->user()->hasRole('cashier'),
                     'isAdminOrManager' => $request->user()->hasAnyRole(['admin', 'manager']),
                     'isManagerOrCashier' => $request->user()->hasAnyRole(['manager', 'cashier']),
-                    'isShopMember' => $request->user()->hasAnyRole(['admin', 'manager', 'cashier']),
                 ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

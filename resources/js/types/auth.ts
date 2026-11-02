@@ -12,6 +12,7 @@
 //     [key: string]: unknown;
 // };
 export type User = {
+    uuid: string;
     username: string;
     firstname: string;
     lastname: string;

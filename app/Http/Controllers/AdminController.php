@@ -22,6 +22,18 @@ use Throwable;
 
 class AdminController extends Controller
 {
+
+   private function destoryUserSession(Request $request,  User $user) 
+   {
+
+        $user->setRememberToken(Str::random(60));
+        DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->where('id', '!=', $request->session()->getId())
+            ->delete();
+   }
+
+
     public function createShop(Request $request): RedirectResponse
     {
 
@@ -296,9 +308,8 @@ class AdminController extends Controller
             : Shop::whereIn('uuid', $validated['shops'])->pluck('id')->all();
 
             $user->shops()->sync($shopIds);
+            
             DB::commit();
-
-
             Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff updated successfully.')]);
             return back(); 
                       
@@ -356,16 +367,34 @@ class AdminController extends Controller
                     'credentials' => 'Could not update the credentials. Please try again.',
                 ]);
             }
-
-
-            
-
-           
-
-            return back() ;
     }
 
+
+
     public function storeStaff(Request $request) {}
+
+
+    public function activateStaff(User $user){
+        $user->update(['status' => 'active']); 
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff activated successfully.')]);
+        return back(); 
+    }
+    public function deactivateStaff(Request $request, User $user){
+        $user->update(['status' => 'inactive']); 
+
+        $this->destoryUserSession($request, $user); 
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff deactivated successfully.')]);
+        return back(); 
+    }
+    public function suspendStaff(Request $request, User $user){
+        $user->update(['status' => 'suspended']);
+        $this->destoryUserSession($request, $user); 
+
+        
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff suspended successfully.')]);
+        return back(); 
+    }
 
     public function activityLogs()
     {

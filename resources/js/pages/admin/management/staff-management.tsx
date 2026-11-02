@@ -1,5 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
+    Ban,
     Eye,
     Globe,
     Key,
@@ -9,6 +10,7 @@ import {
     ShieldCheck,
     Store,
     UserCheck,
+    UserMinus,
     UserX,
     Users,
     UsersRound,
@@ -63,6 +65,7 @@ import {
 import { Auth } from '@/types';
 import { toast } from 'sonner';
 import ShopFilter from '@/components/user-filter-by-shop';
+import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
 
 interface PaginationLink {
     url: string | null;
@@ -221,6 +224,16 @@ export default function StaffManagement({
         );
     };
 
+    const handleActivateUser = (uuid: string) => {
+        router.patch(admin.activateStaff({ user: uuid }));
+    };
+    const handleDeactivateUser = (uuid: string) => {
+        router.patch(admin.deactivateStaff({ user: uuid }));
+    };
+    const handleSuspendUser = (uuid: string) => {
+        router.patch(admin.suspendStaff({ user: uuid }));
+    };
+
     return (
         <>
             <Head title="Staff Management" />
@@ -257,6 +270,17 @@ export default function StaffManagement({
                         valueClassName="text-emerald-600"
                     />
                     <StatCard
+                        title="In-active"
+                        value={stats.inactive.toString()}
+                        icon={
+                            <UserMinus className="h-4 w-4 text-destructive" />
+                        }
+                        subtitle="User account deactivated"
+                        valueClassName={
+                            stats.inactive > 0 ? 'text-destructive' : ''
+                        }
+                    />
+                    <StatCard
                         title="Suspended"
                         value={stats.suspended.toString()}
                         icon={<UserX className="h-4 w-4 text-destructive" />}
@@ -265,7 +289,7 @@ export default function StaffManagement({
                             stats.suspended > 0 ? 'text-destructive' : ''
                         }
                     />
-                    <StatCard
+                    {/* <StatCard
                         title="Roles"
                         value={available_roles.length.toString()}
                         icon={
@@ -276,7 +300,7 @@ export default function StaffManagement({
                                 ? available_roles.join(' · ')
                                 : 'No roles defined'
                         }
-                    />
+                    /> */}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3 border-b border-border/40 pb-3">
@@ -298,35 +322,6 @@ export default function StaffManagement({
 
                         {/* filter users by shop name */}
                         <div className="sm:col-span-1 lg:col-span-4">
-                            {/* <Select
-                                value={filters.shop || 'all'}
-                                onValueChange={(value) =>
-                                    applyFilter(
-                                        'shop',
-                                        value === 'all' ? '' : value,
-                                    )
-                                }
-                            >
-                                <SelectTrigger
-                                    size="sm"
-                                    className="w-full cursor-pointer bg-background"
-                                >
-                                    <SelectValue placeholder="All shops" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">
-                                        All shops
-                                    </SelectItem>
-                                    {available_shops.map((shop) => (
-                                        <SelectItem
-                                            key={shop.uuid}
-                                            value={shop.uuid}
-                                        >
-                                            {shop.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select> */}
                             <ShopFilter
                                 shops={available_shops}
                                 value={filters.shop ?? ''}
@@ -455,19 +450,15 @@ export default function StaffManagement({
                                                                 ' ' +
                                                                 member.lastname}
                                                             {'    '}
-                                                            {auth.user.roles.includes(
-                                                                'admin',
-                                                            ) &&
-                                                                member.roles.includes(
-                                                                    'admin',
-                                                                ) && (
-                                                                    <Badge
-                                                                        variant="secondary"
-                                                                        className="shrink-0 rounded-full bg-primary/10 px-2 py-0 text-[10px] font-semibold tracking-wide text-primary uppercase"
-                                                                    >
-                                                                        You
-                                                                    </Badge>
-                                                                )}
+                                                            {auth.user.uuid ===
+                                                                member.uuid && (
+                                                                <Badge
+                                                                    variant="secondary"
+                                                                    className="shrink-0 rounded-full bg-primary/10 px-2 py-0 text-[10px] font-semibold tracking-wide text-primary uppercase"
+                                                                >
+                                                                    You
+                                                                </Badge>
+                                                            )}
                                                         </p>
                                                         <p className="truncate text-xs text-muted-foreground">
                                                             {member.email}
@@ -569,7 +560,7 @@ export default function StaffManagement({
                                                 </span>
                                             </TableCell>
                                             <TableCell className="pr-4 text-right">
-                                                <DropdownMenu>
+                                                <DropdownMenu modal={false}>
                                                     <DropdownMenuTrigger
                                                         asChild
                                                     >
@@ -599,12 +590,9 @@ export default function StaffManagement({
                                                             // }
                                                             onSelect={() => {
                                                                 if (
-                                                                    member.roles.includes(
-                                                                        'admin',
-                                                                    ) &&
-                                                                    auth.user.roles.includes(
-                                                                        'admin',
-                                                                    )
+                                                                    member.uuid ===
+                                                                    auth.user
+                                                                        .uuid
                                                                 ) {
                                                                     toast.info(
                                                                         'This is your own account',
@@ -637,12 +625,9 @@ export default function StaffManagement({
                                                             className="cursor-pointer"
                                                             onSelect={() => {
                                                                 if (
-                                                                    member.roles.includes(
-                                                                        'admin',
-                                                                    ) &&
-                                                                    auth.user.roles.includes(
-                                                                        'admin',
-                                                                    )
+                                                                    member.uuid ===
+                                                                    auth.user
+                                                                        .uuid
                                                                 ) {
                                                                     toast.info(
                                                                         'This is your own account',
@@ -667,8 +652,172 @@ export default function StaffManagement({
                                                             }}
                                                         >
                                                             <Key className="h-4 w-4" />
-                                                            Change Credentials
+                                                            Staff Credentials
                                                         </DropdownMenuItem>
+
+                                                        {member.status !==
+                                                            'active' &&
+                                                            member.uuid !==
+                                                                auth.user
+                                                                    .uuid && (
+                                                                <ConfirmAlertDialog
+                                                                    trigger={
+                                                                        <DropdownMenuItem
+                                                                            className="cursor-pointer"
+                                                                            onSelect={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.preventDefault()
+                                                                            }
+                                                                        >
+                                                                            <UserCheck className="h-4 w-4" />
+                                                                            Activate
+                                                                            user
+                                                                        </DropdownMenuItem>
+                                                                    }
+                                                                    title="Activate user?"
+                                                                    description={
+                                                                        <>
+                                                                            Are
+                                                                            you
+                                                                            sure
+                                                                            you
+                                                                            want
+                                                                            to
+                                                                            activate{' '}
+                                                                            <span className="font-medium">
+                                                                                {member.firstname +
+                                                                                    ' ' +
+                                                                                    member.lastname}
+                                                                            </span>
+                                                                            ?
+                                                                            They
+                                                                            will
+                                                                            regain
+                                                                            access
+                                                                            to
+                                                                            the
+                                                                            system.
+                                                                        </>
+                                                                    }
+                                                                    actionText="Activate"
+                                                                    cancelText="Cancel"
+                                                                    onConfirm={() => {
+                                                                        handleActivateUser(
+                                                                            member.uuid,
+                                                                        );
+                                                                    }}
+                                                                />
+                                                            )}
+
+                                                        {member.status ===
+                                                            'active' &&
+                                                            member.uuid !==
+                                                                auth.user
+                                                                    .uuid && (
+                                                                <>
+                                                                    <ConfirmAlertDialog
+                                                                        trigger={
+                                                                            <DropdownMenuItem
+                                                                                className="cursor-pointer"
+                                                                                onSelect={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    e.preventDefault()
+                                                                                }
+                                                                            >
+                                                                                <UserMinus className="h-4 w-4" />
+                                                                                Deactivate
+                                                                                User
+                                                                            </DropdownMenuItem>
+                                                                        }
+                                                                        title="Deactivate user?"
+                                                                        description={
+                                                                            <>
+                                                                                Are
+                                                                                you
+                                                                                sure
+                                                                                you
+                                                                                want
+                                                                                to
+                                                                                deactivate{' '}
+                                                                                <span className="font-medium">
+                                                                                    {member.firstname +
+                                                                                        ' ' +
+                                                                                        member.lastname}
+                                                                                </span>
+
+                                                                                ?
+                                                                                They
+                                                                                will
+                                                                                lose
+                                                                                access
+                                                                                to
+                                                                                the
+                                                                                system
+                                                                                until
+                                                                                reactivated.
+                                                                            </>
+                                                                        }
+                                                                        actionText="Deactivate"
+                                                                        cancelText="Cancel"
+                                                                        onConfirm={() => {
+                                                                            handleDeactivateUser(
+                                                                                member.uuid,
+                                                                            );
+                                                                        }}
+                                                                    />
+
+                                                                    <ConfirmAlertDialog
+                                                                        trigger={
+                                                                            <DropdownMenuItem
+                                                                                className="cursor-pointer"
+                                                                                onSelect={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    e.preventDefault()
+                                                                                }
+                                                                            >
+                                                                                <Ban className="h-4 w-4" />
+                                                                                Suspend
+                                                                                user
+                                                                            </DropdownMenuItem>
+                                                                        }
+                                                                        title="Suspend user?"
+                                                                        description={
+                                                                            <>
+                                                                                Are
+                                                                                you
+                                                                                sure
+                                                                                you
+                                                                                want
+                                                                                to
+                                                                                suspend{' '}
+                                                                                <span className="font-medium">
+                                                                                    {member.firstname +
+                                                                                        ' ' +
+                                                                                        member.lastname}
+                                                                                </span>
+
+                                                                                ?
+                                                                                Their
+                                                                                access
+                                                                                will
+                                                                                be
+                                                                                temporarily
+                                                                                blocked.
+                                                                            </>
+                                                                        }
+                                                                        actionText="Suspend"
+                                                                        cancelText="Cancel"
+                                                                        onConfirm={() => {
+                                                                            handleSuspendUser(
+                                                                                member.uuid,
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </>
+                                                            )}
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>

@@ -38,7 +38,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property int|null $active_shop_id
  */
-#[Fillable(['username', 'firstname', 'lastname', 'gender', 'phone', 'email', 'password'])]
+#[Fillable(['username', 'firstname', 'lastname', 'gender', 'phone', 'email', 'password', 'status'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {

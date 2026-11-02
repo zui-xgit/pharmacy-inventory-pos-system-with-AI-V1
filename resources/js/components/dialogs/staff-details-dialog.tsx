@@ -149,11 +149,6 @@ const StaffDetailsForm = ({
     const hasFullAccess = userForm.data.role === 'admin';
 
     const handleUpdateStaff = () => {
-        // console.log('Update staff payload:', {
-        //     staff: member.uuid,
-        //     ...userForm.data,
-        // });
-
         userForm.patch(admin.staffUpdate({ user: member.uuid }).url, {
             preserveScroll: true,
             onError: () => {},

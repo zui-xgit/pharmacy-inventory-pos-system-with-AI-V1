@@ -25,18 +25,14 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import catalog from '@/routes/catalog';
 import admin from '@/routes/admin';
-import stock from '@/routes/stock';
 import type { NavItem } from '@/types';
 import type { Auth } from '@/types/auth';
 // import NavSubMain from './nav-sub-main';
 import { Button } from './ui/button';
-import current_shop from '@/routes/current_shop';
-import reports from '@/routes/reports';
 import staff from '@/routes/staff';
 import { edit } from '@/routes/profile';
-import shopStaff from '@/routes/shop-staff';
+import shop from '@/routes/shop';
 
 // ADMIN NAVITEMS
 const Overview: NavItem[] = [
@@ -70,12 +66,12 @@ const Account: NavItem[] = [
 const ShopOverview = (shop_uuid: string): NavItem[] => [
     {
         title: 'Overview ',
-        href: current_shop.overview({ shop: shop_uuid }),
+        href: shop.overview({ shop: shop_uuid }),
         icon: LayoutDashboard,
     },
     {
         title: 'Sales / POS',
-        href: current_shop.pos({ shop: shop_uuid }),
+        href: shop.pos({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
 ];
@@ -83,17 +79,18 @@ const ShopOverview = (shop_uuid: string): NavItem[] => [
 const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
     {
         title: 'Catalog',
-        href: catalog.batches({ shop: shop_uuid }),
+        href: shop.catalogBatches({ shop: shop_uuid }),
+
         icon: Package,
     },
     {
         title: 'Receive Stock',
-        href: stock.receive_stock({ shop: shop_uuid }),
+        href: shop.receiveStock({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
     {
         title: 'Stock Adjustments',
-        href: stock.stock_adjustments({ shop: shop_uuid }),
+        href: shop.stockAdjustments({ shop: shop_uuid }),
         icon: History,
     },
 ];
@@ -101,12 +98,12 @@ const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
 const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
     {
         title: 'Sales Reports',
-        href: reports.sales({ shop: shop_uuid }),
+        href: shop.reportSales({ shop: shop_uuid }),
         icon: Package,
     },
     {
         title: 'Inventory Reports',
-        href: reports.inventory({ shop: shop_uuid }),
+        href: shop.reportInventory({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
 ];
@@ -115,12 +112,12 @@ const ShopSystem = (shop_uuid: string): NavItem[] => [
     {
         title: 'Staff',
         // href: staff.edit({ shop: shop_uuid }),
-        href: shopStaff.edit({ shop: shop_uuid }),
+        href: shop.staffEdit({ shop: shop_uuid }),
         icon: Users,
     },
     {
         title: 'Settings',
-        href: staff.profile({ shop: shop_uuid }),
+        href: shop.staffProfile({ shop: shop_uuid }),
         icon: Package,
     },
 ];
@@ -143,20 +140,25 @@ export function AppSidebar() {
         auth: Auth;
     }>().props;
 
+    const shopHref = auth.user.isAdmin
+        ? admin.shops()
+        : auth.user.isManagerOrCashier
+          ? staff.shopsSelect()
+          : undefined;
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={admin.shops()} prefetch>
+                            <Link href={shopHref} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
-
             {/* ADMIN */}
             {auth.user.isAdmin && !active_shop && (
                 <SidebarContent>
@@ -165,7 +167,6 @@ export function AppSidebar() {
                     <NavMain groupLabel={'Account'} items={Account} />
                 </SidebarContent>
             )}
-
             {active_shop && (
                 <SidebarContent>
                     <NavMain
@@ -187,7 +188,6 @@ export function AppSidebar() {
                     />
                 </SidebarContent>
             )}
-
             <SidebarFooter>
                 <NavUser />
             </SidebarFooter>

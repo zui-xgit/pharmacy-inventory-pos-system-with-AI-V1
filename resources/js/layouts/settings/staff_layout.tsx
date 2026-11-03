@@ -5,11 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
-import { edit } from '@/routes/profile';
-import { edit as editSecurity } from '@/routes/security';
 import type { Auth, NavItem } from '@/types';
-import staff from '@/routes/staff';
+import shop from '@/routes/shop';
 
 export default function StaffSettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
@@ -22,17 +19,17 @@ export default function StaffSettingsLayout({ children }: PropsWithChildren) {
     const sidebarNavItems: NavItem[] = [
         {
             title: 'Profile',
-            href: staff.profile({ shop: active_shop?.uuid as string }),
+            href: shop.staffProfile({ shop: active_shop?.uuid as string }),
             icon: null,
         },
         {
             title: 'Security',
-            href: staff.security({ shop: active_shop?.uuid as string }),
+            href: shop.staffSecurity({ shop: active_shop?.uuid as string }),
             icon: null,
         },
         {
             title: 'Appearance',
-            href: staff.appearance({ shop: active_shop?.uuid as string }),
+            href: shop.staffAppearance({ shop: active_shop?.uuid as string }),
             icon: null,
         },
     ];

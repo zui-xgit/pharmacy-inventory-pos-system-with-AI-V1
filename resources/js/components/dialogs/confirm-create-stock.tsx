@@ -44,8 +44,8 @@ export function StocktConfirmationDialog({
 }: ProductConfirmationDialogProps) {
     const formatCurrency = (value: string | number) => {
         if (!value) {
-return '-';
-}
+            return '-';
+        }
 
         return new Intl.NumberFormat('en-TZ', {
             style: 'currency',

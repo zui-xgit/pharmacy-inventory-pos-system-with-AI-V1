@@ -33,8 +33,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import stock from '@/routes/stock';
 import type { DosageForm, Product } from '@/types/type';
+import shop from '@/routes/shop';
 
 interface ReceiveStockProps {
     products: Product[];
@@ -181,7 +181,8 @@ const ReceiveStock = ({
     };
 
     const handleDataPostRequest = () => {
-        post(stock.new_batch({ shop: active_shop.uuid }).url, {
+        // post(stock.new_batch({ shop: active_shop.uuid }).url, {
+        post(shop.stockNewBatch({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
@@ -253,7 +254,8 @@ const ReceiveStock = ({
                                     products={products}
                                     selected={selectedProduct}
                                     onSelect={setSelectedProduct}
-                                    searchUrl={stock.receive_stock({
+                                    // searchUrl={stock.receive_stock({
+                                    searchUrl={shop.receiveStock({
                                         shop: shop_uuid,
                                     })}
                                     filters={filters}

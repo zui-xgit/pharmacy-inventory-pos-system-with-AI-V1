@@ -22,7 +22,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 import { formatDate } from '@/lib/utils';
-import stock from '@/routes/stock';
+import shop from '@/routes/shop';
 
 interface BatchItem {
     uuid: string;
@@ -136,7 +136,8 @@ export default function StockAdjustmentsPage({
             return;
         }
 
-        post(stock.adjust_stock({ shop: shop_uuid }).url, {
+        // post(stock.adjust_stock({ shop: shop_uuid }).url, {
+        post(shop.adjustStock({ shop: shop_uuid }).url, {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
@@ -185,7 +186,8 @@ export default function StockAdjustmentsPage({
                     <CardContent className="space-y-4">
                         <SearchInput
                             href={
-                                stock.stock_adjustments({ shop: shop_uuid }).url
+                                // stock.stock_adjustments({ shop: shop_uuid }).url
+                                shop.stockAdjustments({ shop: shop_uuid }).url
                             }
                             filters={filters}
                             placeholder="Search batch number or product..."

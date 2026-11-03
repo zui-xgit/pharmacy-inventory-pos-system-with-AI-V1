@@ -33,7 +33,7 @@ export function UserMenuContent({ user }: Props) {
         <>
             <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <UserInfo user={user} showEmail={true} />
+                    <UserInfo user={user} showRole={true} />
                 </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -46,7 +46,12 @@ export function UserMenuContent({ user }: Props) {
                         onClick={cleanup}
                     >
                         <Store className="mr-2" />
-                        All shops
+                        <span className="flex gap-2">
+                            All shops
+                            <Badge variant="destructive">
+                                {auth.user.shops_count}
+                            </Badge>
+                        </span>
                     </Link>
                 </DropdownMenuItem>
             )}

@@ -29,7 +29,7 @@ class ProfileController extends Controller
 
     public function staffProfileEdit(Request $request, Shop $shop): Response
     {
-        return Inertia::render('staff_settings/profile', [
+        return Inertia::render('staff-settings/profile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
         ]);

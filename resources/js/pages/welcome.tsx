@@ -13,8 +13,8 @@ import { login } from '@/routes';
 import admin from '@/routes/admin';
 import type { Auth } from '@/types';
 import type { RouteDefinition } from '@/wayfinder';
-import current_shop from '@/routes/current_shop';
 import staff from '@/routes/staff';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 export default function Welcome() {
     const { auth } = usePage<{
@@ -43,9 +43,7 @@ export default function Welcome() {
                 {/* Header */}
                 <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/40">
                     <div className="flex items-center gap-3">
-                        <div className="rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-2.5 text-white shadow-md shadow-emerald-500/20">
-                            <Pill className="h-5 w-5" />
-                        </div>
+                        <AppLogoIcon />
                         <div>
                             <span className="text-slate-905 flex items-center gap-1.5 text-lg font-bold tracking-tight dark:text-white">
                                 RxPOS

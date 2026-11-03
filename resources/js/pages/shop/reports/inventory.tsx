@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/table';
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 import { formatDate } from '@/lib/utils';
-import reports from '@/routes/reports';
+import shop from '@/routes/shop';
 
 interface BatchItem {
     uuid: string;
@@ -202,7 +202,9 @@ export default function InventoryReports({
                         <div className="w-full lg:w-1/2">
                             <SearchInput
                                 href={
-                                    reports.inventory({ shop: shop_uuid }).url
+                                    // reports.inventory({ shop: shop_uuid }).url
+                                    shop.reportInventory({ shop: shop_uuid })
+                                        .url
                                 }
                                 filters={filters}
                                 placeholder="Search batch number or product..."

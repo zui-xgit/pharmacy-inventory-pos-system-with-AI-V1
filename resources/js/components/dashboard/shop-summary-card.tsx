@@ -18,9 +18,9 @@ import {
 } from '@/components/ui/card';
 import { useCartStore } from '@/hooks/stores/user-cart-store';
 import { cn } from '@/lib/utils';
-import current_shop from '@/routes/current_shop';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import ThisShop from '@/routes/shop';
 
 interface ShopStats {
     total_sales_today: number;
@@ -180,7 +180,7 @@ const ShopSummaryCard = ({ shop }: { shop: Shop }) => {
                 <Button
                     onClick={() => {
                         clearCart();
-                        router.get(current_shop.overview({ shop: shop.uuid }));
+                        router.get(ThisShop.overview({ shop: shop.uuid }));
                     }}
                     className="w-full cursor-pointer items-center justify-between rounded-xl bg-primary font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                 >

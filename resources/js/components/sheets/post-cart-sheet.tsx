@@ -23,9 +23,9 @@ import { CartItem, useCartStore } from '@/hooks/stores/user-cart-store';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import { router, usePage } from '@inertiajs/react';
-import current_shop from '@/routes/current_shop';
 import { Spinner } from '@/components/ui/spinner';
 import { ConfirmAlertDialog } from '@/components/dialogs/confirm-alert-dialog';
+import shop from '@/routes/shop';
 
 interface PosCartSheetProps {
     trigger: React.ReactNode;
@@ -57,7 +57,7 @@ export function PosCartSheet({ trigger }: PosCartSheetProps) {
         });
 
         router.post(
-            current_shop.pos_checkout({ shop: active_shop.uuid }).url,
+            shop.posCheckout({ shop: active_shop.uuid }).url,
             {
                 items,
             },

@@ -14,8 +14,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import stock from '@/routes/stock';
 import { formatDate } from '@/lib/utils';
+import shop from '@/routes/shop';
 
 interface BatchItem {
     uuid: string;
@@ -90,7 +90,7 @@ const Batches = ({ batches, filters }: Props) => {
                         onClick={() => {
                             if (active_shop) {
                                 router.get(
-                                    stock.receive_stock(active_shop.uuid).url,
+                                    shop.receiveStock(active_shop.uuid).url,
                                 );
                             }
                         }}

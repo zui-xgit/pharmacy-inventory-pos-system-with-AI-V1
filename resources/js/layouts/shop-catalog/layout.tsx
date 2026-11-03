@@ -4,23 +4,23 @@ import type { PropsWithChildren } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { toUrl } from '@/lib/utils';
-import catalog from '@/routes/catalog';
 import type { NavItem } from '@/types';
+import shop from '@/routes/shop';
 
 const sidebarNavItems = (shop_uuid: string): NavItem[] => [
     {
         title: 'Batches',
-        href: catalog.batches({ shop: shop_uuid }),
+        href: shop.catalogBatches({ shop: shop_uuid }),
         icon: Layers,
     },
     {
         title: 'Products',
-        href: catalog.products({ shop: shop_uuid }),
+        href: shop.catalogProducts({ shop: shop_uuid }),
         icon: Package,
     },
     {
         title: 'Dosage Forms',
-        href: catalog.dosage_forms({ shop: shop_uuid }),
+        href: shop.catalogDosageForms({ shop: shop_uuid }),
         icon: Pill,
     },
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Core\Shop;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -58,7 +59,9 @@ class HandleInertiaRequests extends Middleware
                             'isCashier' => $request->user()->hasRole('cashier'),
                             'isAdminOrManager' => $request->user()->hasAnyRole(['admin', 'manager']),
                             'isManagerOrCashier' => $request->user()->hasAnyRole(['manager', 'cashier']),
-                            
+                            'shops_count' => fn () => $request->user()->isAdmin()
+                                                  ? Shop::count()
+                                                  : 0, 
                             'user_shops_count' => fn () => $request->user()->isManagerOrCashier()
                                                 ? $request->user()->shops()->count()
                                                 : 0,

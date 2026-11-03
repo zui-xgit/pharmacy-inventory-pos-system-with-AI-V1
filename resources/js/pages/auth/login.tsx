@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { toast } from 'sonner';
 import InputError from '@/components/input-error';
@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { Auth } from '@/types';
 
 type Props = {
     status?: string;
@@ -30,9 +31,6 @@ export default function Login({ status, canResetPassword }: Props) {
         post(store().url, {
             preserveScroll: true,
             onFinish: () => reset('password'),
-            onSuccess: () => {
-                toast.success('Logged in successfully');
-            },
         });
     };
 
@@ -113,8 +111,6 @@ export default function Login({ status, canResetPassword }: Props) {
                         Log in
                     </Button>
                 </div>
-
-              
             </form>
 
             {status && (

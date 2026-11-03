@@ -15,52 +15,61 @@ use Inertia\Inertia;
 
 Route::inertia('/', 'welcome')->name('home');
 
-Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
+Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member', 'check.status'])->group(function () {
 
     // Main
-    Route::get('/', [OverviewController::class, 'overview'])->name('current_shop.overview');
-    Route::get('/pos', [PosController::class, 'posIndex'])->name('current_shop.pos');
-    Route::post('/post/checkout', [PosController::class, 'checkout'])->name('current_shop.pos_checkout');
+    Route::get('/', [OverviewController::class, 'overview'])->name('shop.overview');
+    Route::get('/pos', [PosController::class, 'posIndex'])->name('shop.pos');
+    Route::post('/post/checkout', [PosController::class, 'checkout'])->name('shop.pos-checkout');
 
     // CATALOG
-    Route::get('/catalog/products', [CatalogController::class, 'productsCatalog'])->name('catalog.products');
-    Route::get('/catalog/batches', [CatalogController::class, 'batchesCatalog'])->name('catalog.batches');
-    Route::get('/catalog/dosage-forms', [CatalogController::class, 'dosageFormsCatalog'])->name('catalog.dosage_forms');
-    Route::get('/catalog/package-units', [CatalogController::class, 'packageUnitsCatalog'])->name('catalog.package_units');
-    Route::post('/catalog/new-dosage-form', [CatalogController::class, 'createDosageForm'])->name('catalog.new_dosage_form');
-    Route::post('/catalog/new-product', [CatalogController::class, 'createProduct'])->name('catalog.new_product');
-    Route::post('/stock/new-batch', [CatalogController::class, 'createBatch'])->name('stock.new_batch');
+    Route::get('/catalog/products', [CatalogController::class, 'productsCatalog'])->name('shop.catalog-products');
+    Route::get('/catalog/batches', [CatalogController::class, 'batchesCatalog'])->name('shop.catalog-batches');
+    Route::get('/catalog/dosage-forms', [CatalogController::class, 'dosageFormsCatalog'])->name('shop.catalog-dosage-forms');
+    Route::get('/catalog/package-units', [CatalogController::class, 'packageUnitsCatalog'])->name('shop.catalog-package-units');
+    Route::post('/catalog/new-dosage-form', [CatalogController::class, 'createDosageForm'])->name('shop.catalog-new-dosage-form');
+    Route::post('/catalog/new-product', [CatalogController::class, 'createProduct'])->name('shop.catalog-new-product');
+    Route::post('/stock/new-batch', [CatalogController::class, 'createBatch'])->name('shop.stock-new-batch');
 
     // Stock
-    Route::get('/stock/receive-stock', [StockController::class, 'receiveStock'])->name('stock.receive_stock');
-    Route::get('/stock/stock-adjustments', [StockController::class, 'stockAdjustments'])->name('stock.stock_adjustments');
-    Route::post('/stock/stock-adjustments', [StockController::class, 'adjustStock'])->name('stock.adjust_stock');
+    Route::get('/stock/receive-stock', [StockController::class, 'receiveStock'])->name('shop.receive-stock');
+    Route::get('/stock/stock-adjustments', [StockController::class, 'stockAdjustments'])->name('shop.stock-adjustments');
+    Route::post('/stock/stock-adjustments', [StockController::class, 'adjustStock'])->name('shop.adjust-stock');
 
     // Reports
-    Route::get('/reports/sales', [ReportsAndInsightsController::class, 'salesReports'])->name('reports.sales');
-    Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('reports.inventory');
+    Route::get('/reports/sales', [ReportsAndInsightsController::class, 'salesReports'])->name('shop.report-sales');
+    Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('shop.report-inventory');
 
-});
 
-// shop user settings
-Route::prefix('staff/shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
-    Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('staff.profile');
-    Route::get('staff/security', [SecurityController::class, 'staffSecurityEdit'])->name('staff.security');
+
+    // SHOP USER SETTINGS
+    Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('shop.staff-profile');
+    Route::get('staff/security', [SecurityController::class, 'staffSecurityEdit'])->name('shop.staff-security');
 
     Route::get('staff/appearance', function (Shop $shop) {
-        return Inertia::render('staff_settings/appearance');
-    })->name('staff.appearance');
+        return Inertia::render('staff-settings/appearance');
+    })->name('shop.staff-appearance');
+
+    Route::get('shop-staff', [ShopStaffController::class, 'shopStaffEdit'])->name('shop.staff-edit');
 
 });
 
-// shop staff
-Route::prefix('staff/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'])->group(function () {
-    Route::get('shop-staff', [ShopStaffController::class, 'shopStaffEdit'])->name('shop-staff.edit');
-});
 
-Route::middleware(['auth', 'verified', 'role:manager|cashier'])->group(function (){
+Route::middleware(['auth', 'verified', 'role:manager|cashier', 'check.status'])->group(function (){
     Route::get('select-shop', [ShopSelectionController::class, 'index'])->name('staff.shops-select');
 });
+
+
+
+Route::middleware('guest')->group(function () {
+    Route::get('inactive', function () {
+        return Inertia::render('account-status/inactive');  
+        })->name('account.inactive'); 
+    Route::get('suspended', function () {
+        return Inertia::render('account-status/suspended');  
+        })->name('account.suspended');     
+});
+
 
 require __DIR__.'/admin.php';
 

@@ -27,8 +27,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import current_shop from '@/routes/current_shop';
-import reports from '@/routes/reports';
+import ThisShop from '@/routes/shop';
 
 interface Stats {
     totalSalesToday: number;
@@ -87,13 +86,17 @@ export default function OverviewDashboard({
                 />
                 <div className="mt-6 flex flex-wrap gap-2">
                     <Button asChild>
-                        <Link href={current_shop.pos({ shop: shop.uuid })}>
+                        {/* <Link href={current_shop.pos({ shop: shop.uuid })}> */}
+                        <Link href={ThisShop.pos({ shop: shop.uuid })}>
                             <Receipt className="mr-2 h-4 w-4" />
                             Go to POS
                         </Link>
                     </Button>
                     <Button asChild variant="outline">
-                        <Link href={reports.inventory({ shop: shop.uuid })}>
+                        {/* <Link href={reports.inventory({ shop: shop.uuid })}> */}
+                        <Link
+                            href={ThisShop.reportInventory({ shop: shop.uuid })}
+                        >
                             <PackageX className="mr-2 h-4 w-4" />
                             Inventory Reports
                         </Link>
@@ -146,7 +149,10 @@ export default function OverviewDashboard({
                             </CardDescription>
                         </div>
                         <Button asChild size="sm" variant="outline">
-                            <Link href={reports.sales({ shop: shop.uuid })}>
+                            {/* <Link href={reports.sales({ shop: shop.uuid })}> */}
+                            <Link
+                                href={ThisShop.reportSales({ shop: shop.uuid })}
+                            >
                                 View All
                             </Link>
                         </Button>
@@ -212,7 +218,10 @@ export default function OverviewDashboard({
                             </CardDescription>
                         </div>
                         <Button asChild size="sm" variant="outline">
-                            <Link href={reports.sales({ shop: shop.uuid })}>
+                            {/* <Link href={reports.sales({ shop: shop.uuid })}> */}
+                            <Link
+                                href={ThisShop.reportSales({ shop: shop.uuid })}
+                            >
                                 Reports
                             </Link>
                         </Button>

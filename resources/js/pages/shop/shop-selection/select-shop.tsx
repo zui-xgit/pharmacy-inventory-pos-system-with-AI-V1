@@ -3,19 +3,18 @@ import { ArrowRight, LogOut, MapPin, Phone, Store } from 'lucide-react';
 
 import Heading from '@/components/heading';
 import SearchInput from '@/components/search-input';
-import current_shop from '@/routes/current_shop';
 import { logout } from '@/routes';
 import type { Auth } from '@/types';
 import staff from '@/routes/staff';
 import RefreshButton from '@/components/refresh-button';
 import {
     Empty,
-    EmptyContent,
     EmptyDescription,
     EmptyHeader,
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
+import ThisShop from '@/routes/shop';
 
 interface Shop {
     uuid: string;
@@ -34,7 +33,8 @@ interface SelectShopProps {
 
 const ShopCard = ({ shop }: { shop: Shop }) => (
     <Link
-        href={current_shop.overview({ shop: shop.uuid })}
+        // href={current_shop.overview({ shop: shop.uuid })}
+        href={ThisShop.overview({ shop: shop.uuid })}
         className="group rounded-2xl border bg-card p-5 shadow-xs transition-all hover:border-primary/40 hover:shadow-md"
     >
         <div className="flex items-start gap-3">

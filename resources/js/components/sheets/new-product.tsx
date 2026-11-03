@@ -19,13 +19,13 @@ import {
     SheetClose,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import catalog from '@/routes/catalog';
 import type { DosageForm } from '@/types/type';
 import InputError from '../input-error';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label'; // Corrected to point to standard Shadcn Label component
 import { Spinner } from '../ui/spinner';
+import shop from '@/routes/shop';
 
 interface NewProductDialogProps {
     trigger: React.ReactNode;
@@ -45,7 +45,7 @@ const NewProductSheet = ({ trigger, dosage_forms }: NewProductDialogProps) => {
     const { active_shop } = usePage<{ active_shop: { uuid: string } }>().props;
 
     const handleAddProduct = () => {
-        post(catalog.new_product({ shop: active_shop.uuid }).url, {
+        post(shop.catalogNewProduct({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

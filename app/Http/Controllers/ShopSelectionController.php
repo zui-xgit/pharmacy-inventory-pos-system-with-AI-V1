@@ -32,7 +32,7 @@ class ShopSelectionController extends Controller
                 'shops.phone',
             ]);
 
-        return Inertia::render('shop/shop_selection/select-shop', [
+        return Inertia::render('shop/shop-selection/select-shop', [
             'shops'   => $shops,
             'filters' => [
                 'search' => $search ?: null,

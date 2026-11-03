@@ -38,8 +38,9 @@ class FortifyServiceProvider extends ServiceProvider
         {
             public function toResponse($request): RedirectResponse
             {
-                $user = $request->user();
+                Inertia::flash('toast', ['type' => 'success', 'message' => __('Logged in successfully.')]);
 
+                $user = $request->user();
                 if (! $user instanceof User) {
                     return redirect('/login');
                 }
@@ -49,10 +50,11 @@ class FortifyServiceProvider extends ServiceProvider
                 }
 
                 if ($user->isManagerOrCashier()) {
+
                     $shops = $user->shops()->get(['shops.uuid']);
 
                     if ($shops->count() === 1) {
-                        return redirect()->route('current_shop.overview', ['shop' => $shops->first()->uuid]);
+                        return redirect()->route('shop.overview', ['shop' => $shops->first()->uuid]);
                     }
         
                     // 0 shops
@@ -73,6 +75,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+
     }
 
     /**

@@ -4,10 +4,10 @@ import type { User } from '@/types';
 
 export function UserInfo({
     user,
-    showEmail = false,
+    showRole = false,
 }: {
     user: User;
-    showEmail?: boolean;
+    showRole?: boolean;
 }) {
     const getInitials = useInitials();
 
@@ -23,9 +23,9 @@ export function UserInfo({
                 <span className="truncate font-medium">
                     {user.firstname + ' ' + user.lastname}
                 </span>
-                {showEmail && (
+                {showRole && (
                     <span className="truncate text-xs text-muted-foreground">
-                        {user.email}
+                        {user.roles}
                     </span>
                 )}
             </div>

@@ -15,8 +15,8 @@ import {
     SheetClose,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import catalog from '@/routes/catalog';
 import InputError from '../input-error';
+import shop from '@/routes/shop';
 
 interface NewDosageFormSheetProps {
     trigger: React.ReactNode;
@@ -36,7 +36,7 @@ const NewDosageFormSheet = ({ trigger }: NewDosageFormSheetProps) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(catalog.new_dosage_form({ shop: active_shop.uuid }).url, {
+        post(shop.catalogNewDosageForm({ shop: active_shop.uuid }).url, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {

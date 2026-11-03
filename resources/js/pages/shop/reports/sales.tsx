@@ -35,7 +35,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
-import reports from '@/routes/reports';
+import shop from '@/routes/shop';
+// import reports from '@/routes/reports';
 
 interface SaleItem {
     uuid: string;
@@ -103,7 +104,8 @@ export default function SalesReports({
         toDate?: string,
     ) => {
         router.get(
-            reports.sales({ shop: shop_uuid }).url,
+            // reports.sales({ shop: shop_uuid }).url,
+            shop.reportSales({ shop: shop_uuid }).url,
             {
                 period: newPeriod,
                 from: fromDate || from,

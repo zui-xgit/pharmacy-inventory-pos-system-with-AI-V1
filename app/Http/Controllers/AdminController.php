@@ -22,15 +22,7 @@ use Throwable;
 
 class AdminController extends Controller
 {
-    private function destoryUserSession(Request $request, User $user)
-    {
-
-        $user->setRememberToken(Str::random(60));
-        DB::table('sessions')
-            ->where('user_id', $user->id)
-            ->where('id', '!=', $request->session()->getId())
-            ->delete();
-    }
+    
 
     public function createShop(Request $request): RedirectResponse
     {
@@ -443,7 +435,6 @@ class AdminController extends Controller
     {
         $user->update(['status' => 'inactive']);
 
-        $this->destoryUserSession($request, $user);
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff deactivated successfully.')]);
 
         return back();
@@ -452,7 +443,6 @@ class AdminController extends Controller
     public function suspendStaff(Request $request, User $user)
     {
         $user->update(['status' => 'suspended']);
-        $this->destoryUserSession($request, $user);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff suspended successfully.')]);
 

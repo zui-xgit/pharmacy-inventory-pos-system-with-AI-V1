@@ -28,7 +28,7 @@ class CheckStatus
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route($route);
+            return redirect()->route($route)->with('account_status', true);
         }
         return $next($request);
     }

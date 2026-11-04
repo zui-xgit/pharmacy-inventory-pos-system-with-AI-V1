@@ -63,11 +63,22 @@ Route::middleware(['auth', 'verified', 'role:manager|cashier', 'check.status'])-
 
 Route::middleware('guest')->group(function () {
     Route::get('inactive', function () {
+
+        abort_unless(session()->has('account_status'), 404);
+        session()->reflash(); // keeps it alive across a refresh
+
         return Inertia::render('account-status/inactive');  
-        })->name('account.inactive'); 
+    })->name('account.inactive'); 
+
+
     Route::get('suspended', function () {
+        
+        abort_unless(session()->has('account_status'), 404);
+        session()->reflash();
+
+
         return Inertia::render('account-status/suspended');  
-        })->name('account.suspended');     
+    })->name('account.suspended');     
 });
 
 

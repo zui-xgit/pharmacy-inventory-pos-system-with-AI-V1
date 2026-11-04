@@ -325,27 +325,19 @@ class AdminController extends Controller
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
-        $passwordChanged = filled($validated['password'] ?? null);
 
         DB::beginTransaction();
 
         try {
             $user->username = $validated['username'];
 
-            if ($passwordChanged) {
+             if (filled($validated['password'] ?? null)) {
                 $user->password = $validated['password'];
-                $user->setRememberToken(Str::random(60));
-            }
+             }
 
             $user->save();
 
-            if ($passwordChanged) {
-                DB::table('sessions')
-                    ->where('user_id', $user->id)
-                    ->where('id', '!=', $request->session()->getId())
-                    ->delete();
-            }
-
+           
             DB::commit();
             Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff Credentials updated successfully.')]);
 
@@ -431,16 +423,9 @@ class AdminController extends Controller
         return back();
     }
 
-    public function deactivateStaff(Request $request, User $user)
-    {
-        $user->update(['status' => 'inactive']);
+    
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Staff deactivated successfully.')]);
-
-        return back();
-    }
-
-    public function suspendStaff(Request $request, User $user)
+    public function suspendStaff(User $user)
     {
         $user->update(['status' => 'suspended']);
 

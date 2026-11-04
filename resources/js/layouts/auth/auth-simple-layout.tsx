@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Pill } from 'lucide-react';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 export default function AuthSimpleLayout({
     children,
@@ -21,9 +22,10 @@ export default function AuthSimpleLayout({
                             href={home()}
                             className="group flex flex-col items-center gap-2"
                         >
-                            <div className="rounded-xl bg-primary p-3 text-primary-foreground shadow-md shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
+                            {/* <div className="rounded-xl bg-primary p-3 text-primary-foreground shadow-md shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
                                 <Pill className="h-6 w-6" />
-                            </div>
+                            </div> */}
+                            <AppLogoIcon />
                             <span className="text-lg font-bold tracking-tight text-foreground">
                                 RxPOS Terminal
                             </span>

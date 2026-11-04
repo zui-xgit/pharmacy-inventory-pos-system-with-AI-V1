@@ -49,43 +49,9 @@ class DatabaseSeeder extends Seeder
         ]);
         $admin_user->assignRole($admin_role);
 
-        // USER B (MANAGER)
-         $manager_user_1 = User::factory()->create([
-            'username' => 'manager.1',
-            'firstname' => 'manager_1',
-            'lastname' => 'juma',
-            'email' => 'benardbenny10@gmail.com', 
-
-        ]);
-        $manager_user_1->assignRole($manager_role);
-
-
-        // USER C (manager)
-         $manager_user_2 = User::factory()->create([
-            'username' => 'manager.2',
-            'firstname' => 'manager_2',
-            'lastname' => 'juma',
-            'email' => 'benardbenny20@gmail.com', 
-
-        ]);
-        $manager_user_2->assignRole($manager_role);
-
-         // USER 4 (cashier)
-         $cashier_user_1 = User::factory()->create([
-            'username' => 'cashier.1',  
-            'firstname' => 'cashier',
-            'lastname' => 'juma',
-            'email' => 'benardbenny30@gmail.com', 
-            'status' => 'inactive'
-
-        ]);
-        $cashier_user_1->assignRole($cashier_role);
-
-
+       
         // SHOP 1
         $shop_1 = Shop::factory()->create();
-        $manager_user_1->shops()->attach($shop_1->id);
-
         $dosageForm_shop_1 = DosageForm::factory(10)->create([
             'shop_id' => $shop_1->id,
         ]);
@@ -97,14 +63,10 @@ class DatabaseSeeder extends Seeder
 
         // SHOP 2
        
-
         $shop_2 = Shop::factory()->create();
-        $manager_user_2->shops()->attach($shop_2->id);
-
         $dosageForm_shop_2 = DosageForm::factory(10)->create([
             'shop_id' => $shop_2->id,
         ]);
-
         Product::factory(10)->create([
             'shop_id' => $shop_2->id,
             'dosage_form_id' => fn () => $dosageForm_shop_2->random()->id,

@@ -11,6 +11,7 @@ import {
     ShoppingCart,
     History,
     Users,
+    Settings2,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 // import { NavFooter } from '@/components/nav-footer';
@@ -20,6 +21,8 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
+    SidebarGroup,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -33,6 +36,7 @@ import { Button } from './ui/button';
 import staff from '@/routes/staff';
 import { edit } from '@/routes/profile';
 import shop from '@/routes/shop';
+import { useCurrentUrl } from '@/hooks/use-current-url';
 
 // ADMIN NAVITEMS
 const Overview: NavItem[] = [
@@ -146,6 +150,8 @@ export function AppSidebar() {
           ? staff.shopsSelect()
           : undefined;
 
+    const { isCurrentUrl } = useCurrentUrl();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -159,7 +165,7 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
-            {/* ADMIN */}
+            {/* ADMIN ALL SHOPS DASHBOARD */}
             {auth.user.isAdmin && !active_shop && (
                 <SidebarContent>
                     <NavMain groupLabel={'Overview'} items={Overview} />
@@ -167,6 +173,8 @@ export function AppSidebar() {
                     <NavMain groupLabel={'Account'} items={Account} />
                 </SidebarContent>
             )}
+
+            {/* SHOP DASHBOARD */}
             {active_shop && (
                 <SidebarContent>
                     <NavMain
@@ -182,10 +190,57 @@ export function AppSidebar() {
                         items={ShopReportAndInsights(active_shop.uuid)}
                     />
 
-                    <NavMain
-                        groupLabel={'System'}
-                        items={ShopSystem(active_shop.uuid)}
-                    />
+                    <SidebarGroup className="px-2 py-0">
+                        <SidebarGroupLabel>System</SidebarGroupLabel>
+                        <SidebarMenu>
+                            {auth.user.isAdminOrManager && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={isCurrentUrl(
+                                            shop.staffEdit({
+                                                shop: active_shop.uuid,
+                                            }),
+                                        )}
+                                        tooltip={'Staff'}
+                                    >
+                                        <Link
+                                            href={shop.staffEdit({
+                                                shop: active_shop.uuid,
+                                            })}
+                                            prefetch
+                                        >
+                                            <Users />
+                                            <span>Staff</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={isCurrentUrl(
+                                        shop.staffProfile({
+                                            shop: active_shop.uuid,
+                                        }),
+                                    )}
+                                    tooltip={'Settings'}
+                                >
+                                    <Link
+                                        href={shop.staffProfile({
+                                            shop: active_shop.uuid,
+                                        })}
+                                        prefetch
+                                    >
+                                        <Settings2 />
+                                        <span>Settings</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+
+                    {/* .................... */}
                 </SidebarContent>
             )}
             <SidebarFooter>

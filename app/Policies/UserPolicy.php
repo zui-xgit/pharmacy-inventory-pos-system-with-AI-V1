@@ -15,27 +15,15 @@ class UserPolicy
      *    
      */
 
-    
-    public function changeStatus(User $user, User $model): Response
+
+    public function updateSelfUser(User $user, User $model): Response 
     {
         return $user->uuid !== $model->uuid
             ? Response::allow()
-            : Response::deny('You cannot change your own status.');
-    }
-
-    public function updateCredentials(User $user, User $model): Response
-    {
-        return $user->uuid !== $model->uuid
-            ? Response::allow() 
             : Response::deny('FORBIDDEN');
     }
-
-    public function updateStaff(User $user, User $model): Response
-    {
-        return $user->uuid !== $model->uuid
-            ? Response::allow() 
-            : Response::deny('FORBIDDEN');
-    }
+    
+ 
 
     
 

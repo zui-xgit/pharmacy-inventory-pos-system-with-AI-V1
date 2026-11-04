@@ -15,7 +15,7 @@ use Inertia\Inertia;
 
 Route::inertia('/', 'welcome')->name('home');
 
-Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member', 'check.status'])->group(function () {
+Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'check.status', 'shop.member', ])->group(function () {
 
     // Main
     Route::get('/', [OverviewController::class, 'overview'])->name('shop.overview');
@@ -40,8 +40,6 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
     Route::get('/reports/sales', [ReportsAndInsightsController::class, 'salesReports'])->name('shop.report-sales');
     Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('shop.report-inventory');
 
-
-
     // SHOP USER SETTINGS
     Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('shop.staff-profile');
     Route::get('staff/security', [SecurityController::class, 'staffSecurityEdit'])->name('shop.staff-security');
@@ -50,16 +48,39 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'shop.member'
         return Inertia::render('staff-settings/appearance');
     })->name('shop.staff-appearance');
 
-    Route::get('shop-staff', [ShopStaffController::class, 'shopStaffEdit'])->name('shop.staff-edit');
+    // SHOP STAFF MANAGEMENT
+    Route::middleware('role:admin|manager')->group(function () {
+        Route::get('shop-staff', [ShopStaffController::class, 'staffEdit'])->name('shop.staff-edit');
+        Route::post('shop-staff/create', [ShopStaffController::class, 'createStaff'])->name('shop.staff-create');
+        // Scoped bindings would resolve the user through Shop::users(), turning
+        // cross-shop requests into 404s. Resolve the user globally and let the
+        // controller/middleware return a 403 for staff outside this shop.
+        Route::patch('shop-staff/{user:uuid}/update', [ShopStaffController::class, 'updateStaff'])
+            ->name('shop.staff-update')
+            ->middleware('can:updateSelfUser,user')
+            ->scopeBindings();
+
+        Route::patch('shop-staff/{user:uuid}/update-credentials', [ShopStaffController::class, 'updateCredentials'])
+            ->name('shop.staff-update-credentials')
+            ->middleware('can:updateSelfUser,user')
+            ->scopeBindings();
+
+        Route::patch('shop-staff/{user:uuid}/activate', [ShopStaffController::class, 'activateStaff'])
+            ->name('shop.staff-activate')
+            ->middleware('can:updateSelfUser,user')
+            ->scopeBindings();
+        
+        Route::patch('shop-staff/{user:uuid}/suspend', [ShopStaffController::class, 'suspendStaff'])
+            ->name('shop.staff-suspend')
+            ->middleware('can:updateSelfUser,user')
+            ->scopeBindings(); 
+    });
 
 });
 
-
-Route::middleware(['auth', 'verified', 'role:manager|cashier', 'check.status'])->group(function (){
+Route::middleware(['auth', 'verified', 'check.status', 'role:manager|cashier', ])->group(function () {
     Route::get('select-shop', [ShopSelectionController::class, 'index'])->name('staff.shops-select');
 });
-
-
 
 Route::middleware('guest')->group(function () {
     Route::get('inactive', function () {
@@ -67,20 +88,17 @@ Route::middleware('guest')->group(function () {
         abort_unless(session()->has('account_status'), 404);
         session()->reflash(); // keeps it alive across a refresh
 
-        return Inertia::render('account-status/inactive');  
-    })->name('account.inactive'); 
-
+        return Inertia::render('account-status/inactive');
+    })->name('account.inactive');
 
     Route::get('suspended', function () {
-        
+
         abort_unless(session()->has('account_status'), 404);
         session()->reflash();
 
-
-        return Inertia::render('account-status/suspended');  
-    })->name('account.suspended');     
+        return Inertia::render('account-status/suspended');
+    })->name('account.suspended');
 });
-
 
 require __DIR__.'/admin.php';
 

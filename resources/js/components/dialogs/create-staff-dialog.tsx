@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { Globe, Plus, Store, UserPlus, X } from 'lucide-react';
+import { Globe, Plus, ShieldCheck, Store, UserPlus, X } from 'lucide-react';
 import type { ChangeEvent, FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -144,6 +144,9 @@ const CreateStaffForm = ({
         form.setData((current) => ({
             ...current,
             role,
+            // Admins already have every permission and shop, so drop any
+            // individual selections when the role changes to admin.
+            permissions: role === 'admin' ? [] : current.permissions,
             shops: role === 'admin' ? [] : current.shops,
         }));
 
@@ -464,13 +467,32 @@ const CreateStaffForm = ({
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between gap-2">
                                     <Caption>Permissions</Caption>
-                                    <span className="text-[11px] text-muted-foreground">
-                                        {form.data.permissions.length} of{' '}
-                                        {availablePermissions.length} selected
-                                    </span>
+                                    {!hasFullAccess && (
+                                        <span className="text-[11px] text-muted-foreground">
+                                            {form.data.permissions.length} of{' '}
+                                            {availablePermissions.length}{' '}
+                                            selected
+                                        </span>
+                                    )}
                                 </div>
 
-                                {availablePermissions.length === 0 ? (
+                                {hasFullAccess ? (
+                                    <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                            <ShieldCheck className="h-4 w-4" />
+                                        </span>
+                                        <div className="leading-tight">
+                                            <p className="text-sm font-medium text-foreground">
+                                                Access to all permissions
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                Admins automatically get every
+                                                permission, so no individual
+                                                selection is needed.
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : availablePermissions.length === 0 ? (
                                     <p className="text-sm text-muted-foreground">
                                         No permissions defined
                                     </p>

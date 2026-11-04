@@ -228,9 +228,7 @@ export default function StaffManagement({
     const handleActivateUser = (uuid: string) => {
         router.patch(admin.activateStaff({ user: uuid }));
     };
-    const handleDeactivateUser = (uuid: string) => {
-        router.patch(admin.deactivateStaff({ user: uuid }));
-    };
+
     const handleSuspendUser = (uuid: string) => {
         router.patch(admin.suspendStaff({ user: uuid }));
     };
@@ -296,18 +294,6 @@ export default function StaffManagement({
                             stats.suspended > 0 ? 'text-destructive' : ''
                         }
                     />
-                    {/* <StatCard
-                        title="Roles"
-                        value={available_roles.length.toString()}
-                        icon={
-                            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                        }
-                        subtitle={
-                            available_roles.length > 0
-                                ? available_roles.join(' · ')
-                                : 'No roles defined'
-                        }
-                    /> */}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3 border-b border-border/40 pb-3">
@@ -457,15 +443,6 @@ export default function StaffManagement({
                                                                 ' ' +
                                                                 member.lastname}
                                                             {'    '}
-                                                            {auth.user.uuid ===
-                                                                member.uuid && (
-                                                                <Badge
-                                                                    variant="secondary"
-                                                                    className="shrink-0 rounded-full bg-primary/10 px-2 py-0 text-[10px] font-semibold tracking-wide text-primary uppercase"
-                                                                >
-                                                                    You
-                                                                </Badge>
-                                                            )}
                                                         </p>
                                                         <p className="truncate text-xs text-muted-foreground">
                                                             {member.email}
@@ -567,106 +544,56 @@ export default function StaffManagement({
                                                 </span>
                                             </TableCell>
                                             <TableCell className="pr-4 text-right">
-                                                <DropdownMenu modal={false}>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon-sm"
-                                                            aria-label={`Actions for ${member.firstname + ' ' + member.lastname}`}
-                                                            className="cursor-pointer rounded-lg text-muted-foreground hover:text-foreground"
+                                                {member.uuid !==
+                                                auth.user.uuid ? (
+                                                    <DropdownMenu modal={false}>
+                                                        <DropdownMenuTrigger
+                                                            asChild
                                                         >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent
-                                                        align="end"
-                                                        className="w-44"
-                                                    >
-                                                        <DropdownMenuLabel>
-                                                            Options
-                                                        </DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem
-                                                            className="cursor-pointer"
-                                                            // onSelect={() =>
-                                                            //     setSelectedMember(
-                                                            //         member,
-                                                            //     )
-                                                            // }
-                                                            onSelect={() => {
-                                                                if (
-                                                                    member.uuid ===
-                                                                    auth.user
-                                                                        .uuid
-                                                                ) {
-                                                                    toast.info(
-                                                                        'This is your own account',
-                                                                        {
-                                                                            description:
-                                                                                'You can view and edit your details in Settings → Profile.',
-                                                                            action: {
-                                                                                label: 'Open profile',
-                                                                                onClick:
-                                                                                    () =>
-                                                                                        router.visit(
-                                                                                            '/settings/profile',
-                                                                                        ),
-                                                                            },
-                                                                        },
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon-sm"
+                                                                aria-label={`Actions for ${member.firstname + ' ' + member.lastname}`}
+                                                                className="cursor-pointer rounded-lg text-muted-foreground hover:text-foreground"
+                                                            >
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent
+                                                            align="end"
+                                                            className="w-44"
+                                                        >
+                                                            <DropdownMenuLabel>
+                                                                Options
+                                                            </DropdownMenuLabel>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem
+                                                                className="cursor-pointer"
+                                                                onSelect={() => {
+                                                                    setSelectedMember(
+                                                                        member,
                                                                     );
-                                                                    return;
-                                                                }
+                                                                }}
+                                                            >
+                                                                <Eye className="h-4 w-4" />
+                                                                View details
+                                                            </DropdownMenuItem>
 
-                                                                setSelectedMember(
-                                                                    member,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Eye className="h-4 w-4" />
-                                                            View details
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuItem
-                                                            className="cursor-pointer"
-                                                            onSelect={() => {
-                                                                if (
-                                                                    member.uuid ===
-                                                                    auth.user
-                                                                        .uuid
-                                                                ) {
-                                                                    toast.info(
-                                                                        'This is your own account',
-                                                                        {
-                                                                            description:
-                                                                                'You can view and edit your credentials in Settings → Security.',
-                                                                            action: {
-                                                                                label: 'Open credentials',
-                                                                                onClick:
-                                                                                    () =>
-                                                                                        router.visit(
-                                                                                            '/settings/security',
-                                                                                        ),
-                                                                            },
-                                                                        },
+                                                            <DropdownMenuItem
+                                                                className="cursor-pointer"
+                                                                onSelect={() => {
+                                                                    setPasswordMember(
+                                                                        member,
                                                                     );
-                                                                    return;
-                                                                }
-                                                                setPasswordMember(
-                                                                    member,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Key className="h-4 w-4" />
-                                                            Staff Credentials
-                                                        </DropdownMenuItem>
+                                                                }}
+                                                            >
+                                                                <Key className="h-4 w-4" />
+                                                                Staff
+                                                                Credentials
+                                                            </DropdownMenuItem>
 
-                                                        {member.status !==
-                                                            'active' &&
-                                                            member.uuid !==
-                                                                auth.user
-                                                                    .uuid && (
+                                                            {member.status !==
+                                                                'active' && (
                                                                 <ConfirmAlertDialog
                                                                     trigger={
                                                                         <DropdownMenuItem
@@ -717,64 +644,9 @@ export default function StaffManagement({
                                                                 />
                                                             )}
 
-                                                        {member.status ===
-                                                            'active' &&
-                                                            member.uuid !==
-                                                                auth.user
-                                                                    .uuid && (
+                                                            {member.status ===
+                                                                'active' && (
                                                                 <>
-                                                                    <ConfirmAlertDialog
-                                                                        trigger={
-                                                                            <DropdownMenuItem
-                                                                                className="cursor-pointer"
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) =>
-                                                                                    e.preventDefault()
-                                                                                }
-                                                                            >
-                                                                                <UserMinus className="h-4 w-4" />
-                                                                                Deactivate
-                                                                                User
-                                                                            </DropdownMenuItem>
-                                                                        }
-                                                                        title="Deactivate user?"
-                                                                        description={
-                                                                            <>
-                                                                                Are
-                                                                                you
-                                                                                sure
-                                                                                you
-                                                                                want
-                                                                                to
-                                                                                deactivate{' '}
-                                                                                <span className="font-medium">
-                                                                                    {member.firstname +
-                                                                                        ' ' +
-                                                                                        member.lastname}
-                                                                                </span>
-
-                                                                                ?
-                                                                                They
-                                                                                will
-                                                                                lose
-                                                                                access
-                                                                                to
-                                                                                the
-                                                                                system
-                                                                                until
-                                                                                reactivated.
-                                                                            </>
-                                                                        }
-                                                                        actionText="Deactivate"
-                                                                        cancelText="Cancel"
-                                                                        onConfirm={() => {
-                                                                            handleDeactivateUser(
-                                                                                member.uuid,
-                                                                            );
-                                                                        }}
-                                                                    />
-
                                                                     <ConfirmAlertDialog
                                                                         trigger={
                                                                             <DropdownMenuItem
@@ -825,8 +697,13 @@ export default function StaffManagement({
                                                                     />
                                                                 </>
                                                             )}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                ) : (
+                                                    <>
+                                                        <Badge>You</Badge>
+                                                    </>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))}

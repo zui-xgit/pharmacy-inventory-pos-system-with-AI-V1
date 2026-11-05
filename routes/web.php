@@ -37,8 +37,8 @@ Route::prefix('shop/{shop:uuid}')->middleware(['auth', 'verified', 'check.status
     Route::post('/stock/stock-adjustments', [StockController::class, 'adjustStock'])->name('shop.adjust-stock');
 
     // Reports
-    Route::get('/reports/sales', [ReportsAndInsightsController::class, 'salesReports'])->name('shop.report-sales');
-    Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('shop.report-inventory');
+    Route::get('/reports/sales', [ReportsAndInsightsController::class, 'salesReports'])->name('shop.sales-report');
+    Route::get('/reports/inventory', [ReportsAndInsightsController::class, 'inventoryReports'])->name('shop.inventory-report');
 
     // SHOP USER SETTINGS
     Route::get('staff/profile', [ProfileController::class, 'staffProfileEdit'])->name('shop.staff-profile');

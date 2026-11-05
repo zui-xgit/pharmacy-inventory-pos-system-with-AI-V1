@@ -102,12 +102,12 @@ const ShopInventoryAndStock = (shop_uuid: string): NavItem[] => [
 const ShopReportAndInsights = (shop_uuid: string): NavItem[] => [
     {
         title: 'Sales Reports',
-        href: shop.reportSales({ shop: shop_uuid }),
+        href: shop.salesReport({ shop: shop_uuid }),
         icon: Package,
     },
     {
         title: 'Inventory Reports',
-        href: shop.reportInventory({ shop: shop_uuid }),
+        href: shop.inventoryReport({ shop: shop_uuid }),
         icon: ShoppingCart,
     },
 ];

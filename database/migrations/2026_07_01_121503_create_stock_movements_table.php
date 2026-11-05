@@ -23,8 +23,8 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete();
 
-            // The user who triggered this movement
-            $table->foreignIdFor(User::class)
+            // The user who performed the movement
+            $table->foreignIdFor(User::class, 'performed_by')
                 ->constrained()
                 ->restrictOnDelete();
 
@@ -34,8 +34,6 @@ return new class extends Migration
             $table->integer('quantity');
             $table->integer('previous_stock');
             $table->integer('new_stock');
-
-            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

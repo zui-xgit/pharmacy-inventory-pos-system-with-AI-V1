@@ -34,22 +34,14 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            // The cashier or staff member who processed this sale
-            $table->foreignIdFor(User::class)
+            // Whoever processed the sale: cashier, manager or admin
+            $table->foreignIdFor(User::class, 'sold_by')
                 ->constrained()
                 ->restrictOnDelete();
 
             $table->string('receipt_number')->unique(); // auto generated e.g. RCP-20240101-0001
             $table->decimal('total_amount', 10, 2);     // sum of all sale items
-            $table->decimal('discount', 10, 2)->default(0);
-            $table->decimal('amount_paid', 10, 2);      // actual amount handed over
-            $table->decimal('change_given', 10, 2)->default(0); // amount_paid - total_amount
-
-            $table->enum('payment_method', ['cash', 'card', 'mobile'])->default('cash');
-
             $table->enum('status', ['completed', 'refunded', 'cancelled'])->default('completed');
-
-            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

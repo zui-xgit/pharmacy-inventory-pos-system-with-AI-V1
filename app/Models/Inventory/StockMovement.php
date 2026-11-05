@@ -31,7 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read Batch $batch
  * @property-read User $user
  */
-#[Guarded('id')]
+#[Guarded('id', 'uuid')]
 class StockMovement extends Model
 {
     /** @use HasFactory<StockMovementFactory> */
@@ -47,9 +47,9 @@ class StockMovement extends Model
     protected function casts(): array
     {
         return [
-            'quantity' => 'decimal:2',
-            'quantity_before' => 'decimal:2',
-            'quantity_after' => 'decimal:2',
+            'quantity' => 'integer',
+            'previous_stock' => 'integer',
+            'new_stock' => 'integer',
             'type' => StockMovementType::class,
             'reason' => StockMovementReason::class,
         ];
@@ -81,9 +81,9 @@ class StockMovement extends Model
     /**
      * @return BelongsTo<User, $this>
      */
-    public function user(): BelongsTo
+    public function performedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'performed_by');
     }
 
     /**

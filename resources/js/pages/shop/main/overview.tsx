@@ -43,7 +43,7 @@ interface RecentSale {
     receipt_number: string;
     total_amount: number;
     created_at: string;
-    cashier: string | null;
+    sold_by: string | null;
 }
 
 interface TopProduct {
@@ -95,7 +95,7 @@ export default function OverviewDashboard({
                     <Button asChild variant="outline">
                         {/* <Link href={reports.inventory({ shop: shop.uuid })}> */}
                         <Link
-                            href={ThisShop.reportInventory({ shop: shop.uuid })}
+                            href={ThisShop.inventoryReport({ shop: shop.uuid })}
                         >
                             <PackageX className="mr-2 h-4 w-4" />
                             Inventory Reports
@@ -151,7 +151,7 @@ export default function OverviewDashboard({
                         <Button asChild size="sm" variant="outline">
                             {/* <Link href={reports.sales({ shop: shop.uuid })}> */}
                             <Link
-                                href={ThisShop.reportSales({ shop: shop.uuid })}
+                                href={ThisShop.salesReport({ shop: shop.uuid })}
                             >
                                 View All
                             </Link>
@@ -164,7 +164,6 @@ export default function OverviewDashboard({
                                     <TableRow>
                                         <TableHead>Receipt</TableHead>
                                         <TableHead>Time</TableHead>
-                                        <TableHead>Cashier</TableHead>
                                         <TableHead className="text-right">
                                             Amount
                                         </TableHead>
@@ -189,9 +188,7 @@ export default function OverviewDashboard({
                                                 <TableCell>
                                                     {sale.created_at}
                                                 </TableCell>
-                                                <TableCell>
-                                                    {sale.cashier || '-'}
-                                                </TableCell>
+
                                                 <TableCell className="text-right font-medium">
                                                     {formatCurrency(
                                                         sale.total_amount,
@@ -220,7 +217,7 @@ export default function OverviewDashboard({
                         <Button asChild size="sm" variant="outline">
                             {/* <Link href={reports.sales({ shop: shop.uuid })}> */}
                             <Link
-                                href={ThisShop.reportSales({ shop: shop.uuid })}
+                                href={ThisShop.salesReport({ shop: shop.uuid })}
                             >
                                 Reports
                             </Link>

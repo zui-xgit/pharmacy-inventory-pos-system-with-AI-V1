@@ -203,7 +203,7 @@ export default function InventoryReports({
                             <SearchInput
                                 href={
                                     // reports.inventory({ shop: shop_uuid }).url
-                                    shop.reportInventory({ shop: shop_uuid })
+                                    shop.inventoryReport({ shop: shop_uuid })
                                         .url
                                 }
                                 filters={filters}

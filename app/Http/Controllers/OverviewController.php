@@ -60,7 +60,7 @@ class OverviewController extends Controller
 
         $recentSales = Sale::where('shop_id', $shop->id)
             ->where('status', 'completed')
-            ->with(['user:id,firstname,lastname'])
+            ->with(['soldBy:id,firstname,lastname'])
             ->latest()
             ->limit(5)
             ->get()
@@ -69,7 +69,7 @@ class OverviewController extends Controller
                     'receipt_number' => $sale->receipt_number,
                     'total_amount' => (float) $sale->total_amount,
                     'created_at' => $sale->created_at->format('Y-m-d H:i'),
-                    'cashier' => $sale->user ? trim(($sale->user->firstname ?? '').' '.($sale->user->lastname ?? '')) : null,
+                    'sold_by' => $sale->soldBy  ? trim(($sale->soldBy ->firstname ?? '').' '.($sale->soldBy ->lastname ?? '')) : null,
                 ];
             });
 

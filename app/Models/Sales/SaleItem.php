@@ -21,7 +21,6 @@ use Illuminate\Support\Carbon;
  * @property int $quantity
  * @property string $unit_price
  * @property string $cost_price
- * @property string $discount
  * @property string $subtotal
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -29,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property-read Product $product
  * @property-read Batch $batch
  */
-#[Guarded('id')]
+#[Guarded('id', 'uuid')]
 class SaleItem extends Model
 {
     /** @use HasFactory<SaleItemFactory> */
@@ -44,6 +43,21 @@ class SaleItem extends Model
     public function uniqueIds(): array
     {
         return ['uuid'];
+    }
+
+     /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'integer',
+            'unit_price' => 'decimal',
+            'cost_price' => 'decimal',
+            'subtotal' => 'decimal',
+        ];
     }
 
     // Belongs to the header sale

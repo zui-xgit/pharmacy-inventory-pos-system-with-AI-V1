@@ -75,9 +75,9 @@ class Sale extends Model
     /**
      * @return BelongsTo<User, $this>
      */
-    public function user(): BelongsTo
+    public function soldBy(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'sold_by');
     }
 
     /**
@@ -91,20 +91,12 @@ class Sale extends Model
     /**
      * @return HasMany<SaleItem, $this>
      */
-    public function saleItems(): HasMany
+    public function items(): HasMany
     {
         return $this->hasMany(SaleItem::class);
     }
 
-    /**
-     * Alias for saleItems() to support $sale->items
-     *
-     * @return HasMany<SaleItem, $this>
-     */
-    public function items(): HasMany
-    {
-        return $this->saleItems();
-    }
+   
 
     // -------------------------------------------------------------------------
     // Helpers

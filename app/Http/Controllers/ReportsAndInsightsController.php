@@ -43,7 +43,7 @@ class ReportsAndInsightsController extends Controller
                 break;
         }
 
-        $sales = (clone $query)->with(['user:id,firstname,lastname', 'items.product:id,name'])
+        $sales = (clone $query)->with(['soldBy:id,firstname,lastname', 'items.product:id,name'])
             ->latest()
             ->paginate(20)
             ->withQueryString()
@@ -52,11 +52,9 @@ class ReportsAndInsightsController extends Controller
                     'uuid' => $sale->uuid,
                     'receipt_number' => $sale->receipt_number,
                     'total_amount' => (float) $sale->total_amount,
-                    'discount' => (float) $sale->discount,
-                    'payment_method' => $sale->payment_method,
                     'status' => $sale->status,
                     'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
-                    'cashier' => $sale->user ? trim(($sale->user->firstname ?? '').' '.($sale->user->lastname ?? '')) : null,
+                    'sold_by' => $sale->soldBy  ? trim(($sale->soldBy ->firstname ?? '').' '.($sale->soldBy ->lastname ?? '')) : null,
                     'items_count' => $sale->items->count(),
                     'profit' => $sale->profit(),
                 ];

@@ -172,19 +172,18 @@ class StockController extends Controller
 
             StockMovement::create([
                 'batch_id' => $batch->id,
-                'user_id' => Auth::id(),
+                'performed_by' => Auth::id(),
                 'type' => $difference >= 0 ? StockMovementType::IN : StockMovementType::OUT,
                 'reason' => StockMovementReason::ADJUSTMENT,
                 'quantity' => abs($difference),
                 'previous_stock' => $previousStock,
                 'new_stock' => $newStock,
-                'notes' => $validated['notes'] ?? null,
             ]);
 
             DB::commit();
 
             return back();
-        } catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return back()->withErrors([
@@ -192,7 +191,6 @@ class StockController extends Controller
             ]);
         } catch (Throwable $e) {
             DB::rollBack();
-            report($e);
 
             return back()->withErrors([
                 'error' => 'Failed to save the stock adjustment. Please try again.',

@@ -91,7 +91,7 @@ class PosController extends Controller
 
    
 
-    // make a sell
+    // checkOUT
     public function checkOut(Request $request, PosService $posService, Shop $shop): RedirectResponse
     { 
             $validated = $request->validate([
@@ -116,8 +116,7 @@ class PosController extends Controller
             try{
                 DB::beginTransaction(); 
 
-                // ── Step 1: Lock & Verify batch stock directly ────────────────────
-                // Collect batch IDs and lock rows to prevent race conditions at POS
+                // ── Step 1: Lock & verify batch stock ─────────────────────────────
                 $batchIds = collect($items)->pluck('batch_id');
                 
                 $batches = Batch::whereIn('id', $batchIds)
@@ -154,13 +153,9 @@ class PosController extends Controller
                 // ── Step 4: Create the sale record ───────────────────────────────
                 $sale = Sale::create([
                     'shop_id'        => $shop->id,
-                    'user_id'        => Auth::id(), // who made the sale
+                    'sold_by'        => Auth::id(), // who made the sale
                     'receipt_number' => $receiptNumber,
                     'total_amount'   => $totalAmount,
-                    'discount'       => 0,
-                    'amount_paid'    => $totalAmount,
-                    'change_given'   => 0,
-                    'payment_method' => 'cash',
                     'status'         => 'completed',
                 ]);
 
@@ -189,7 +184,6 @@ class PosController extends Controller
                         'quantity'   => $item['quantity'],
                         'unit_price' => $batch->selling_price,
                         'cost_price' => $batch->cost_price,
-                        'discount'   => 0,
                         'subtotal'   => $batch->selling_price * $item['quantity'],
                     ]);
 
@@ -202,13 +196,12 @@ class PosController extends Controller
                     // 5c. Log movement in stock_movements ledger for auditing
                     StockMovement::create([
                         'batch_id'        => $batch->id,
-                        'user_id'         => Auth::id(),
+                        'performed_by'         => Auth::id(),
                         'type'            => StockMovementType::OUT,
                         'reason'          => StockMovementReason::SALE,
                         'quantity'        => $item['quantity'],
                         'previous_stock'  => $quantityBefore,
                         'new_stock'       => $quantityAfter,
-                        'notes'           => "Sale — receipt {$receiptNumber}",
                     ]);
                 }
 
@@ -218,8 +211,6 @@ class PosController extends Controller
   
             }catch(Throwable $e){
                 DB::rollBack();
-
-                dd($e); 
                 return back()->withErrors([
                     'error_message' => 'Failed to complete the sale. Please try again.',
                 ]);

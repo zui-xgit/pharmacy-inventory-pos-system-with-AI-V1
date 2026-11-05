@@ -38,15 +38,13 @@ import DashboardInnerLayout from '@/layouts/app/dashboard-inner-layout';
 import shop from '@/routes/shop';
 // import reports from '@/routes/reports';
 
-interface SaleItem {
+interface Sale {
     uuid: string;
     receipt_number: string;
     total_amount: number;
-    discount: number;
-    payment_method: string;
     status: string;
     created_at: string;
-    cashier: string | null;
+    sold_by: string | null;
     items_count: number;
     profit: number;
 }
@@ -70,7 +68,7 @@ interface PaginationLink {
 
 interface Props {
     sales: {
-        data: SaleItem[];
+        data: Sale[];
         links: PaginationLink[];
     };
     summary: {
@@ -105,7 +103,7 @@ export default function SalesReports({
     ) => {
         router.get(
             // reports.sales({ shop: shop_uuid }).url,
-            shop.reportSales({ shop: shop_uuid }).url,
+            shop.salesReport({ shop: shop_uuid }).url,
             {
                 period: newPeriod,
                 from: fromDate || from,
@@ -228,9 +226,8 @@ export default function SalesReports({
                                     <TableRow>
                                         <TableHead>Receipt</TableHead>
                                         <TableHead>Date</TableHead>
-                                        <TableHead>Cashier</TableHead>
+                                        <TableHead>Performed By</TableHead>
                                         <TableHead>Items</TableHead>
-                                        <TableHead>Payment</TableHead>
                                         <TableHead className="text-right">
                                             Total
                                         </TableHead>
@@ -259,14 +256,12 @@ export default function SalesReports({
                                                     {sale.created_at}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {sale.cashier || '-'}
+                                                    {sale.sold_by || '-'}
                                                 </TableCell>
                                                 <TableCell>
                                                     {sale.items_count}
                                                 </TableCell>
-                                                <TableCell className="capitalize">
-                                                    {sale.payment_method}
-                                                </TableCell>
+
                                                 <TableCell className="text-right">
                                                     {formatCurrency(
                                                         sale.total_amount,

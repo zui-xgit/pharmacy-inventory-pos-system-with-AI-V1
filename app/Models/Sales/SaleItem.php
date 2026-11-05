@@ -54,9 +54,9 @@ class SaleItem extends Model
     {
         return [
             'quantity' => 'integer',
-            'unit_price' => 'decimal',
-            'cost_price' => 'decimal',
-            'subtotal' => 'decimal',
+            'unit_price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
+            'subtotal' => 'decimal:2',
         ];
     }
 
